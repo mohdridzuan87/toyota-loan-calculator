@@ -39,7 +39,8 @@
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
       inst: (y, r) => `Ansuran ${y} tahun @ ${r}%`, upfront: "Bayaran awal (deposit + insurans)",
       diff: t => `Beza ${t ? "deposit" : "sebulan"}`, hiLo: " (tertinggi vs terendah)", lowest: t => `${t ? "Deposit" : "Ansuran"} terendah`,
-      insNote: "Insurans: anggaran premium komprehensif (tarif Semenanjung, ikut cc & harga, termasuk SST 8% + duti setem RM10). Harga sebenar ikut syarikat insurans.",
+      insNote: d => "Insurans (anggaran): premium komprehensif kereta persendirian Semenanjung, dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (disemak " + d + ")" : "") + " dan kadar tarif motor (cc + RM26 setiap RM1,000 harga, tolak NCD, termasuk SST 8% + duti setem RM10). Harga dikemas kini automatik 1hb & 15hb. Toyota tidak menerbitkan harga premium; harga sebenar ikut syarikat insurans.",
+      pInsNote: d => "Insurans: anggaran dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (" + d + ")" : "") + " dan tarif motor kereta persendirian.",
       pCmp: n => `PERBANDINGAN LOAN · ${n} VARIAN`, pPkg: "PAKEJ LOAN TOYOTA", pFrom: "Ansuran bulanan dari", pMonthly: "Ansuran sebulan",
       pAfter: "Selepas rebate", pAfterS: "Lepas rebate", pIns: " + insurans", pInsS: " + ins.", pTenure: "Tempoh", pRate: "Kadar",
       bPrice: "Harga kereta (OTR)", bAfter: "Harga selepas rebate", bIns: (n, l) => `Insurans anggaran (NCD ${n}%)${l ? " · dalam loan" : " · bayar tunai"}`,
@@ -97,7 +98,8 @@
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
       inst: (y, r) => `Instalment ${y} yr${y > 1 ? "s" : ""} @ ${r}%`, upfront: "Upfront (down payment + insurance)",
       diff: t => `Difference ${t ? "in down payment" : "per month"}`, hiLo: " (highest vs lowest)", lowest: t => `Lowest ${t ? "down payment" : "instalment"}`,
-      insNote: "Insurance: estimated comprehensive premium (Peninsular tariff, by cc & price, incl. 8% SST + RM10 stamp duty). Actual price depends on the insurer.",
+      insNote: d => "Insurance (estimate): comprehensive premium for a Peninsular private car, calculated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (checked " + d + ")" : "") + " and the motor tariff rates (by cc + RM26 per RM1,000 of price, less NCD, incl. 8% SST + RM10 stamp duty). Prices update automatically on the 1st & 15th. Toyota does not publish premium prices; the actual premium depends on the insurer.",
+      pInsNote: d => "Insurance: estimated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (" + d + ")" : "") + " and the private-car motor tariff.",
       pCmp: n => `LOAN COMPARISON · ${n} VARIANTS`, pPkg: "TOYOTA LOAN PACKAGE", pFrom: "Monthly instalment from", pMonthly: "Monthly instalment",
       pAfter: "After rebate", pAfterS: "After rebate", pIns: " + insurance", pInsS: " + ins.", pTenure: "Tenure", pRate: "Rate",
       bPrice: "Car price (OTR)", bAfter: "Price after rebate", bIns: (n, l) => `Insurance est. (NCD ${n}%)${l ? " · in loan" : " · paid upfront"}`,
@@ -168,6 +170,7 @@
     const net = gross * (1 - ncd / 100);
     return { cc, gross, net, total: net * 1.08 + 10 };
   };
+  let PRICE_AT = ""; // tarikh semakan harga (prices.json), untuk nota sumber insurans
   const pct1 = n => (Math.round(n * 10) / 10).toString();
   // Rebate: rebates.json (dikemas kini harian oleh GitHub Actions dari laman promo Toyota MY); data.js = sandaran
   let REB = window.REBATES || { byGrade: {} };
@@ -353,7 +356,7 @@
           return `<div class="kv"><span>${t("diff", tg)}${rows.length > 2 ? t("hiLo") : ""}</span><b>${RM(Math.max(...vals) - Math.min(...vals))}</b></div>` +
             (rows.length > 2 ? `<div class="kv"><span>${t("lowest", tg)}</span><span>${esc(lo.g.name)}</span></div>` : "");
         })() : "") +
-        `<p class="note" style="margin:0">${t("insNote")}</p>`;
+        `<p class="note" style="margin:0">${t("insNote", PRICE_AT)}</p>`;
       neonSet = newNeon(); drawPoster(rows, v);
     };
     $("#dm").querySelectorAll("button").forEach(b => b.onclick = () => {
@@ -420,10 +423,10 @@
   const NAVY = "#0b1f4b", RED = "#e4002b", INK = "#1f2937", MUTE = "#6b7280", LINE = "#e3e7ee";
   // Saiz poster ikut bilangan varian (ikut format contoh Wan)
   const LAYOUT = {
-    1: { W: 1500, H: 2000, cols: 1, rows: 1, hs: 1, fs: .85, head: 330, foot: 200, disc: 70 },
-    2: { W: 2000, H: 2000, cols: 2, rows: 1, hs: 1, fs: 1, head: 320, foot: 220, disc: 70 },
-    3: { W: 2000, H: 1125, cols: 3, rows: 1, hs: .72, fs: .66, head: 215, foot: 145, disc: 46 },
-    4: { W: 1125, H: 2000, cols: 2, rows: 2, hs: .62, fs: .6, head: 205, foot: 140, disc: 56 }
+    1: { W: 1500, H: 2000, cols: 1, rows: 1, hs: 1, fs: .85, head: 330, foot: 200, disc: 104 },
+    2: { W: 2000, H: 2000, cols: 2, rows: 1, hs: 1, fs: 1, head: 320, foot: 220, disc: 104 },
+    3: { W: 2000, H: 1125, cols: 3, rows: 1, hs: .72, fs: .66, head: 215, foot: 145, disc: 70 },
+    4: { W: 1125, H: 2000, cols: 2, rows: 2, hs: .62, fs: .6, head: 205, foot: 140, disc: 84 }
   };
   const WA_BUBBLE = new Path2D("M3.6 20.4l1.25-3.9A8.6 8.6 0 1 1 8.1 19.6z");
   const WA_PHONE = new Path2D("M9.3 7.3c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2 0 .5-.1.7l-.6.7c-.1.2-.1.4 0 .5.6 1 1.5 1.9 2.5 2.5.2.1.4.1.5 0l.7-.7c.2-.2.5-.2.7-.1l1.8.8c.2.1.4.3.4.5 0 .5-.1 1.2-.6 1.6-.5.4-1.2.6-2 .5-1.5-.2-3-1-4.2-2.3-1.3-1.2-2.1-2.7-2.3-4.2-.1-.7.1-1.3.6-1.7z");
@@ -610,7 +613,8 @@
     }
     // penafian
     ctx.save(); ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = 8 * f; ctx.textAlign = "center"; ctx.fillStyle = "#fff"; fitF(t("pDisc"), W * .86, 26 * f, 600, true);
-    ctx.fillText(t("pDisc"), W / 2, H - L.disc * .4); ctx.restore();
+    ctx.fillText(t("pDisc"), W / 2, H - L.disc * .62);
+    const insLine = t("pInsNote", PRICE_AT); fitF(insLine, W * .86, 26 * f, 600, true); ctx.fillText(insLine, W / 2, H - L.disc * .2); ctx.restore();
   }
 
   function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(t("saved")); }
@@ -798,6 +802,7 @@
   Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json")]).then(([pr, rb, cj, cpj]) => {
     let changed = false;
     if (pr && pr.byGrade) {
+      PRICE_AT = pr.updatedAt || ""; changed = true;
       for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }
       for (const c of CARS) for (const row of c.grades) { const p = pr.byGrade[row[0]]; if (p) row[2] = p; }
     }
