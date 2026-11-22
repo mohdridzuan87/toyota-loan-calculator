@@ -45,6 +45,8 @@ if (Object.keys(byGrade).length < ours.length / 2) throw new Error(`Terlalu sedi
 
 const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : {};
 const same = JSON.stringify(prev.byGrade) === JSON.stringify(byGrade);
-const out = { source: SRC, updatedAt: same ? prev.updatedAt : new Date().toISOString().slice(0, 10), byGrade, missing };
+// checkedAt = tarikh semakan berjaya terakhir (berubah setiap larian); app beri amaran jika >30 hari (Action mungkin terhenti)
+const today = new Date().toISOString().slice(0, 10);
+const out = { source: SRC, updatedAt: same ? prev.updatedAt : today, checkedAt: today, byGrade, missing };
 writeFileSync(OUT, JSON.stringify(out, null, 2) + "\n");
 console.log(`${same ? "Tiada perubahan" : "DIKEMAS KINI"} · ${Object.keys(byGrade).length} varian · tiada di laman: ${missing.join(", ") || "-"}`);

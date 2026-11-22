@@ -56,6 +56,7 @@
       msgCta: ph => `Nak pandu uji atau kira loan? WhatsApp saya: ${ph}`,
       broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Pautan</b>: hantar pautan + harga ke nombor pelanggan.",
       docMax: "MaxCheck (servis berkala)", docPrice: "Senarai harga",
+      staleWarn: (d, n) => `⚠ Harga & rebate tidak disemak automatik sejak ${d} (${n} hari). Angka mungkin sudah lapuk; sahkan di toyota.com.my sebelum beri sebut harga.`,
       custWA: "Nombor WhatsApp pelanggan (untuk Pautan)", eg: "cth.", from: "dari",
       broNote: "E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.",
       preparing: "Menyediakan brochure…", failed: "Gagal: ",
@@ -118,6 +119,7 @@
       msgCta: ph => `Keen on a test drive or a loan calculation? Message me: ${ph}`,
       broH: "Official brochures", broSub: "<b>PDF</b>: official e-brochure with your name & number, share straight to WhatsApp. <b>Link</b>: send the link + prices to the customer's number.",
       docMax: "MaxCheck (periodic service)", docPrice: "Price list",
+      staleWarn: (d, n) => `⚠ Prices & rebates have not been checked automatically since ${d} (${n} days). Figures may be out of date; confirm at toyota.com.my before quoting.`,
       custWA: "Customer's WhatsApp number (for Link)", eg: "e.g.", from: "from",
       broNote: "E-brochures are copies of the official toyota.com.my files; the app only adds a name & number strip (tap to WhatsApp you). OTR prices for Peninsular, without insurance.",
       preparing: "Preparing brochure…", failed: "Failed: ",
@@ -176,6 +178,7 @@
     const net = gross * (1 - ncd / 100);
     return { cc, gross, net, total: net * 1.08 + 10 };
   };
+  let CHECKED_AT = ""; // semakan automatik terakhir (prices.json checkedAt) untuk amaran >30 hari
   let PRICE_AT = ""; // tarikh semakan harga (prices.json), untuk nota sumber insurans
   const pct1 = n => (Math.round(n * 10) / 10).toString();
   // Rebate: rebates.json (dikemas kini harian oleh GitHub Actions dari laman promo Toyota MY); data.js = sandaran
@@ -885,6 +888,10 @@
     const map = { home, loan, brosur, gaji, akaun };
     if (tab === "loan") loanN = sub === "banding" ? 2 : sub === "banding3" ? 3 : sub === "banding4" ? 4 : 1;
     (map[tab] || home)();
+    if (CHECKED_AT) {
+      const days = Math.floor((Date.now() - Date.parse(CHECKED_AT)) / 864e5);
+      if (days > 30) { const b = document.createElement("div"); b.className = "stalebar"; b.textContent = t("staleWarn", CHECKED_AT, days); view.prepend(b); }
+    }
     document.querySelectorAll(".tabs a").forEach(a => a.classList.toggle("on", a.dataset.tab === (map[tab] ? tab : "home")));
     window.scrollTo(0, 0);
   }
@@ -898,7 +905,7 @@
     let changed = false;
     if (dj && dj.maxcheck) { DOCS = dj; changed = true; }
     if (pr && pr.byGrade) {
-      PRICE_AT = pr.updatedAt || ""; changed = true;
+      PRICE_AT = pr.updatedAt || ""; CHECKED_AT = pr.checkedAt || ""; changed = true;
       for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }
       for (const c of CARS) for (const row of c.grades) { const p = pr.byGrade[row[0]]; if (p) row[2] = p; }
     }
