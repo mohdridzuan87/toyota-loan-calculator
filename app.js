@@ -57,6 +57,8 @@
       depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
       salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
       salNone: "Tiada model dalam had 30% gaji. Cuba tambah deposit.",
+      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: m => `Rebate ikut laman promo Toyota MY (${m}, "promo worth up to"). Nilai yang diubah di tab Loan turut dipakai.`,
+      afterRebS: "lepas rebate",
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
       accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
@@ -105,6 +107,8 @@
       depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
       salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤30%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
       salNone: "No model within 30% of salary. Try a higher down payment.",
+      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: m => `Rebates from the Toyota MY promo page (${m}, "promo worth up to"). Amounts edited in the Loan tab are used too.`,
+      afterRebS: "after rebate",
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
       accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
@@ -488,20 +492,24 @@
           <div><label>${t("depPct")}</label><input id="dep" type="number" value="${pref.dep}"></div>
           <div><label>${t("ratePct")}</label><input id="rate" type="number" step="0.01" value="${pref.rate}"></div>
         </div>
+        <label class="chk" style="padding:12px;margin-top:12px"><input type="checkbox" id="sreb" ${store.get("sa_gaji_reb", true) ? "checked" : ""}> ${t("salReb")}</label>
       </div>
       <div class="list" id="out"></div>
-      <p class="note">${t("salNote", pref.years)}</p>`;
+      <p class="note">${t("salNote", pref.years)}</p>
+      <p class="note">${t("salRebNote", REB.month || "")}</p>`;
     const run = () => {
-      const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0;
-      store.set("sa_gaji", sal);
-      const list = GRADES.map((g, i) => ({ g, i, m: monthly(g.price, dep, rate, pref.years) }))
-        .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.30).sort((a, b) => b.g.price - a.g.price);
+      const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0, useReb = $("#sreb").checked;
+      store.set("sa_gaji", sal); store.set("sa_gaji_reb", useReb);
+      // Rebate auto: nilai laman promo Toyota MY (atau nilai yang diubah di tab Loan)
+      const list = GRADES.map((g, i) => { const reb = useReb ? Math.min(rebateOf(g), g.price) : 0, net = g.price - reb; return { g, i, reb, net, m: monthly(net, dep, rate, pref.years) }; })
+        .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.30).sort((a, b) => b.net - a.net);
       const tags = t("tags");
       $("#out").innerHTML = list.length ? list.map(x => {
         const tg = x.r <= .20 ? ["ok", tags[0]] : x.r <= .25 ? ["mid", tags[1]] : ["max", tags[2]];
-        return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${RM(x.g.price)} · ${Math.round(x.r * 100)}% ${t("ofSal")}</small></div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${tg[0]}">${tg[1]}</span></div></a>`;
+        const price = x.reb ? `<s>${RM(x.g.price)}</s> ${RM(x.net)} ${t("afterRebS")}` : RM(x.g.price);
+        return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${price} · ${Math.round(x.r * 100)}% ${t("ofSal")}</small>${x.reb ? `<small style="display:block;color:var(--green);font-weight:700">Rebate -${RM(x.reb)}</small>` : ""}</div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${tg[0]}">${tg[1]}</span></div></a>`;
       }).join("") : `<div class="card">${t("salNone")}</div>`;
-      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); });
+      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate, reb: useReb }); });
     };
     view.querySelectorAll("input").forEach(e => e.oninput = run); run();
   }
