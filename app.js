@@ -15,17 +15,17 @@
   let lang = store.get("sa_lang", "ms") === "en" ? "en" : "ms";
   const I18N = {
     ms: {
-      nav: ["Home", "Loan", "Brochure", "Gaji", "Akaun"],
+      nav: ["Utama", "Loan", "Brochure", "Gaji", "Akaun"],
       foot: "*Harga boleh berubah bila-bila masa dari tarikh poster ini dikongsi. Harga berdasarkan untuk Semenanjung Malaysia sahaja. Anggaran ansuran, tertakluk pada terma dan syarat bank.",
       footSrc: "Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my",
       needProfile: "Isi nama & nombor di tab Akaun dulu",
       new: "BARU", models: n => `${n} MODEL TOYOTA RASMI`,
       heroH: name => `Hantar info rasmi, <em>siap nama & nombor ${name}</em>`, you: "awak",
-      heroP: "Customer minta brochure? Hantar terus ke WhatsApp.", openBroch: "Buka Brochure",
-      tLoan: ["Loan poster", "Percuma · tanpa had"], tCmp: ["Banding varian", "1 poster, 2-4 loan"],
+      heroP: "Pelanggan minta brochure? Hantar terus ke WhatsApp.", openBroch: "Buka Brochure",
+      tLoan: ["Poster loan", "Percuma · tanpa had"], tCmp: ["Banding varian", "1 poster, 2-4 loan"],
       tSal: ["Ikut gaji", "Gaji → senarai kereta"], tBro: ["Brochure", "Hantar ke WhatsApp"],
       tProf: ["Lengkapkan profil", "Nama & nombor akan masuk dalam poster"],
-      loanH: "Loan poster", loanSub: "Kira ansuran & jana poster siap nama awak.",
+      loanH: "Poster loan", loanSub: "Kira ansuran & jana poster siap nama awak.",
       one: "Varian 1", cmp: n => `Varian ${n}`, variant: "Varian",
       deposit: "Deposit", byMonthly: "Ikut bulanan", rate: "Kadar (% setahun)", tenure: "Tempoh", yrs: n => `${n} tahun`,
       insH: "Insurans (anggaran)", insIn: "Masuk dalam loan", rebH: "Rebate / promo", rebChk: "Tolak rebate dari harga",
@@ -33,7 +33,7 @@
       phDepRM: "Deposit (RM)", phTarget: "Ansuran sasaran sebulan (RM)", phDepPct: "Deposit (%)",
       targetNote: "Masukkan bulanan yang customer mahu, app kira deposit yang perlu.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: (m, d) => `Rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Boleh ubah ikut rebate tunai sebenar dari cawangan; nilai diubah tamat bila promo bulan baru keluar.`,
+      rebNote: (m, d) => `Rebate automatik dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Boleh ubah ikut rebate tunai sebenar dari cawangan; nilai diubah tamat bila promo bulan baru keluar.`,
       depNeeded: "deposit diperlukan", noDep: m => `Tanpa deposit pun ansuran cuma ${m} sebulan.`, tooLow: "Sasaran terlalu rendah untuk varian ini.",
       perMonth: "/bulan", otr: "Harga OTR", rebate: "Rebate", afterReb: "Harga selepas rebate",
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
@@ -47,24 +47,24 @@
       pPerMonth: " /bulan", pDiff: m => `beza ${m} sebulan`, pDiff2: m => `Beza ${m} sebulan`, pName: "Nama awak",
       saved: "Fail dimuat turun", noShare: "Telefon tak sokong kongsi terus — fail dimuat turun",
       tapWA: "Tekan untuk WhatsApp",
-      msgHi: (n, b) => `Hi! Saya ${n}, Sales Advisor Toyota${b ? " " + b : ""}.`,
+      msgHi: (n, b) => `Hai! Saya ${n}, Sales Advisor Toyota${b ? " " + b : ""}.`,
       msgLink: (c, u) => `Ini e-brochure rasmi Toyota ${c}:\n${u}`, msgNoLink: c => `Ini e-brochure rasmi Toyota ${c}.`,
       msgPrice: "Harga OTR (Semenanjung, tanpa insurans):", msgChange: "*Harga boleh berubah bila-bila masa.",
-      msgCta: ph => `Nak test drive atau kira loan? Boleh message saya: ${ph}`,
-      broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Link</b>: hantar pautan + harga ke nombor customer.",
-      custWA: "Nombor WhatsApp customer (untuk Link)", eg: "cth.", from: "dari",
+      msgCta: ph => `Nak pandu uji atau kira loan? WhatsApp saya: ${ph}`,
+      broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Pautan</b>: hantar pautan + harga ke nombor pelanggan.",
+      custWA: "Nombor WhatsApp pelanggan (untuk Pautan)", eg: "cth.", from: "dari",
       broNote: "E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.",
       preparing: "Menyediakan brochure…", failed: "Gagal: ",
       salH: "Ikut gaji", salSub: "Masukkan gaji kasar sebulan, dapat senarai kereta yang sesuai.", salIn: "Gaji kasar sebulan (RM)",
       depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
       salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤40%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
       salNone: "Tiada model dalam had 40% gaji. Cuba tambah deposit.",
-      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Nilai yang diubah di tab Loan turut dipakai.`,
+      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate automatik dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Nilai yang diubah di tab Loan turut dipakai.`,
       afterRebS: "lepas rebate",
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
       accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
-      langLbl: "Bahasa"
+      langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
       nav: ["Home", "Loan", "Brochure", "Salary", "Account"],
@@ -79,13 +79,13 @@
       tProf: ["Complete your profile", "Your name & number go on the poster"],
       loanH: "Loan poster", loanSub: "Calculate instalments & create a poster with your name.",
       one: "Variant 1", cmp: n => `Variant ${n}`, variant: "Variant",
-      deposit: "Down payment", byMonthly: "By monthly", rate: "Rate (% p.a.)", tenure: "Tenure", yrs: n => `${n} year${n > 1 ? "s" : ""}`,
+      deposit: "Down payment", byMonthly: "By monthly instalment", rate: "Rate (% p.a.)", tenure: "Tenure", yrs: n => `${n} year${n > 1 ? "s" : ""}`,
       insH: "Insurance (estimate)", insIn: "Include in loan", rebH: "Rebate / promo", rebChk: "Deduct rebate from price",
       dl: "Download PNG", share: "Share",
       phDepRM: "Down payment (RM)", phTarget: "Target monthly instalment (RM)", phDepPct: "Down payment (%)",
       targetNote: "Enter the monthly amount the customer wants; the app works out the down payment needed.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: (m, d) => `Rebate auto from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Adjust to your branch's actual cash rebate; edits expire when the next month's promo is published.`,
+      rebNote: (m, d) => `Rebate pulled automatically from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Adjust to your branch's actual cash rebate; edits expire when the next month's promo is published.`,
       depNeeded: "down payment needed", noDep: m => `Even with zero down payment the instalment is only ${m} a month.`, tooLow: "Target is too low for this variant.",
       perMonth: "/month", otr: "OTR price", rebate: "Rebate", afterReb: "Price after rebate",
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
@@ -111,12 +111,12 @@
       depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
       salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤40%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
       salNone: "No model within 40% of salary. Try a higher down payment.",
-      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate auto-pulled from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Amounts edited in the Loan tab are used too.`,
+      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate pulled automatically from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Amounts edited in the Loan tab are used too.`,
       afterRebS: "after rebate",
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
       accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
-      langLbl: "Language"
+      langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
   const t = (k, ...a) => { const v = I18N[lang][k] ?? I18N.ms[k]; return typeof v === "function" ? v(...a) : v; };
@@ -197,6 +197,9 @@
   const gradeOptions = sel => GRADE_AZ.map(i => `<option value="${i}" ${i === sel ? "selected" : ""}>${GRADES[i].name} · ${RM(GRADES[i].price)}</option>`).join("");
   const needProfile = () => { const p = profile(); if (!p.name || !p.phone) { toast(t("needProfile")); return false; } return true; };
 
+  // Ikon WhatsApp (gelembung + gagang), ikut warna teks butang
+  const WA_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="flex:none"><path d="M3.6 20.4l1.25-3.9A8.6 8.6 0 1 1 8.1 19.6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path fill="currentColor" d="M9.3 7.3c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2 0 .5-.1.7l-.6.7c-.1.2-.1.4 0 .5.6 1 1.5 1.9 2.5 2.5.2.1.4.1.5 0l.7-.7c.2-.2.5-.2.7-.1l1.8.8c.2.1.4.3.4.5 0 .5-.1 1.2-.6 1.6-.5.4-1.2.6-2 .5-1.5-.2-3-1-4.2-2.3-1.3-1.2-2.1-2.7-2.3-4.2-.1-.7.1-1.3.6-1.7z"/></svg>';
+
   // ---------- HOME ----------
   function home() {
     const p = profile();
@@ -249,7 +252,7 @@
       <div class="card result" id="res"></div>
       <div class="card">
         <canvas id="cv" width="1080" height="1350"></canvas>
-        <div class="actions"><button class="btn red" id="dl">${t("dl")}</button><button class="btn wa" id="share">${t("share")}</button></div>
+        <div class="actions"><button class="btn red" id="dl">${t("dl")}</button><button class="btn wa" id="share">${WA_ICON}${t("share")}</button></div>
         <p class="note">${t("foot")}</p>
       </div>`;
     view.querySelectorAll(".seg button[data-n]").forEach(b => b.onclick = () => { location.hash = loanHash(+b.dataset.n); });
@@ -380,8 +383,8 @@
         const mm = RM(r.m) + t("pPerMonth");
         ctx.fillStyle = "#f5c542"; fit(ctx, mm, tw, sz(68 * Math.min(1, s + .15))); ctx.fillText(mm, tx, y + ch * 0.56);
         ctx.fillStyle = "#b9c6e4";
-        const l1 = `OTR ${RM(r.g.price)}${r.reb ? ` · ${t("rebate")} -${RM(r.reb)}` : ""} · ${t("bInsS")} ${RM(r.ins.total)}${r.insFin ? t("inLoan") : ""}`;
-        const l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · Loan ${RM(r.fin)}`;
+        const l1 = `${t("otrS")} ${RM(r.g.price)}${r.reb ? ` · ${t("rebate")} -${RM(r.reb)}` : ""} · ${t("bInsS")} ${RM(r.ins.total)}${r.insFin ? t("inLoan") : ""}`;
+        const l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · ${t("loanS")} ${RM(r.fin)}`;
         const fs = sz(24 * Math.min(1, s + .2));
         const fsz = txt => { let z = fs; F(600, z); while (ctx.measureText(txt).width > tw && z > 12) F(600, --z); return z; };
         F(600, Math.min(fsz(l1), fsz(l2))); // saiz sama untuk kedua-dua baris
@@ -400,9 +403,9 @@
         wrap(ctx, r.g.name, x + w / 2, 512, w - 40, 42);
         ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(t("pMonthly"), x + w / 2, 640);
         ctx.fillStyle = "#f5c542"; fit(ctx, RM(r.m), w - 40, 80); ctx.fillText(RM(r.m), x + w / 2, 726);
-        const br = [["OTR", RM(r.g.price)]];
+        const br = [[t("otrS"), RM(r.g.price)]];
         if (rows.some(q => q.reb)) br.push([t("rebate"), r.reb ? "-" + RM(r.reb) : "-", "#4ade80"]);
-        br.push([`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("bInsS") + (r.insFin ? t("inLoan") : ""), RM(r.ins.total)], ["Loan", RM(r.fin), "#f5c542"]);
+        br.push([`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("bInsS") + (r.insFin ? t("inLoan") : ""), RM(r.ins.total)], [t("loanS"), RM(r.fin), "#f5c542"]);
         const step = br.length > 4 ? 44 : 52;
         br.forEach(([k, val, col], j) => {
           const y = 782 + j * step; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 250, 23, 600); ctx.fillText(k, x + 30, y);
@@ -415,7 +418,7 @@
     // jalur SA
     ctx.fillStyle = "#eb0a1e"; ctx.fillRect(0, 1180, W, 120);
     ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(800, 40); ctx.fillText(p.name || t("pName"), 60, 1232);
-    F(600, 26); ctx.fillText(`Sales Advisor Toyota${p.branch ? " · " + p.branch : ""}`, 60, 1272);
+    F(600, 26); ctx.fillText(`${t("sa")}${p.branch ? " · " + p.branch : ""}`, 60, 1272);
     ctx.textAlign = "right"; F(800, 42); ctx.fillText(p.phone || "01x-xxx xxxx", W - 60, 1250);
     ctx.textAlign = "center"; ctx.fillStyle = "#b9c6e4"; F(500, 17);
     wrap(ctx, t("foot"), W / 2, rows.length === 1 ? 1140 : 1122, 960, 22);
@@ -467,7 +470,7 @@
         page.drawRectangle({ x: 0, y: 0, width: w, height: bh, color: red });
         const ns = bh * 0.3, ss = bh * 0.17, ps = bh * 0.32;
         page.drawText(name, { x: pad, y: bh * 0.52, size: ns, font: bold, color: white });
-        page.drawText(`Sales Advisor Toyota${branch ? " · " + branch : ""}`, { x: pad, y: bh * 0.22, size: ss, font: reg, color: white });
+        page.drawText(`${t("sa")}${branch ? " · " + branch : ""}`, { x: pad, y: bh * 0.22, size: ss, font: reg, color: white });
         const pw = bold.widthOfTextAtSize(phone, ps);
         page.drawText(phone, { x: w - pad - pw, y: bh * 0.44, size: ps, font: bold, color: white });
         const tip = t("tapWA");
@@ -484,7 +487,7 @@
       }
     });
     doc.setTitle(`Toyota ${car.name} e-brochure`);
-    doc.setAuthor(`${name} · Sales Advisor Toyota`);
+    doc.setAuthor(`${name} · ${t("sa")}`);
     const out = await doc.save();
     const fname = `Toyota-${car.name.replace(/\s+/g, "-")}-e-brochure-${(name.split(" ")[0] || "SA").replace(/[^\w-]/g, "")}.pdf`;
     return new File([out], fname, { type: "application/pdf" });
@@ -503,8 +506,8 @@
       <h2>${t("broH")}</h2><p class="sub">${t("broSub")}</p>
       <div class="card"><label>${t("custWA")}</label><input id="cust" inputmode="tel" placeholder="${t("eg")} 012-345 6789" onblur="this.value=this.value&&window.__fmtPhone(this.value)"></div>
       <div class="list">${CARS.map((c, i) => `
-        <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type} · ${t("from")} ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
-        <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">Link</button></div></div>`).join("")}</div>
+        <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type === "Pickup" ? t("pickup") : c.type} · ${t("from")} ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
+        <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">${t("link")}</button></div></div>`).join("")}</div>
       <p class="note">${t("broNote")}</p>`;
     view.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
       if (!needProfile()) return;
