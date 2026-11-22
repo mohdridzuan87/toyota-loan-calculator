@@ -1,0 +1,42 @@
+{
+ "updatedAt": "2026-11-22",
+ "source": "https://www.toyota.com.my/en/promotions.html",
+ "items": [
+  {
+   "id": "monthly-promo",
+   "kind": "promo",
+   "title": "NOVEMBER PROMO",
+   "desc": "Bring home your new Toyota and enjoy exclusive rewards.",
+   "link": "https://www.toyota.com.my/en/promotions/monthly-promo.html",
+   "until": "2026-12-07",
+   "img": "assets/promo/ac52255e6d.jpg"
+  },
+  {
+   "id": "toyota-extrasmiles",
+   "kind": "promo",
+   "title": "EXTRA REASONS TO SMILE WITH EXTRA SAVINGS",
+   "desc": "Give your Toyota that extra care with 10% OFF selected parts, accessories and Toyota Extend.",
+   "link": "https://www.toyota.com.my/en/promotions/toyota-extrasmiles.html",
+   "until": "2027-12-30",
+   "img": "assets/promo/2bbce87808.jpg"
+  },
+  {
+   "id": "toyota-myapp2026",
+   "kind": "promo",
+   "title": "GET EXTRA LOYAL-T POINTS WITH TOYOTA MY APP",
+   "desc": "Earn extra Loyal-T points just for registering and using the Toyota MY App to make your next service appointment.",
+   "link": "https://www.toyota.com.my/en/promotions/toyota-myapp2026.html",
+   "until": "2027-12-30",
+   "img": "assets/promo/5e62efcf33.jpg"
+  },
+  {
+   "id": "toyota-recondservice",
+   "kind": "promo",
+   "title": "YOUR RECOND TOYOTA, SERVICED BY TOYOTA",
+   "desc": "Give your recond Toyota expert care from RM469, with certified Toyota technicians, genuine parts and a 12-month warranty on parts and labour.",
+   "link": "https://www.toyota.com.my/en/promotions/toyota-recondservice.html",
+   "until": "2027-12-30",
+   "img": "assets/promo/cd70626807.png"
+  }
+ ]
+}

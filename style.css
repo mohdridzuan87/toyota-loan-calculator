@@ -88,3 +88,18 @@ canvas{width:100%;height:auto;border-radius:14px;display:block;margin:12px 0}
 .colp{display:flex;align-items:center;gap:6px;margin:0}
 .colp small{color:var(--mute);font-weight:600}
 .colp input{width:96px;padding:6px 8px;font-size:13px;text-align:right}
+
+/* Karusel poster promosi (Home) */
+.promo{margin-bottom:14px}
+.pslides{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:22px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.pslides::-webkit-scrollbar{display:none}
+.pslide{flex:0 0 100%;scroll-snap-align:center;background:#0b1b3a;text-decoration:none;color:#fff;display:flex;flex-direction:column}
+.pimg{aspect-ratio:1200/628;background:#fff center/cover no-repeat}
+.pcap{padding:11px 16px 13px;background:#0b1b3a;display:flex;flex-direction:column;gap:3px}
+.ptag{font-size:10px;font-weight:800;letter-spacing:.8px;color:#f5c542}
+.pcap b{font-size:17px;line-height:1.2}
+.pcap small{font-size:12px;opacity:.88;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.pmore{font-size:12px;font-weight:700;margin-top:3px;color:#fff;opacity:.95}
+.pdots{display:flex;justify-content:center;gap:7px;margin-top:9px}
+.pdots i{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;transition:.2s}
+.pdots i.on{background:var(--red);width:20px;border-radius:7px}

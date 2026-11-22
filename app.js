@@ -22,6 +22,8 @@
       new: "BARU", models: n => `${n} MODEL TOYOTA RASMI`,
       heroH: name => `Hantar info rasmi, <em>siap nama & nombor ${name}</em>`, you: "awak",
       heroP: "Pelanggan minta brochure? Hantar terus ke WhatsApp.", openBroch: "Buka Brochure",
+      promoTag: "PROMOSI RASMI TOYOTA", promoUntil: d => "hingga " + d, promoMore: "Lihat butiran",
+      promoSrc: d => "Poster promosi utama dari toyota.com.my/en/promotions, dikemas kini automatik setiap 3 hari" + (d ? " (disemak " + d + ")" : "") + ". Tajuk promosi ikut laman Toyota Malaysia. Tertakluk pada terma dan syarat.",
       tLoan: ["Poster loan", "Percuma · tanpa had"], tCmp: ["Banding varian", "1 poster, 2-4 loan"],
       tSal: ["Ikut gaji", "Gaji → senarai kereta"], tBro: ["Brochure", "Hantar ke WhatsApp"],
       tProf: ["Lengkapkan profil", "Nama & nombor akan masuk dalam poster"],
@@ -81,6 +83,8 @@
       new: "NEW", models: n => `${n} OFFICIAL TOYOTA MODELS`,
       heroH: name => `Send official info, <em>with ${name} name & number</em>`, you: "your",
       heroP: "Customer wants a brochure? Send it straight to WhatsApp.", openBroch: "Open Brochures",
+      promoTag: "OFFICIAL TOYOTA PROMOTION", promoUntil: d => "until " + d, promoMore: "View details",
+      promoSrc: d => "Main promotion posters from toyota.com.my/en/promotions, updated automatically every 3 days" + (d ? " (checked " + d + ")" : "") + ". Subject to terms and conditions.",
       tLoan: ["Loan poster", "Free · unlimited"], tCmp: ["Compare variants", "1 poster, 2-4 loans"],
       tSal: ["By salary", "Salary → car list"], tBro: ["Brochure", "Send to WhatsApp"],
       tProf: ["Complete your profile", "Your name & number go on the poster"],
@@ -238,23 +242,53 @@
   const WA_ICON = '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" style="flex:none"><path d="M3.6 20.4l1.25-3.9A8.6 8.6 0 1 1 8.1 19.6z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/><path fill="currentColor" d="M9.3 7.3c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2 0 .5-.1.7l-.6.7c-.1.2-.1.4 0 .5.6 1 1.5 1.9 2.5 2.5.2.1.4.1.5 0l.7-.7c.2-.2.5-.2.7-.1l1.8.8c.2.1.4.3.4.5 0 .5-.1 1.2-.6 1.6-.5.4-1.2.6-2 .5-1.5-.2-3-1-4.2-2.3-1.3-1.2-2.1-2.7-2.3-4.2-.1-.7.1-1.3.6-1.7z"/></svg>';
 
   // ---------- HOME ----------
-  function home() {
-    const p = profile();
-    const tile = (href, ic, [b, s]) => `<a class="tile" href="${href}"><div class="ic">${ic}</div><b>${b}</b><small>${s}</small></a>`;
-    view.innerHTML = `
+  // Poster promosi utama Toyota MY (promos.json, dikemas kini setiap 3 hari oleh GitHub Actions)
+  let PROMOS = { items: [], updatedAt: "" }, promoTimer = null;
+  const todayISO = () => { const d = new Date(), z = n => String(n).padStart(2, "0"); return d.getFullYear() + "-" + z(d.getMonth() + 1) + "-" + z(d.getDate()); };
+  const dmy = iso => { const m = String(iso).match(/^(\d{4})-(\d{2})-(\d{2})$/); return m ? m[3] + "/" + m[2] + "/" + m[1] : iso; };
+  const activePromos = () => (PROMOS.items || []).filter(i => i.img && (!i.until || i.until >= todayISO()));
+  function homeHero(p) {
+    const items = activePromos();
+    if (!items.length) return `
       <section class="hero">
         <div class="strip">${CARS.slice(0, 8).map(c => `<img src="${c.img}" alt="${c.name}">`).join("")}</div>
         <span class="badge">${t("new")}</span><small>${t("models", CARS.length)}</small>
         <h3>${t("heroH", p.name ? esc(p.name.split(" ")[0]) + (lang === "en" ? "'s" : "") : t("you"))}</h3>
         <p>${t("heroP")}</p>
         <a class="btn white" href="#brosur">${t("openBroch")}</a>
+      </section>`;
+    return `
+      <section class="promo" aria-label="${t("promoTag")}">
+        <div class="pslides">${items.map(it => `
+          <a class="pslide" href="${esc(it.link)}" target="_blank" rel="noopener">
+            <div class="pimg" style="background-image:url('${esc(it.img)}')" role="img" aria-label="${esc(it.title)}"></div>
+            <div class="pcap"><span class="ptag">${t("promoTag")}${it.until && it.until < "2027" ? " · " + t("promoUntil", dmy(it.until)) : ""}</span><b>${esc(it.title)}</b>${lang === "en" && it.desc ? `<small>${esc(it.desc)}</small>` : ""}<span class="pmore">${t("promoMore")} ›</span></div>
+          </a>`).join("")}</div>
+        <div class="pdots">${items.map((_, i) => `<i data-i="${i}" class="${i ? "" : "on"}"></i>`).join("")}</div>
       </section>
+      <p class="note" style="margin:-6px 0 16px">${t("promoSrc", PROMOS.updatedAt || "")}</p>`;
+  }
+  function startPromo() {
+    clearInterval(promoTimer);
+    const el = $(".pslides"); if (!el) return;
+    const n = el.children.length, dots = [...document.querySelectorAll(".pdots i")];
+    const idx = () => Math.round(el.scrollLeft / Math.max(1, el.clientWidth));
+    el.addEventListener("scroll", () => { const i = idx(); dots.forEach((d, k) => d.classList.toggle("on", k === i)); }, { passive: true });
+    dots.forEach(d => d.onclick = () => el.scrollTo({ left: +d.dataset.i * el.clientWidth, behavior: "smooth" }));
+    if (n > 1 && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches))
+      promoTimer = setInterval(() => { if (!document.body.contains(el)) return clearInterval(promoTimer); el.scrollTo({ left: ((idx() + 1) % n) * el.clientWidth, behavior: "smooth" }); }, 5000);
+  }
+  function home() {
+    const p = profile();
+    const tile = (href, ic, [b, s]) => `<a class="tile" href="${href}"><div class="ic">${ic}</div><b>${b}</b><small>${s}</small></a>`;
+    view.innerHTML = `
+      ${homeHero(p)}
       <div class="grid">
         ${tile("#loan", "🧾", t("tLoan"))}${tile("#loan/banding", "⚖️", t("tCmp"))}${tile("#gaji", "💼", t("tSal"))}${tile("#brosur", "📄", t("tBro"))}
         <a class="tile wide" href="#akaun"><div class="ic">👤</div><div><b>${esc(p.name) || t("tProf")[0]}</b><small>${esc(p.phone) || t("tProf")[1]}</small></div></a>
       </div>`;
+    startPromo();
   }
-
   // ---------- LOAN ----------
   // Bilangan varian dalam poster: 1 (pakej) atau 2/3/4 (banding)
   let loanN = 1;
@@ -786,6 +820,7 @@
 
   // ---------- router ----------
   function route() {
+    clearInterval(promoTimer);
     const [tab, sub] = (location.hash.slice(1) || "home").split("/");
     const map = { home, loan, brosur, gaji, akaun };
     if (tab === "loan") loanN = sub === "banding" ? 2 : sub === "banding3" ? 3 : sub === "banding4" ? 4 : 1;
@@ -799,7 +834,7 @@
   route();
   // Ambil harga (prices.json) & rebate (rebates.json) terkini tanpa cache — dikemas kini GitHub Actions 1hb & 15hb
   const getJSON = f => fetch(f + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
-  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json")]).then(([pr, rb, cj, cpj]) => {
+  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json"), getJSON("promos.json")]).then(([pr, rb, cj, cpj, pj]) => {
     let changed = false;
     if (pr && pr.byGrade) {
       PRICE_AT = pr.updatedAt || ""; changed = true;
@@ -812,6 +847,7 @@
     }
     if (cj && cj.byGrade) { COL = cj; changed = true; }
     if (cpj && cpj.byGrade) { CP = cpj; changed = true; }
+    if (pj && Array.isArray(pj.items)) { PROMOS = pj; changed = true; }
     if (changed && !/^akaun/.test(location.hash.slice(1))) route();
   });
 })();
