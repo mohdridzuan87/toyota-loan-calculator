@@ -383,12 +383,19 @@
     const fitF = (text, maxW, size, w, it) => { let z = size; F(w, z, it); while (ctx.measureText(text).width > maxW && z > 8) F(w, --z, it); return z; };
     const GOLD = "#f5c542", SOFT = "#b9c6e4", PANEL = "#f2f5fa";
 
-    // ---- latar: navy gelap + jalur serong halus
-    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0a1733"); bg.addColorStop(1, "#15336a");
-    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.045)"; ctx.lineWidth = 34;
-    for (let i = -H; i < W; i += 150) { ctx.beginPath(); ctx.moveTo(i, H); ctx.lineTo(i + H * .6, 0); ctx.stroke(); }
+    // ---- latar: asas gelap + 4 cahaya neon dari setiap bucu, bertemu di tengah
+    ctx.fillStyle = "#050a18"; ctx.fillRect(0, 0, W, H);
+    const NEON = [[0, 0, "0,229,255"], [W, 0, "57,255,20"], [W, H, "255,170,0"], [0, H, "255,59,31"]]; // cyan, hijau limau, amber, merah-jingga
+    const reach = Math.hypot(W, H) * .56;
+    ctx.save(); ctx.globalCompositeOperation = "lighter";
+    NEON.forEach(([cx, cy, rgb]) => {
+      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, reach);
+      g.addColorStop(0, "rgba(" + rgb + ",1)"); g.addColorStop(.5, "rgba(" + rgb + ",.55)"); g.addColorStop(1, "rgba(" + rgb + ",0)");
+      ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    });
     ctx.restore();
+    // kegelapan lembut supaya teks kekal jelas
+    ctx.fillStyle = "rgba(5,10,24,.12)"; ctx.fillRect(0, 0, W, H);
 
     // ---- kepala
     const hs = L.hs, pad = 60 * Math.max(hs, .7);
@@ -402,7 +409,7 @@
     ctx.textAlign = "left"; F(800, 30 * hs); ctx.letterSpacing = 3 * hs + "px"; const tg = t("cTitle"), tgw = ctx.measureText(tg).width + 44 * hs;
     rr(ctx, pad, 38 * hs, tgw, 56 * hs, 28 * hs); ctx.fillStyle = RED; ctx.fill(); ctx.fillStyle = "#fff"; ctx.fillText(tg, pad + 22 * hs, 77 * hs); ctx.letterSpacing = "0px";
     ctx.fillStyle = "#fff"; fitF(title, W - pad * 2 - 560 * hs, 112 * hs, 800); ctx.fillText(title, pad, 210 * hs);
-    ctx.fillStyle = GOLD; F(600, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs);
+    ctx.save(); ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 8 * hs; ctx.fillStyle = "#fff"; F(700, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs); ctx.restore();
 
     // ---- kad varian
     const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
@@ -524,8 +531,8 @@
       ctx.fillText(w1, icx + ir + 18 * f, midY - 4 * f); ctx.fillText(w2, icx + ir + 18 * f, midY + 38 * f);
     }
     // penafian
-    ctx.textAlign = "center"; ctx.fillStyle = "#9fb0d2"; fitF(t("pDisc"), W * .86, 26 * f, 500, true);
-    ctx.fillText(t("pDisc"), W / 2, H - L.disc * .4);
+    ctx.save(); ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = 8 * f; ctx.textAlign = "center"; ctx.fillStyle = "#fff"; fitF(t("pDisc"), W * .86, 26 * f, 600, true);
+    ctx.fillText(t("pDisc"), W / 2, H - L.disc * .4); ctx.restore();
   }
 
   function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(t("saved")); }
