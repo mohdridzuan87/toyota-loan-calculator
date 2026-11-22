@@ -72,7 +72,7 @@
       cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
       fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
       pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
-      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", colLabel: "Warna", colFree: "percuma", colPrice: "Harga warna (RM)", colNote: (d, stale) => "Warna ikut laman model Toyota MY" + (d ? " (disemak " + d + ")" : "") + "; harga warna & warna yang ada ikut varian dari PDF senarai harga Toyota. Lalai = warna percuma. Boleh isi harga sendiri." + (stale ? " ⚠ PDF senarai harga Toyota sudah dikemas kini; harga warna mungkin belum terkini." : ""), photoDel: "Buang gambar", newColors: "Tukar warna latar",
+      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", colLabel: "Warna", colFree: "percuma", colPrice: "Harga warna (RM)", colNote: (d, stale) => "Warna ikut laman model Toyota MY" + (d ? " (disemak " + d + ")" : "") + "; harga warna & warna yang ada ikut varian dari PDF senarai harga Toyota. Lalai = warna percuma. Boleh isi harga sendiri." + (stale ? " ⚠ PDF senarai harga Toyota sudah dikemas kini; harga warna mungkin belum terkini." : ""), photoDel: "Buang gambar", photoAdj: "Laras gambar", photoHint: "Seret untuk gerakkan gambar; guna slider untuk zum. Pastikan rambut dan muka dalam bulatan.", photoZoom: "Zum", photoSave: "Simpan gambar", photoReset: "Set semula", cancel: "Batal", newColors: "Tukar warna latar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
@@ -133,7 +133,7 @@
       cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
       fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
       pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
-      photo: "Profile photo (for posters)", photoAdd: "Choose photo", colLabel: "Colour", colFree: "free", colPrice: "Colour price (RM)", colNote: (d, stale) => "Colours from the Toyota MY model pages" + (d ? " (checked " + d + ")" : "") + "; colour prices and per-variant availability from Toyota's price-list PDFs. Default = free colour. You can enter your own price." + (stale ? " ⚠ Toyota's price-list PDF has been updated; colour prices may be out of date." : ""), photoDel: "Remove photo", newColors: "Shuffle background colours",
+      photo: "Profile photo (for posters)", photoAdd: "Choose photo", colLabel: "Colour", colFree: "free", colPrice: "Colour price (RM)", colNote: (d, stale) => "Colours from the Toyota MY model pages" + (d ? " (checked " + d + ")" : "") + "; colour prices and per-variant availability from Toyota's price-list PDFs. Default = free colour. You can enter your own price." + (stale ? " ⚠ Toyota's price-list PDF has been updated; colour prices may be out of date." : ""), photoDel: "Remove photo", photoAdj: "Adjust photo", photoHint: "Drag to move the photo; use the slider to zoom. Keep your hair and face inside the circle.", photoZoom: "Zoom", photoSave: "Save photo", photoReset: "Reset", cancel: "Cancel", newColors: "Shuffle background colours",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
@@ -798,7 +798,7 @@
         <label>${t("langLbl")}</label>
         <div class="seg" id="lsel" style="margin-bottom:4px"><button data-l="ms" class="${lang === "ms" ? "on" : ""}">Bahasa Melayu</button><button data-l="en" class="${lang === "en" ? "on" : ""}">English</button></div>
         <label>${t("photo")}</label>
-        <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px"><img id="phImg" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--soft);flex:none" ${store.get("sa_photo", "") ? `src="${store.get("sa_photo", "")}"` : ""}><label class="btn ghost" style="margin:0;cursor:pointer;padding:10px 14px">${t("photoAdd")}<input id="phFile" type="file" accept="image/*" hidden></label><button class="btn ghost" id="phDel" type="button" style="padding:10px 14px">${t("photoDel")}</button></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px"><img id="phImg" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--soft);flex:none" ${store.get("sa_photo", "") ? `src="${store.get("sa_photo", "")}"` : ""}><label class="btn ghost" style="margin:0;cursor:pointer;padding:10px 14px">${t("photoAdd")}<input id="phFile" type="file" accept="image/*" hidden></label><button class="btn ghost" id="phAdj" type="button" style="padding:10px 14px" ${store.get("sa_photo_src", "") ? "" : "hidden"}>${t("photoAdj")}</button><button class="btn ghost" id="phDel" type="button" style="padding:10px 14px">${t("photoDel")}</button></div>
         <label>${t("name")}</label><input id="n" value="${esc(p.name)}" placeholder="${t("eg")} Wan Jasni">
         <label>${t("phone")}</label><input id="ph" inputmode="tel" value="${esc(p.phone)}" placeholder="${t("eg")} 012-345 6789">
         <label>${t("branch")}</label><input id="br" value="${esc(p.branch)}" placeholder="${t("eg")} Toyota Shah Alam">
@@ -806,18 +806,60 @@
       </div>
       <p class="note">${t("accNote")}</p>`;
     $("#lsel").querySelectorAll("button").forEach(b => b.onclick = () => setLang(b.dataset.l));
+    // Editor gambar profil: seret + zum sebelum simpan (gambar asal disimpan supaya boleh dilaras semula)
+    const photoEditor = srcData => {
+      const img = new Image();
+      img.onload = () => {
+        const S = 600, D = 520, M = (S - D) / 2; // kanvas 600; bulatan diameter D di tengah
+        const ov = document.createElement("div"); ov.className = "modal";
+        ov.innerHTML = `<div class="mcard"><b>${t("photoAdj")}</b><canvas id="phc" width="${S}" height="${S}"></canvas>
+          <p class="note" style="margin:6px 0">${t("photoHint")}</p>
+          <label style="margin:6px 0 4px">${t("photoZoom")}</label><input id="phz" type="range" min="0" max="100" value="0">
+          <div class="actions" style="margin-top:12px"><button class="btn ghost" id="phx" type="button">${t("cancel")}</button><button class="btn red" id="phs" type="button">${t("photoSave")}</button></div>
+          <button class="btn ghost block" id="phr" type="button" style="margin-top:8px">${t("photoReset")}</button></div>`;
+        document.body.appendChild(ov);
+        const cv = ov.querySelector("#phc"), ctx = cv.getContext("2d"), z = ov.querySelector("#phz");
+        const cover = Math.max(D / img.width, D / img.height), fit = Math.min(D / img.width, D / img.height) * .9, maxS = cover * 4;
+        let sc = cover, cx = S / 2, cy = S / 2, drag = null;
+        const sFromZ = v => fit * Math.pow(maxS / fit, v / 100), zFromS = s => Math.round(100 * Math.log(s / fit) / Math.log(maxS / fit));
+        const draw = () => {
+          ctx.fillStyle = "#dfe5ef"; ctx.fillRect(0, 0, S, S);
+          ctx.drawImage(img, cx - img.width * sc / 2, cy - img.height * sc / 2, img.width * sc, img.height * sc);
+          ctx.save(); ctx.fillStyle = "rgba(8,14,30,.62)"; ctx.beginPath(); ctx.rect(0, 0, S, S); ctx.arc(S / 2, S / 2, D / 2, 0, Math.PI * 2, true); ctx.fill("evenodd"); ctx.restore();
+          ctx.beginPath(); ctx.arc(S / 2, S / 2, D / 2, 0, Math.PI * 2); ctx.lineWidth = 4; ctx.strokeStyle = "#fff"; ctx.stroke();
+        };
+        // Mula: potret disejajar ke atas (supaya rambut kelihatan); landskap di tengah
+        const reset = () => { sc = cover; cx = S / 2; const h = img.height * sc; cy = h > D ? M + h / 2 : S / 2; z.value = zFromS(sc); draw(); };
+        cv.onpointerdown = e => { cv.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, cx, cy }; };
+        cv.onpointermove = e => { if (!drag) return; const k = S / cv.getBoundingClientRect().width; cx = drag.cx + (e.clientX - drag.x) * k; cy = drag.cy + (e.clientY - drag.y) * k; draw(); };
+        cv.onpointerup = cv.onpointercancel = () => { drag = null; };
+        z.oninput = () => { const ns = sFromZ(+z.value), f = ns / sc; cx = S / 2 + (cx - S / 2) * f; cy = S / 2 + (cy - S / 2) * f; sc = ns; draw(); };
+        cv.onwheel = e => { e.preventDefault(); z.value = Math.max(0, Math.min(100, +z.value + (e.deltaY < 0 ? 4 : -4))); z.oninput(); };
+        ov.querySelector("#phr").onclick = reset;
+        ov.querySelector("#phx").onclick = () => ov.remove();
+        ov.querySelector("#phs").onclick = () => {
+          const O = 400, o = document.createElement("canvas"); o.width = o.height = O; const oc = o.getContext("2d"), k = O / D;
+          oc.fillStyle = "#dfe5ef"; oc.fillRect(0, 0, O, O);
+          oc.drawImage(img, (cx - img.width * sc / 2 - M) * k, (cy - img.height * sc / 2 - M) * k, img.width * sc * k, img.height * sc * k);
+          const data = o.toDataURL("image/jpeg", .88); store.set("sa_photo", data); store.set("sa_photo_src", srcData);
+          $("#phImg").src = data; $("#phAdj").hidden = false; ov.remove(); toast(t("savedProf"));
+        };
+        reset();
+      };
+      img.src = srcData;
+    };
     $("#phFile").onchange = e => {
       const f = e.target.files[0]; if (!f) return;
-      const img = new Image(), url = URL.createObjectURL(f);
-      img.onload = () => {
-        const S = 400, c = document.createElement("canvas"); c.width = c.height = S;
-        const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
-        c.getContext("2d").drawImage(img, (S - w) / 2, (S - h) / 2 - (h > S ? (h - S) * .15 : 0), w, h);
-        const data = c.toDataURL("image/jpeg", .85); store.set("sa_photo", data); $("#phImg").src = data; URL.revokeObjectURL(url); toast(t("savedProf"));
+      const im = new Image(), url = URL.createObjectURL(f);
+      im.onload = () => { // kecilkan ke maks 1000 px untuk simpanan
+        const k = Math.min(1, 1000 / Math.max(im.width, im.height)), c = document.createElement("canvas"); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(url); e.target.value = "";
+        photoEditor(c.toDataURL("image/jpeg", .86));
       };
-      img.src = url;
+      im.src = url;
     };
-    $("#phDel").onclick = () => { try { localStorage.removeItem("sa_photo"); } catch {} $("#phImg").removeAttribute("src"); toast(t("savedProf")); };
+    $("#phAdj").onclick = () => { const s = store.get("sa_photo_src", ""); if (s) photoEditor(s); };
+    $("#phDel").onclick = () => { try { localStorage.removeItem("sa_photo"); localStorage.removeItem("sa_photo_src"); } catch {} $("#phImg").removeAttribute("src"); $("#phAdj").hidden = true; toast(t("savedProf")); };
     $("#ph").onblur = () => { $("#ph").value = fmtPhone($("#ph").value); };
     $("#sv").onclick = () => { const ph = fmtPhone($("#ph").value); $("#ph").value = ph; store.set("sa_profile", { name: $("#n").value.trim(), phone: ph, branch: $("#br").value.trim() }); toast(t("savedProf")); };
   }

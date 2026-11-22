@@ -103,3 +103,9 @@ canvas{width:100%;height:auto;border-radius:14px;display:block;margin:12px 0}
 .pdots{display:flex;justify-content:center;gap:7px;margin-top:9px}
 .pdots i{width:7px;height:7px;border-radius:50%;background:var(--line);cursor:pointer;transition:.2s}
 .pdots i.on{background:var(--red);width:20px;border-radius:7px}
+
+/* Editor gambar profil */
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:60;display:grid;place-items:center;padding:16px;overflow:auto}
+.mcard{background:var(--card);border-radius:20px;padding:16px;width:100%;max-width:380px}
+.mcard canvas{width:100%;max-width:340px;display:block;margin:10px auto;border-radius:14px;touch-action:none;cursor:grab;background:#dfe5ef}
+.mcard input[type=range]{width:100%;padding:0;accent-color:var(--red)}
