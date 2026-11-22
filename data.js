@@ -10,7 +10,7 @@ window.CARS = [
     grades: [["Yaris Cross 1.5S", "Petrol", 99900], ["Yaris Cross 1.5S HEV", "HEV", 109900]] },
   { id: "corolla", name: "Corolla", type: "Sedan", img: "assets/cars/corolla.jpg", url: U + "corolla.html",
     grades: [["Corolla 1.8G", "Petrol", 144800]] },
-  { id: "corolla-cross", name: "Corolla Cross", type: "SUV", img: "assets/cars/corolla-cross.jpg", url: U + "corolla-cross-hybrid-electric.html",
+  { id: "corolla-cross", name: "Corolla Cross", type: "SUV", cc: 1798, img: "assets/cars/corolla-cross.jpg", url: U + "corolla-cross-hybrid-electric.html",
     grades: [["Corolla Cross 1.8V AT", "Petrol", 133800], ["Corolla Cross HEV", "HEV", 140800], ["Corolla Cross HEV GR Sport", "HEV", 148800]] },
   { id: "camry", name: "Camry", type: "Sedan", img: "assets/cars/camry.jpg", url: U + "camry-hybrid-electric.html",
     grades: [["Camry 2.5V AT", "Petrol", 221800], ["Camry 2.5 HEV", "HEV", 248800]] },
@@ -31,6 +31,26 @@ window.CARS = [
   { id: "vellfire", name: "Vellfire", type: "MPV", img: "assets/cars/vellfire.jpg", url: U + "vellfire.html",
     grades: [["Vellfire 2.5", "Petrol", 448000], ["Vellfire 2.5 HEV Executive Lounge", "HEV", 549900]] }
 ];
+
+// Rebate / promo: https://www.toyota.com.my/en/promotions/monthly-promo.html (November 2026, dibaca 22 Nov 2026)
+// Laman beri "Promo worth up to" (mungkin gabungan rebate + lain-lain); SA boleh ubah nilai dalam app.
+// Yaris Cross: pilih RM3,500 rebate tunai (atau RM2,000 + baucar service RM2,000). Hiace: baucar service sahaja.
+window.REBATES = {
+  month: "November 2026",
+  source: "https://www.toyota.com.my/en/promotions/monthly-promo.html",
+  byGrade: {
+    "Vios 1.5E AT": 12000, "Vios 1.5G AT": 12000, "Vios 1.5 HEV AT": 14000,
+    "Yaris Cross 1.5S": 3500, "Yaris Cross 1.5S HEV": 3500,
+    "Corolla 1.8G": 18000,
+    "Corolla Cross 1.8V AT": 13000, "Corolla Cross HEV": 13000, "Corolla Cross HEV GR Sport": 13000,
+    "Camry 2.5V AT": 20000, "Camry 2.5 HEV": 12000,
+    "Veloz 1.5 AT": 3000,
+    "Innova Zenix 2.0V": 10000, "Innova Zenix 2.0 HEV": 11000,
+    "Fortuner 2.4 AT 4WD": 11000, "Fortuner 2.7 SRZ AT 4WD": 11000, "Fortuner 2.8 VRZ AT 4WD": 11000,
+    "Hilux Single Cab 2.4 MT 4WD": 9000, "Hilux Double Cab 2.4E MT 4WD": 14000, "Hilux Double Cab 2.4E AT 4WD": 14000,
+    "Hilux Double Cab 2.4V AT 4WD": 14000, "Hilux Double Cab 2.8 Rogue AT 4WD": 14000
+  }
+};
 
 // E-brochure rasmi (salinan dalam brochures/, sumber asal di bawah). Dikemas kini 22 Nov 2026.
 const BR = "https://www.toyota.com.my/content/dam/malaysia/model-brochures/brochures/";

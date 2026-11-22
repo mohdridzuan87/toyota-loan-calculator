@@ -12,7 +12,35 @@
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   };
   const profile = () => store.get("sa_profile", { name: "", phone: "", branch: "" });
-  const loanPref = () => store.get("sa_loan", { dep: 10, rate: 2.8, years: 9 });
+  // sa_loan2: kadar lalai 2.3% (Wan, 22 Nov 2026)
+  const loanPref = () => ({ mode: "pct", dep: 10, depRM: 10000, target: 1000, rate: 2.3, years: 9, ncd: 0, insIn: false, reb: false, ...store.get("sa_loan2", {}) });
+
+  // Anggaran insurans komprehensif (tarif Semenanjung, kereta persendirian):
+  // premium asas ikut cc untuk RM1,000 pertama + RM26 setiap RM1,000 seterusnya, tolak NCD, + SST 8% + duti setem RM10.
+  const CC = { "1.5": 1496, "1.8": 1798, "2.0": 1987, "2.4": 2393, "2.5": 2487, "2.7": 2694, "2.8": 2755, "3.0": 2982 };
+  const ccOf = g => { const m = g.name.match(/(\d\.\d)/); return (m && CC[m[1]]) || g.car.cc || 1496; };
+  const BASE = [[1400, 273.8], [1650, 305.5], [2200, 339.1], [3050, 372.6], [4100, 404.3], [4250, 436], [4400, 469.6], [Infinity, 501.3]];
+  const NCDS = [0, 25, 30, 38.33, 45, 55];
+  const insurance = (g, ncd) => {
+    const cc = ccOf(g), base = BASE.find(b => cc <= b[0])[1];
+    const gross = base + 26 * Math.max(0, Math.ceil(g.price / 1000) - 1);
+    const net = gross * (1 - ncd / 100);
+    return { cc, gross, net, total: net * 1.08 + 10 };
+  };
+  const pct1 = n => (Math.round(n * 10) / 10).toString();
+  const REB = window.REBATES || { byGrade: {} };
+  const rebateOf = g => { const o = store.get("sa_reb", {}); return o[g.name] ?? REB.byGrade[g.name] ?? 0; };
+  // Kira satu varian ikut tetapan v (rebate tolak dari harga; insurans ikut harga OTR penuh)
+  const calc = (g, v) => {
+    const r = v.rate / 100, n = v.years, ins = insurance(g, v.ncd), insFin = v.insIn ? ins.total : 0;
+    const reb = v.reb ? Math.min(rebateOf(g), g.price) : 0, net = g.price - reb;
+    let dep;
+    if (v.mode === "rm") dep = Math.min(Math.max(0, v.depRM), net);
+    else if (v.mode === "target") dep = Math.min(net, Math.max(0, net + insFin - (v.target * 12 * n) / (1 + r * n)));
+    else dep = net * v.dep / 100;
+    const fin = Math.max(0, net + insFin - dep);
+    return { g, ins, insFin, reb, net, dep, depPct: net ? dep / net * 100 : 0, fin, m: fin * (1 + r * n) / (12 * n) };
+  };
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const toast = msg => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); };
@@ -56,12 +84,25 @@
       <div class="card">
         <label>Varian ${loanMode === "banding" ? "A" : ""}</label><select id="g1">${gradeOptions(sel[0])}</select>
         ${loanMode === "banding" ? `<label>Varian B</label><select id="g2">${gradeOptions(sel[1])}</select>` : ""}
-        <div class="row">
-          <div><label>Deposit (%)</label><input id="dep" type="number" min="0" max="90" step="1" value="${pref.dep}"></div>
-          <div><label>Kadar faedah (% setahun)</label><input id="rate" type="number" min="0" max="10" step="0.01" value="${pref.rate}"></div>
+        <label>Deposit</label>
+        <div class="seg" id="dm" style="margin-bottom:8px">
+          <button data-d="pct" class="${pref.mode === "pct" ? "on" : ""}">%</button>
+          <button data-d="rm" class="${pref.mode === "rm" ? "on" : ""}">RM</button>
+          <button data-d="target" class="${pref.mode === "target" ? "on" : ""}">Ikut bulanan</button>
         </div>
-        <label>Tempoh</label>
-        <select id="yrs">${[9, 8, 7, 6, 5].map(y => `<option ${y == pref.years ? "selected" : ""} value="${y}">${y} tahun</option>`).join("")}</select>
+        <div id="depBox"></div>
+        <div class="row">
+          <div><label>Kadar (% setahun)</label><input id="rate" type="number" min="0" max="10" step="0.01" value="${pref.rate}"></div>
+          <div><label>Tempoh</label><select id="yrs">${[9, 8, 7, 6, 5, 4, 3, 2, 1].map(y => `<option ${y == pref.years ? "selected" : ""} value="${y}">${y} tahun</option>`).join("")}</select></div>
+        </div>
+        <label>Insurans (anggaran)</label>
+        <div class="row">
+          <select id="ncd">${NCDS.map(n => `<option value="${n}" ${n == pref.ncd ? "selected" : ""}>NCD ${n}%</option>`).join("")}</select>
+          <label class="chk"><input type="checkbox" id="insIn" ${pref.insIn ? "checked" : ""}> Masuk dalam loan</label>
+        </div>
+        <label>Rebate / promo</label>
+        <label class="chk" style="padding:12px"><input type="checkbox" id="reb" ${pref.reb ? "checked" : ""}> Tolak rebate dari harga</label>
+        <div id="rebBox"></div>
       </div>
       <div class="card result" id="res"></div>
       <div class="card">
@@ -70,21 +111,61 @@
         <p class="note">${FOOT}</p>
       </div>`;
     view.querySelectorAll(".seg button").forEach(b => b.onclick = () => { loanMode = b.dataset.m; location.hash = loanMode === "banding" ? "#loan/banding" : "#loan"; route(); });
+    let v = pref;
+    const depInput = () => {
+      const box = $("#depBox");
+      if (v.mode === "rm") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="0" step="500" value="${v.depRM}" placeholder="Deposit (RM)">`;
+      else if (v.mode === "target") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="100" step="50" value="${v.target}" placeholder="Ansuran sasaran sebulan (RM)"><p class="note" style="margin:6px 0 0">Masukkan bulanan yang customer mahu, app kira deposit yang perlu.</p>`;
+      else box.innerHTML = `<input id="depv" type="number" inputmode="decimal" min="0" max="90" step="1" value="${v.dep}" placeholder="Deposit (%)">`;
+      $("#depv").oninput = update;
+    };
+    const rebInputs = picks => {
+      const box = $("#rebBox");
+      if (!v.reb) { box.innerHTML = ""; return; }
+      const key = picks.map(i => i).join(",");
+      if (box.dataset.key !== key) {
+        box.dataset.key = key;
+        box.innerHTML = picks.map((i, k) => `<label>Rebate ${esc(GRADES[i].name)} (RM)</label><input class="rebv" data-g="${i}" type="number" inputmode="numeric" min="0" step="500" value="${rebateOf(GRADES[i])}">`).join("") +
+          `<p class="note" style="margin:6px 0 0">Lalai dari laman promo Toyota MY (${REB.month || ""}, "promo worth up to"; mungkin termasuk baucar). Ubah ikut rebate tunai sebenar dari cawangan.</p>`;
+        box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => {
+          const o = store.get("sa_reb", {}); o[GRADES[+inp.dataset.g].name] = Math.max(0, +inp.value || 0); store.set("sa_reb", o); update();
+        });
+      }
+    };
     const update = () => {
-      const v = { dep: +$("#dep").value || 0, rate: +$("#rate").value || 0, years: +$("#yrs").value };
-      store.set("sa_loan", v);
+      const dv = +$("#depv").value || 0;
+      v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked, reb: $("#reb").checked };
+      if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
+      store.set("sa_loan2", v);
       const picks = [+$("#g1").value]; if ($("#g2")) picks.push(+$("#g2").value);
       store.set("sa_sel", [picks[0], picks[1] ?? sel[1]]);
-      const rows = picks.map(i => { const g = GRADES[i]; return { g, dep: g.price * v.dep / 100, m: monthly(g.price, v.dep, v.rate, v.years) }; });
-      $("#res").innerHTML = rows.map(r => `
-        <div class="res"><div class="k">${r.g.name}</div><div class="v">${RM(r.m)}<small style="font-size:14px;font-weight:600"> /bulan</small></div>
-        <div class="kv"><span>Harga OTR</span><span>${RM(r.g.price)}</span></div>
-        <div class="kv"><span>Deposit ${v.dep}%</span><span>${RM(r.dep)}</span></div>
-        <div class="kv"><span>Loan</span><span>${RM(r.g.price - r.dep)}</span></div></div>`).join("") +
-        (rows.length === 2 ? `<div class="kv"><span>Beza sebulan</span><b>${RM(Math.abs(rows[0].m - rows[1].m))}</b></div>` : "");
+      rebInputs(picks);
+      const rows = picks.map(i => calc(GRADES[i], v));
+      $("#res").innerHTML = rows.map(r => {
+        const head = v.mode === "target"
+          ? `<div class="k">${esc(r.g.name)} · deposit diperlukan</div><div class="v">${RM(r.dep)}<small style="font-size:14px;font-weight:600"> (${pct1(r.depPct)}%)</small></div>
+             ${r.dep === 0 && r.m < v.target ? `<p class="note" style="margin:2px 0 6px">Tanpa deposit pun ansuran cuma ${RM(r.m)} sebulan.</p>` : ""}
+             ${r.dep >= r.g.price ? `<p class="note" style="margin:2px 0 6px">Sasaran terlalu rendah untuk varian ini.</p>` : ""}`
+          : `<div class="k">${esc(r.g.name)}</div><div class="v">${RM(r.m)}<small style="font-size:14px;font-weight:600"> /bulan</small></div>`;
+        return `<div class="res">${head}
+          <div class="kv"><span>Harga OTR</span><span>${RM(r.g.price)}</span></div>
+          ${r.reb ? `<div class="kv"><span>Rebate</span><span>-${RM(r.reb)}</span></div><div class="kv"><span>Harga selepas rebate</span><b>${RM(r.net)}</b></div>` : ""}
+          <div class="kv"><span>Insurans anggaran (NCD ${v.ncd}%)${v.insIn ? " · dalam loan" : ""}</span><span>${RM(r.ins.total)}</span></div>
+          <div class="kv"><span>Deposit ${pct1(r.depPct)}%</span><span>${RM(r.dep)}</span></div>
+          <div class="kv"><span>Jumlah loan</span><span>${RM(r.fin)}</span></div>
+          <div class="kv"><span>Ansuran ${v.years} tahun @ ${v.rate}%</span><b>${RM(r.m)}/bulan</b></div>
+          ${v.insIn ? "" : `<div class="kv"><span>Bayaran awal (deposit + insurans)</span><span>${RM(r.dep + r.ins.total)}</span></div>`}</div>`;
+      }).join("") +
+        (rows.length === 2 ? `<div class="kv"><span>Beza ${v.mode === "target" ? "deposit" : "sebulan"}</span><b>${RM(Math.abs(v.mode === "target" ? rows[0].dep - rows[1].dep : rows[0].m - rows[1].m))}</b></div>` : "") +
+        `<p class="note" style="margin:0">Insurans: anggaran premium komprehensif (tarif Semenanjung, ikut cc & harga, termasuk SST 8% + duti setem RM10). Harga sebenar ikut syarikat insurans.</p>`;
       drawPoster(rows, v);
     };
-    view.querySelectorAll("select,input").forEach(e => e.oninput = update);
+    $("#dm").querySelectorAll("button").forEach(b => b.onclick = () => {
+      v.mode = b.dataset.d; $("#dm").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+      depInput(); update();
+    });
+    depInput();
+    view.querySelectorAll(".card select, #rate, #insIn, #reb").forEach(e => e.oninput = update);
     $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "loan-poster.png")); };
     $("#share").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => shareBlob(b, "loan-poster.png")); };
     update();
@@ -124,7 +205,7 @@
       rr(ctx, 60, 214, 960, 500, 32); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[0], 60, 214, 960, 500); ctx.restore();
       ctx.fillStyle = "#fff"; F(600, 34); ctx.fillText("Ansuran bulanan dari", W / 2, 772);
       ctx.fillStyle = "#f5c542"; F(800, 124); ctx.fillText(RM(r.m), W / 2, 884);
-      const items = [["Harga OTR*", RM(r.g.price)], [`Deposit ${v.dep}%`, RM(r.dep)], ["Tempoh", `${v.years} tahun`], ["Kadar", `${v.rate}%`]];
+      const items = [[(r.reb ? "Selepas rebate" : "Harga OTR") + (r.insFin ? " + insurans*" : "*"), RM(r.net + r.insFin)], [`Deposit ${pct1(r.depPct)}%`, RM(r.dep)], ["Tempoh", `${v.years} tahun`], ["Kadar", `${v.rate}%`]];
       items.forEach(([k, val], i) => {
         const x = 60 + (i % 2) * 490, y = 920 + Math.floor(i / 2) * 102;
         rr(ctx, x, y, 470, 90, 20); ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fill();
@@ -140,7 +221,7 @@
         wrap(ctx, r.g.name, x + w / 2, 512, w - 40, 42);
         ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText("Ansuran sebulan", x + w / 2, 640);
         ctx.fillStyle = "#f5c542"; fit(ctx, RM(r.m), w - 40, 80); ctx.fillText(RM(r.m), x + w / 2, 726);
-        [["Harga OTR*", RM(r.g.price)], [`Deposit ${v.dep}%`, RM(r.dep)], ["Loan", RM(r.g.price - r.dep)]].forEach(([k, val], j) => {
+        [[(r.reb ? "Lepas rebate" : "Harga OTR") + (r.insFin ? " + ins.*" : "*"), RM(r.net + r.insFin)], [`Deposit ${pct1(r.depPct)}%`, RM(r.dep)], ["Loan", RM(r.fin)]].forEach(([k, val], j) => {
           const y = 800 + j * 60; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; F(600, 24); ctx.fillText(k, x + 30, y);
           ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 26); ctx.fillText(val, x + w - 30, y);
         });
@@ -284,7 +365,7 @@
         const t = x.r <= .20 ? ["ok", "Selesa"] : x.r <= .25 ? ["mid", "Sederhana"] : ["max", "Maksimum"];
         return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${RM(x.g.price)} · ${Math.round(x.r * 100)}% gaji</small></div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${t[0]}">${t[1]}</span></div></a>`;
       }).join("") : `<div class="card">Tiada model dalam had 30% gaji. Cuba tambah deposit.</div>`;
-      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, 0]); store.set("sa_loan", { ...pref, dep, rate }); loanMode = "satu"; });
+      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, 0]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); loanMode = "satu"; });
     };
     view.querySelectorAll("input").forEach(e => e.oninput = run); run();
   }

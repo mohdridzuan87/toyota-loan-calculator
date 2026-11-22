@@ -43,6 +43,8 @@ h2{font-size:20px;margin:6px 0 4px}
 .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
 label{display:block;font-weight:600;font-size:13px;margin:12px 0 6px;color:var(--mute)}
 input,select{width:100%;font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:12px}
+.chk{display:flex;align-items:center;gap:8px;margin:0;color:var(--ink);font-size:14px;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:0 12px}
+.chk input{width:20px;height:20px;accent-color:var(--red);margin:0}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .seg{display:flex;background:var(--bg);border-radius:12px;padding:4px;gap:4px;margin-bottom:14px}
 .seg button{flex:1;border:0;background:none;font:inherit;font-weight:700;padding:10px;border-radius:9px;color:var(--mute);cursor:pointer}
