@@ -69,7 +69,7 @@
       cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
       fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
       pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
-      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", photoDel: "Buang gambar", newColors: "Tukar warna latar",
+      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", colLabel: "Warna", colFree: "percuma", colPrice: "Harga warna (RM)", colNote: d => "Warna & harga ikut laman model Toyota MY" + (d ? " (disemak " + d + ")" : "") + ", dikemas kini 1hb & 15hb. Lalai = warna percuma. Harga warna hanya ada bila Toyota terbitkan; boleh isi sendiri.", photoDel: "Buang gambar", newColors: "Tukar warna latar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
@@ -127,7 +127,7 @@
       cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
       fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
       pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
-      photo: "Profile photo (for posters)", photoAdd: "Choose photo", photoDel: "Remove photo", newColors: "Shuffle background colours",
+      photo: "Profile photo (for posters)", photoAdd: "Choose photo", colLabel: "Colour", colFree: "free", colPrice: "Colour price (RM)", colNote: d => "Colours & prices from the Toyota MY model pages" + (d ? " (checked " + d + ")" : "") + ", updated on the 1st & 15th. Default = free colour. A colour price shows only when Toyota publishes one; you can enter your own.", photoDel: "Remove photo", newColors: "Shuffle background colours",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
@@ -176,6 +176,25 @@
   const setRebOverride = (name, val) => { store.set("sa_reb2", { month: REB.month, values: { ...rebOverrides(), [name]: val } }); };
   const rebateOf = g => rebOverrides()[g.name] ?? REB.byGrade[g.name] ?? 0;
   // Kira satu varian ikut tetapan v (rebate tolak dari harga; insurans ikut harga OTR penuh)
+  // ---- Warna kereta (colours.json dari laman model Toyota MY; dikemas kini 1hb & 15hb) ----
+  let COL = { byGrade: {}, updatedAt: "" };
+  const colOverrides = () => { const o = store.get("sa_colp", {}); return o.at === COL.updatedAt ? o.v || {} : {}; };
+  const setColOverride = (gName, cName, val) => store.set("sa_colp", { at: COL.updatedAt, v: { ...colOverrides(), [gName + "|" + cName]: val } });
+  const colourList = gName => (COL.byGrade[gName] && COL.byGrade[gName].colours) || [];
+  const colourPrice = (gName, c) => { const o = colOverrides()[gName + "|" + c.name]; return o != null ? o : c.price || 0; };
+  // Warna dipilih: ikut simpanan; lalai = warna percuma pertama
+  const chosenColour = g => {
+    const list = colourList(g.name); if (!list.length) return null;
+    const saved = store.get("sa_col", {})[g.name];
+    // Lalai: warna dalam gambar kereta jika percuma, jika tidak warna percuma pertama
+    const IMG_COLOUR = { fortuner: "Super White II" };
+    const c = list.find(x => x.name === saved) || list.find(x => x.name === IMG_COLOUR[g.car.id] && !colourPrice(g.name, x)) || list.find(x => !colourPrice(g.name, x)) || list[0];
+    return { ...c, price: colourPrice(g.name, c) };
+  };
+  const withColour = g => { const c = chosenColour(g); return c ? { ...g, basePrice: g.price, price: g.price + c.price, colour: c } : g; };
+  const safeHex = h => /^#[0-9a-f]{3,8}$/i.test(String(h)) ? h : "#cccccc";
+  const swatchBg = c => c.two ? "linear-gradient(180deg," + safeHex(c.hex) + " 55%,#111 55%)" : safeHex(c.hex);
+
   const calc = (g, v) => {
     const r = v.rate / 100, n = v.years, ins = insurance(g, v.ncd), insFin = v.insIn ? ins.total : 0;
     const reb = Math.min(rebateOf(g), g.price), net = g.price - reb;
@@ -242,7 +261,7 @@
       <h2>${t("loanH")}</h2><p class="sub">${t("loanSub")}</p>
       <div class="seg">${[1, 2, 3, 4].map(n => `<button data-n="${n}" class="${loanN === n ? "on" : ""}">${n === 1 ? t("one") : t("cmp", n)}</button>`).join("")}</div>
       <div class="card">
-        ${Array.from({ length: loanN }, (_, k) => `<label>${t("variant")} ${loanN > 1 ? "ABCD"[k] : ""}</label><select class="gsel" data-k="${k}">${gradeOptions(sel[k])}</select>`).join("")}
+        ${Array.from({ length: loanN }, (_, k) => `<label>${t("variant")} ${loanN > 1 ? "ABCD"[k] : ""}</label><select class="gsel" data-k="${k}">${gradeOptions(sel[k])}</select><div class="cbox" data-k="${k}"></div>`).join("")}<p class="note" id="colNote" style="margin:8px 0 0"></p>
         <label>${t("deposit")}</label>
         <div class="seg" id="dm" style="margin-bottom:8px">
           <button data-d="pct" class="${pref.mode === "pct" ? "on" : ""}">%</button>
@@ -287,7 +306,18 @@
         box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, parseMoney(inp.value))); update(); });
       }
     };
-    const update = () => {
+    const renderColours = (k, g) => {
+      const box = view.querySelector('.cbox[data-k="' + k + '"]'); if (!box) return;
+      const list = colourList(g.name); if (!list.length) { box.innerHTML = ""; return; }
+      const cur = chosenColour(g);
+      box.innerHTML = '<div class="swatches">' + list.map(c => '<button type="button" class="sw' + (c.name === cur.name ? " on" : "") + '" data-c="' + esc(c.name) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"><i style="background:' + swatchBg(c) + '"></i></button>').join("") + "</div>" +
+        '<div class="swinfo"><span><b>' + esc(cur.name) + "</b> · " + (cur.price ? "+" + RM(cur.price) : t("colFree")) + '</span><label class="colp"><small>' + t("colPrice") + '</small><input class="money" inputmode="decimal" value="' + fmtMoney(cur.price) + '"></label></div>';
+      box.querySelectorAll(".sw").forEach(b => b.onclick = () => { const m = store.get("sa_col", {}); m[g.name] = b.dataset.c; store.set("sa_col", m); update(); });
+      box.querySelector(".colp input").oninput = e => { setColOverride(g.name, cur.name, Math.max(0, parseMoney(e.target.value))); drawOnly(); };
+    };
+    const drawOnly = () => { /* harga warna diubah: kira semula tanpa bina semula kotak warna */ update(true); };
+    const update = (keep) => {
+      const keepBoxes = keep === true; // hanya panggilan sengaja (true); abaikan objek Event dari oninput
       const dv = parseMoney($("#depv").value);
       v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked };
       if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
@@ -295,7 +325,9 @@
       const picks = [...view.querySelectorAll(".gsel")].map(s => +s.value);
       store.set("sa_sel", sel.map((x, k) => picks[k] ?? x));
       rebInputs(picks);
-      const rows = picks.map(i => calc(GRADES[i], v));
+      if (!keepBoxes) picks.forEach((i, k) => renderColours(k, GRADES[i]));
+      $("#colNote").textContent = picks.some(i => colourList(GRADES[i].name).length) ? t("colNote", COL.updatedAt || "") : "";
+      const rows = picks.map(i => calc(withColour(GRADES[i]), v));
       const tg = v.mode === "target", sm = `<small style="font-size:14px;font-weight:600">`;
       $("#res").innerHTML = rows.map(r => {
         const head = tg
@@ -304,6 +336,7 @@
              ${r.dep >= r.net && r.net > 0 ? `<p class="note" style="margin:2px 0 6px">${t("tooLow")}</p>` : ""}`
           : `<div class="k">${esc(r.g.name)}</div><div class="v">${RM(r.m)}${sm} ${t("perMonth")}</small></div>`;
         return `<div class="res">${head}
+          ${r.g.colour ? `<div class="kv"><span>${t("colLabel")}</span><span>${esc(r.g.colour.name)}${r.g.colour.price ? " (+" + RM(r.g.colour.price) + ")" : ""}</span></div>` : ""}
           <div class="kv"><span>${t("otr")}</span><span>${RM(r.g.price)}</span></div>
           ${r.reb ? `<div class="kv"><span>${t("rebate")}</span><span>-${RM(r.reb)}</span></div><div class="kv"><span>${t("afterReb")}</span><b>${RM(r.net)}</b></div>` : ""}
           <div class="kv"><span>${t("insEst", v.ncd)}${v.insIn ? t("inLoan") : ""}</span><span>${RM(r.ins.total)}</span></div>
@@ -447,6 +480,16 @@
       ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
       ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       contain(ctx, img, x + 30 * k, imgTop, cw - 60 * k, imgH * .9, .85);
+      if (r.g.colour) {
+        const cc = r.g.colour, lab = cc.name + (cc.price ? "  +" + RM(cc.price) : "");
+        const fz = fitF(lab, cw - 150 * k, 26 * k, 700), tw = ctx.measureText(lab).width, ph = 50 * k, px = x + 34 * k, py = imgTop + 4 * k;
+        rr(ctx, px, py, tw + 78 * k, ph, ph / 2); ctx.fillStyle = PANEL; ctx.fill(); ctx.lineWidth = Math.max(1, 2 * k); ctx.strokeStyle = "#d9dee8"; ctx.stroke();
+        const rc = 16 * k, cx0 = px + 12 * k + rc, cy0 = py + ph / 2;
+        ctx.save(); ctx.beginPath(); ctx.arc(cx0, cy0, rc, 0, Math.PI * 2); ctx.clip(); ctx.fillStyle = safeHex(cc.hex); ctx.fillRect(cx0 - rc, cy0 - rc, rc * 2, rc * 2);
+        if (cc.two) { ctx.fillStyle = "#111"; ctx.fillRect(cx0 - rc, cy0 + rc * .1, rc * 2, rc); } ctx.restore();
+        ctx.beginPath(); ctx.arc(cx0, cy0, rc, 0, Math.PI * 2); ctx.lineWidth = Math.max(1, 2 * k); ctx.strokeStyle = "rgba(0,0,0,.35)"; ctx.stroke();
+        ctx.textAlign = "left"; ctx.fillStyle = NAVY; F(700, fz); ctx.fillText(lab, cx0 + rc + 14 * k, cy0 + fz * .34);
+      }
       // jadual berselang warna
       const rowsT = [
         [t("cPrice"), RM(r.g.price)], [t("cReb"), RM(r.reb)], [t("cDep"), RM(r.dep)],
@@ -724,7 +767,7 @@
   route();
   // Ambil harga (prices.json) & rebate (rebates.json) terkini tanpa cache — dikemas kini GitHub Actions 1hb & 15hb
   const getJSON = f => fetch(f + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
-  Promise.all([getJSON("prices.json"), getJSON("rebates.json")]).then(([pr, rb]) => {
+  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json")]).then(([pr, rb, cj]) => {
     let changed = false;
     if (pr && pr.byGrade) {
       for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }
@@ -734,6 +777,7 @@
       if (JSON.stringify(rb.byGrade) !== JSON.stringify(REB.byGrade) || rb.month !== REB.month) changed = true;
       REB = rb;
     }
+    if (cj && cj.byGrade) { COL = cj; changed = true; }
     if (changed && !/^akaun/.test(location.hash.slice(1))) route();
   });
 })();

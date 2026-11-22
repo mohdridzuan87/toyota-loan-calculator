@@ -1,0 +1,1132 @@
+{
+ "updatedAt": "2026-11-22",
+ "byGrade": {
+  "Vios 1.5E AT": {
+   "src": "https://www.toyota.com.my/en/models/vios.html",
+   "colours": [
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Nebula Blue Metallic",
+     "hex": "#203079",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 400,
+     "two": false
+    }
+   ]
+  },
+  "Vios 1.5G AT": {
+   "src": "https://www.toyota.com.my/en/models/vios.html",
+   "colours": [
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Nebula Blue Metallic",
+     "hex": "#203079",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 400,
+     "two": false
+    }
+   ]
+  },
+  "Vios 1.5 HEV AT": {
+   "src": "https://www.toyota.com.my/en/models/vios/vios-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Celestite Grey Metallic",
+     "hex": "#4c5662",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Vios 1.5 HEV GR Sport": {
+   "src": "https://www.toyota.com.my/en/models/vios/vios-hev-gr-sport.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "2-tone Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-Tone Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": true
+    }
+   ]
+  },
+  "Yaris 1.5E AT": {
+   "src": "https://www.toyota.com.my/en/models/yaris.html",
+   "colours": [
+    {
+     "name": "2-tone Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-tone Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Yaris 1.5G AT": {
+   "src": "https://www.toyota.com.my/en/models/yaris.html",
+   "colours": [
+    {
+     "name": "2-tone Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-tone Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Yaris Cross 1.5S": {
+   "src": "https://www.toyota.com.my/en/models/yaris-cross-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Dark Turquoise",
+     "hex": "#091449",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum Pearl White",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Yaris Cross 1.5S HEV": {
+   "src": "https://www.toyota.com.my/en/models/yaris-cross-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Dark Turquoise",
+     "hex": "#091449",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Spicy Scarlet SE",
+     "hex": "#990300",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum Pearl White",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Corolla 1.8G": {
+   "src": "https://www.toyota.com.my/en/models/corolla.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Metal Stream Metallic",
+     "hex": "#828084",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Cement Gray Metallic",
+     "hex": "#808080",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Corolla GR Sport": {
+   "src": "https://www.toyota.com.my/en/models/corolla/corolla-gr-sport.html",
+   "colours": [
+    {
+     "name": "2-tone Platinum White Pearl",
+     "hex": "#fcfcfcd",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-tone Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Corolla Cross 1.8V AT": {
+   "src": "https://www.toyota.com.my/en/models/corolla-cross-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Celestite Grey Metallic",
+     "hex": "#4c5662",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Dark Turquoise",
+     "hex": "#091449",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Corolla Cross HEV": {
+   "src": "https://www.toyota.com.my/en/models/corolla-cross-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Celestite Grey Metallic",
+     "hex": "#4c5662",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Dark Turquoise",
+     "hex": "#091449",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Corolla Cross HEV GR Sport": {
+   "src": "https://www.toyota.com.my/en/models/corolla-cross-hybrid-electric/corolla-cross-hev-gr-sport.html",
+   "colours": [
+    {
+     "name": "2-tone Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-tone Dark Turquoise",
+     "hex": "#171948",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "2-tone Red Mica Metallic",
+     "hex": "#7b0010",
+     "price": 0,
+     "two": true
+    }
+   ]
+  },
+  "Camry 2.5V AT": {
+   "src": "https://www.toyota.com.my/en/models/camry-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Emotional Red II",
+     "hex": "#740001",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Cement Gray Metallic",
+     "hex": "#808080",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Metal",
+     "hex": "#545656",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Dark Blue Mica",
+     "hex": "#202649",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Camry 2.5 HEV": {
+   "src": "https://www.toyota.com.my/en/models/camry-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Emotional Red II",
+     "hex": "#740001",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Cement Gray Metallic",
+     "hex": "#808080",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Metal",
+     "hex": "#545656",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Dark Blue Mica",
+     "hex": "#202649",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Veloz 1.5 AT": {
+   "src": "https://www.toyota.com.my/en/models/veloz.html",
+   "colours": [
+    {
+     "name": "Blue Metallic with Black Roof",
+     "hex": "#203079",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Silver Metallic with Black Roof",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Metallic Bluish Black",
+     "hex": "#000000",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Red Metallic",
+     "hex": "#4f000a",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Innova Zenix 2.0V": {
+   "src": "https://www.toyota.com.my/en/models/zenix.html",
+   "colours": [
+    {
+     "name": "Grey Metallic",
+     "hex": "#333538",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#84888c",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Innova Zenix 2.0 HEV": {
+   "src": "https://www.toyota.com.my/en/models/zenix.html",
+   "colours": [
+    {
+     "name": "Grey Metallic",
+     "hex": "#333538",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#84888c",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Fortuner 2.4 AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/fortuner.html",
+   "colours": [
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Fortuner 2.7 SRZ AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/fortuner.html",
+   "colours": [
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Fortuner 2.8 VRZ AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/fortuner.html",
+   "colours": [
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II with Black Roof",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": true
+    },
+    {
+     "name": "Bronze Mica Metallic with Black Roof",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": true
+    }
+   ]
+  },
+  "Hilux Single Cab 2.4 MT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux.html",
+   "colours": [
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hilux Double Cab 2.4E MT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux.html",
+   "colours": [
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hilux Double Cab 2.4E AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux.html",
+   "colours": [
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hilux Double Cab 2.4V AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux.html",
+   "colours": [
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hilux Double Cab 2.8 Rogue AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux.html",
+   "colours": [
+    {
+     "name": "Bronze Mica Metallic",
+     "hex": "#4e4a43",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Phantom Brown Metallic",
+     "hex": "#4a302e",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Medium Silver Metallic",
+     "hex": "#6a7376",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Silver Metallic",
+     "hex": "#9da2a4",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hilux GR Sport 2.8 AT 4WD": {
+   "src": "https://www.toyota.com.my/en/models/hilux/hilux-gr-sport.html",
+   "colours": [
+    {
+     "name": "Super White II",
+     "hex": "#e3e4e0",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Crimson Spark Red Metallic",
+     "hex": "#740013",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Attitude Black Mica",
+     "hex": "#030507",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Hiace Panel Van 3.0 Turbo Diesel": {
+   "src": "https://www.toyota.com.my/en/models/hiace.html",
+   "colours": [
+    {
+     "name": "Solid White",
+     "hex": "#d5d8cf",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Harrier 2.5 HEV": {
+   "src": "https://www.toyota.com.my/en/models/harrier-hybrid-electric.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Grey Metallic",
+     "hex": "#333538",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Black",
+     "hex": "#08080A",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Alphard 2.4T Executive Lounge": {
+   "src": "https://www.toyota.com.my/en/models/alphard.html",
+   "colours": [
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Metal",
+     "hex": "#545656",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Neutral Black",
+     "hex": "#020203",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Leo-Blond",
+     "hex": "#c7b2a1",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Vellfire 2.5": {
+   "src": "https://www.toyota.com.my/en/models/vellfire.html",
+   "colours": [
+    {
+     "name": "Neutral Black",
+     "hex": "#020203",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Metal",
+     "hex": "#545656",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  },
+  "Vellfire 2.5 HEV Executive Lounge": {
+   "src": "https://www.toyota.com.my/en/models/vellfire.html",
+   "colours": [
+    {
+     "name": "Neutral Black",
+     "hex": "#020203",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Precious Metal",
+     "hex": "#545656",
+     "price": 0,
+     "two": false
+    },
+    {
+     "name": "Platinum White Pearl",
+     "hex": "#fcfcfc",
+     "price": 0,
+     "two": false
+    }
+   ]
+  }
+ },
+ "missing": []
+}
