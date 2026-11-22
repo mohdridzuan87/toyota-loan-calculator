@@ -57,8 +57,8 @@
       preparing: "Menyediakan brochure…", failed: "Gagal: ",
       salH: "Ikut gaji", salSub: "Masukkan gaji kasar sebulan, dapat senarai kereta yang sesuai.", salIn: "Gaji kasar sebulan (RM)",
       depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
-      salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
-      salNone: "Tiada model dalam had 30% gaji. Cuba tambah deposit.",
+      salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤40%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
+      salNone: "Tiada model dalam had 40% gaji. Cuba tambah deposit.",
       salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Nilai yang diubah di tab Loan turut dipakai.`,
       afterRebS: "lepas rebate",
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
@@ -109,8 +109,8 @@
       preparing: "Preparing brochure…", failed: "Failed: ",
       salH: "By salary", salSub: "Enter gross monthly salary to get a list of suitable cars.", salIn: "Gross monthly salary (RM)",
       depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
-      salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤30%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
-      salNone: "No model within 30% of salary. Try a higher down payment.",
+      salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤40%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
+      salNone: "No model within 40% of salary. Try a higher down payment.",
       salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate auto-pulled from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Amounts edited in the Loan tab are used too.`,
       afterRebS: "after rebate",
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
@@ -545,7 +545,7 @@
       store.set("sa_gaji", sal);
       // Rebate sentiasa ditolak: nilai laman promo Toyota MY (atau nilai yang diubah di tab Loan bulan ini)
       const list = GRADES.map((g, i) => { const reb = Math.min(rebateOf(g), g.price), net = g.price - reb; return { g, i, reb, net, m: monthly(net, dep, rate, pref.years) }; })
-        .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.30).sort((a, b) => b.net - a.net);
+        .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.40).sort((a, b) => b.net - a.net);
       const tags = t("tags");
       $("#out").innerHTML = list.length ? list.map(x => {
         const tg = x.r <= .20 ? ["ok", tags[0]] : x.r <= .25 ? ["mid", tags[1]] : ["max", tags[2]];
