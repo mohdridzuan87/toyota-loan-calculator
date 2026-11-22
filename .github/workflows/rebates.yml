@@ -1,8 +1,8 @@
-name: Kemas kini rebate Toyota
+name: Kemas kini harga & rebate Toyota
 
 on:
   schedule:
-    - cron: "0 1 * * *"   # setiap hari 9:00 pagi waktu Malaysia
+    - cron: "0 1 1,15 * *"   # 1hb & 15hb setiap bulan, 9:00 pagi waktu Malaysia
   workflow_dispatch:
 
 permissions:
@@ -16,12 +16,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: node scripts/update-rebates.mjs
+      - name: Harga (price-list)
+        run: node scripts/update-prices.mjs
+      - name: Rebate (monthly-promo)
+        run: node scripts/update-rebates.mjs
       - name: Commit jika berubah
         run: |
-          if git diff --quiet -- rebates.json; then echo "Tiada perubahan"; exit 0; fi
+          if git diff --quiet -- prices.json rebates.json; then echo "Tiada perubahan"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add rebates.json
-          git commit -m "Rebate Toyota dikemas kini automatik"
+          git add prices.json rebates.json
+          git commit -m "Harga & rebate Toyota dikemas kini automatik"
           git push

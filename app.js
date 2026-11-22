@@ -33,7 +33,7 @@
       phDepRM: "Deposit (RM)", phTarget: "Ansuran sasaran sebulan (RM)", phDepPct: "Deposit (%)",
       targetNote: "Masukkan bulanan yang customer mahu, app kira deposit yang perlu.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: (m, d) => `Rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap hari). Boleh ubah ikut rebate tunai sebenar dari cawangan; nilai diubah tamat bila promo bulan baru keluar.`,
+      rebNote: (m, d) => `Rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Boleh ubah ikut rebate tunai sebenar dari cawangan; nilai diubah tamat bila promo bulan baru keluar.`,
       depNeeded: "deposit diperlukan", noDep: m => `Tanpa deposit pun ansuran cuma ${m} sebulan.`, tooLow: "Sasaran terlalu rendah untuk varian ini.",
       perMonth: "/bulan", otr: "Harga OTR", rebate: "Rebate", afterReb: "Harga selepas rebate",
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
@@ -59,7 +59,7 @@
       depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
       salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
       salNone: "Tiada model dalam had 30% gaji. Cuba tambah deposit.",
-      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap hari). Nilai yang diubah di tab Loan turut dipakai.`,
+      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap 1hb &amp; 15hb). Nilai yang diubah di tab Loan turut dipakai.`,
       afterRebS: "lepas rebate",
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
@@ -85,7 +85,7 @@
       phDepRM: "Down payment (RM)", phTarget: "Target monthly instalment (RM)", phDepPct: "Down payment (%)",
       targetNote: "Enter the monthly amount the customer wants; the app works out the down payment needed.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: (m, d) => `Rebate auto from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated daily). Adjust to your branch's actual cash rebate; edits expire when the next month's promo is published.`,
+      rebNote: (m, d) => `Rebate auto from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Adjust to your branch's actual cash rebate; edits expire when the next month's promo is published.`,
       depNeeded: "down payment needed", noDep: m => `Even with zero down payment the instalment is only ${m} a month.`, tooLow: "Target is too low for this variant.",
       perMonth: "/month", otr: "OTR price", rebate: "Rebate", afterReb: "Price after rebate",
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
@@ -111,7 +111,7 @@
       depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
       salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤30%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
       salNone: "No model within 30% of salary. Try a higher down payment.",
-      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate auto-pulled from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated daily). Amounts edited in the Loan tab are used too.`,
+      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate auto-pulled from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated on the 1st &amp; 15th). Amounts edited in the Loan tab are used too.`,
       afterRebS: "after rebate",
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
@@ -589,11 +589,18 @@
   addEventListener("hashchange", route);
   applyChrome();
   route();
-  // Ambil rebate terkini (rebates.json) tanpa cache; papar semula jika berbeza
-  fetch("rebates.json?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
-    if (!j || !j.byGrade) return;
-    const changed = JSON.stringify(j.byGrade) !== JSON.stringify(REB.byGrade) || j.month !== REB.month;
-    REB = j;
-    if (changed && /^#?(loan|gaji)/.test(location.hash.slice(1))) route();
-  }).catch(() => {});
+  // Ambil harga (prices.json) & rebate (rebates.json) terkini tanpa cache — dikemas kini GitHub Actions 1hb & 15hb
+  const getJSON = f => fetch(f + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
+  Promise.all([getJSON("prices.json"), getJSON("rebates.json")]).then(([pr, rb]) => {
+    let changed = false;
+    if (pr && pr.byGrade) {
+      for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }
+      for (const c of CARS) for (const row of c.grades) { const p = pr.byGrade[row[0]]; if (p) row[2] = p; }
+    }
+    if (rb && rb.byGrade) {
+      if (JSON.stringify(rb.byGrade) !== JSON.stringify(REB.byGrade) || rb.month !== REB.month) changed = true;
+      REB = rb;
+    }
+    if (changed && !/^akaun/.test(location.hash.slice(1))) route();
+  });
 })();
