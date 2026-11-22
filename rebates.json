@@ -1,0 +1,176 @@
+{
+  "month": "November 2026",
+  "source": "https://www.toyota.com.my/en/promotions/monthly-promo.html",
+  "updatedAt": "2026-11-22",
+  "byGrade": {
+    "Vios 1.5 HEV AT": 14000,
+    "Vios 1.5 HEV GR Sport": 12000,
+    "Vios 1.5E AT": 12000,
+    "Vios 1.5G AT": 12000,
+    "Corolla Cross 1.8V AT": 13000,
+    "Corolla Cross HEV": 13000,
+    "Corolla Cross HEV GR Sport": 13000,
+    "Hilux Double Cab 2.4E MT 4WD": 14000,
+    "Hilux Double Cab 2.4E AT 4WD": 14000,
+    "Hilux Double Cab 2.4V AT 4WD": 14000,
+    "Hilux Double Cab 2.8 Rogue AT 4WD": 14000,
+    "Hilux Single Cab 2.4 MT 4WD": 9000,
+    "Hilux GR Sport 2.8 AT 4WD": 14000,
+    "Yaris Cross 1.5S HEV": 3500,
+    "Yaris Cross 1.5S": 3500,
+    "Corolla 1.8G": 18000,
+    "Corolla GR Sport": 18000,
+    "Veloz 1.5 AT": 3000,
+    "Fortuner 2.4 AT 4WD": 11000,
+    "Fortuner 2.7 SRZ AT 4WD": 11000,
+    "Fortuner 2.8 VRZ AT 4WD": 11000,
+    "Innova Zenix 2.0V": 10000,
+    "Innova Zenix 2.0 HEV": 11000,
+    "Camry 2.5V AT": 20000,
+    "Camry 2.5 HEV": 12000,
+    "Hiace Panel Van 3.0 Turbo Diesel": 0
+  },
+  "raw": [
+    {
+      "title": "ALL-NEW VIOS HYBRID ELECTRIC",
+      "label": "Promo worth up to",
+      "amount": "RM14,000*",
+      "conditions": "",
+      "used": 14000
+    },
+    {
+      "title": "ALL-NEW VIOS HEV GR SPORT",
+      "label": "Promo worth up to",
+      "amount": "RM12,000*",
+      "conditions": "",
+      "used": 12000
+    },
+    {
+      "title": "VIOS",
+      "label": "Promo worth up to",
+      "amount": "RM12,000*",
+      "conditions": "",
+      "used": 12000
+    },
+    {
+      "title": "COROLLA CROSS",
+      "label": "Promo worth up to",
+      "amount": "RM13,000*",
+      "conditions": "",
+      "used": 13000
+    },
+    {
+      "title": "COROLLA CROSS HYBRID ELECTRIC",
+      "label": "Promo worth up to",
+      "amount": "RM13,000*",
+      "conditions": "",
+      "used": 13000
+    },
+    {
+      "title": "COROLLA CROSS HEV GR SPORT",
+      "label": "Promo worth up to",
+      "amount": "RM13,000*",
+      "conditions": "",
+      "used": 13000
+    },
+    {
+      "title": "HILUX",
+      "label": "Promo from",
+      "amount": "RM14,000*",
+      "conditions": "*Contact your nearest Toyota dealer for details.",
+      "used": 14000
+    },
+    {
+      "title": "HILUX SINGLE CAB",
+      "label": "Promo from",
+      "amount": "RM9,000*",
+      "conditions": "",
+      "used": 9000
+    },
+    {
+      "title": "HILUX GR SPORT",
+      "label": "Promo from",
+      "amount": "RM14,000*",
+      "conditions": "*Contact your nearest Toyota dealer for details.",
+      "used": 14000
+    },
+    {
+      "title": "ALL-NEW YARIS CROSS HYBRID ELECTRIC",
+      "label": "Promo worth up to",
+      "amount": "RM4,000*",
+      "conditions": "*Choose from RM2,000 rebate + RM2,000 service voucher, or RM3,500 rebate.",
+      "used": 3500
+    },
+    {
+      "title": "ALL-NEW YARIS CROSS",
+      "label": "Promo worth up to",
+      "amount": "RM4,000*",
+      "conditions": "*Choose from RM2,000 rebate + RM2,000 service voucher, or RM3,500 rebate.",
+      "used": 3500
+    },
+    {
+      "title": "COROLLA",
+      "label": "Promo worth up to",
+      "amount": "RM18,000*",
+      "conditions": "",
+      "used": 18000
+    },
+    {
+      "title": "NEW COROLLA GR SPORT",
+      "label": "Promo worth up to",
+      "amount": "RM18,000*",
+      "conditions": "",
+      "used": 18000
+    },
+    {
+      "title": "VELOZ",
+      "label": "Promo worth up to",
+      "amount": "RM3,000*",
+      "conditions": "",
+      "used": 3000
+    },
+    {
+      "title": "FORTUNER",
+      "label": "Promo worth up to",
+      "amount": "RM11,000*",
+      "conditions": "",
+      "used": 11000
+    },
+    {
+      "title": "INNOVA ZENIX",
+      "label": "Promo worth up to",
+      "amount": "RM10,000*",
+      "conditions": "",
+      "used": 10000
+    },
+    {
+      "title": "INNOVA ZENIX HEV",
+      "label": "Promo worth up to",
+      "amount": "RM11,000*",
+      "conditions": "",
+      "used": 11000
+    },
+    {
+      "title": "CAMRY",
+      "label": "Promo worth up to",
+      "amount": "RM20,000*",
+      "conditions": "",
+      "used": 20000
+    },
+    {
+      "title": "CAMRY HEV",
+      "label": "Promo worth up to",
+      "amount": "RM12,000*",
+      "conditions": "",
+      "used": 12000
+    },
+    {
+      "title": "HIACE",
+      "label": "",
+      "amount": "Service Voucher*",
+      "conditions": "",
+      "used": 0
+    }
+  ],
+  "unmapped": []
+}

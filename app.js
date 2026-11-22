@@ -33,7 +33,7 @@
       phDepRM: "Deposit (RM)", phTarget: "Ansuran sasaran sebulan (RM)", phDepPct: "Deposit (%)",
       targetNote: "Masukkan bulanan yang customer mahu, app kira deposit yang perlu.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: m => `Lalai dari laman promo Toyota MY (${m}, "promo worth up to"; mungkin termasuk baucar). Ubah ikut rebate tunai sebenar dari cawangan.`,
+      rebNote: (m, d) => `Rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap hari). Boleh ubah ikut rebate tunai sebenar dari cawangan; nilai diubah tamat bila promo bulan baru keluar.`,
       depNeeded: "deposit diperlukan", noDep: m => `Tanpa deposit pun ansuran cuma ${m} sebulan.`, tooLow: "Sasaran terlalu rendah untuk varian ini.",
       perMonth: "/bulan", otr: "Harga OTR", rebate: "Rebate", afterReb: "Harga selepas rebate",
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
@@ -59,7 +59,7 @@
       depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
       salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
       salNone: "Tiada model dalam had 30% gaji. Cuba tambah deposit.",
-      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: m => `Rebate ikut laman promo Toyota MY (${m}, "promo worth up to"). Nilai yang diubah di tab Loan turut dipakai.`,
+      salReb: "Tolak rebate (auto dari laman promo Toyota MY)", salRebNote: (m, d) => `Harga sudah tolak rebate auto dari laman promo Toyota MY (${m}${d ? ", disemak " + d : ""}; dikemas kini setiap hari). Nilai yang diubah di tab Loan turut dipakai.`,
       afterRebS: "lepas rebate",
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
@@ -85,7 +85,7 @@
       phDepRM: "Down payment (RM)", phTarget: "Target monthly instalment (RM)", phDepPct: "Down payment (%)",
       targetNote: "Enter the monthly amount the customer wants; the app works out the down payment needed.",
       rebLabel: n => `Rebate ${n} (RM)`,
-      rebNote: m => `Default from Toyota MY promo page (${m}, "promo worth up to"; may include vouchers). Adjust to the actual cash rebate from your branch.`,
+      rebNote: (m, d) => `Rebate auto from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated daily). Adjust to your branch's actual cash rebate; edits expire when the next month's promo is published.`,
       depNeeded: "down payment needed", noDep: m => `Even with zero down payment the instalment is only ${m} a month.`, tooLow: "Target is too low for this variant.",
       perMonth: "/month", otr: "OTR price", rebate: "Rebate", afterReb: "Price after rebate",
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
@@ -111,7 +111,7 @@
       depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
       salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤30%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
       salNone: "No model within 30% of salary. Try a higher down payment.",
-      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: m => `Rebates from the Toyota MY promo page (${m}, "promo worth up to"). Amounts edited in the Loan tab are used too.`,
+      salReb: "Deduct rebate (auto from Toyota MY promo page)", salRebNote: (m, d) => `Prices already deduct the rebate auto-pulled from the Toyota MY promo page (${m}${d ? ", checked " + d : ""}; updated daily). Amounts edited in the Loan tab are used too.`,
       afterRebS: "after rebate",
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
@@ -127,7 +127,20 @@
     const b = $("#lang"); if (b) { b.textContent = lang === "en" ? "BM" : "EN"; b.title = t("langLbl"); }
   }
 
-  const profile = () => store.get("sa_profile", { name: "", phone: "", branch: "" });
+  // Format nombor Malaysia: 016-331 3607 · 011-1234 5678 · 03-1234 5678 · 04-123 4567
+  const fmtPhone = p => {
+    let d = String(p || "").replace(/\D/g, "");
+    if (d.startsWith("60")) d = "0" + d.slice(2); else if (d && !d.startsWith("0")) d = "0" + d;
+    const grp = r => r.length === 8 ? r.slice(0, 4) + " " + r.slice(4) : r.length === 7 ? r.slice(0, 3) + " " + r.slice(3) : r;
+    if (/^01\d{8,9}$/.test(d)) return d.slice(0, 3) + "-" + grp(d.slice(3));
+    if (/^03\d{8}$/.test(d)) return "03-" + grp(d.slice(2));
+    if (/^08[2-9]\d{6}$/.test(d)) return d.slice(0, 3) + "-" + d.slice(3, 6) + " " + d.slice(6); // Sabah/Sarawak
+
+    if (/^0[2-9]\d{6,8}$/.test(d)) return d.slice(0, 2) + "-" + grp(d.slice(2));
+    return String(p || "").trim();
+  };
+  window.__fmtPhone = fmtPhone;
+  const profile = () => { const p = store.get("sa_profile", { name: "", phone: "", branch: "" }); return { ...p, phone: fmtPhone(p.phone) }; };
   // sa_loan2: kadar lalai 2.3% (Wan, 22 Nov 2026)
   const loanPref = () => ({ mode: "pct", dep: 10, depRM: 10000, target: 1000, rate: 2.3, years: 9, ncd: 0, insIn: false, reb: false, ...store.get("sa_loan2", {}) });
 
@@ -144,12 +157,16 @@
     return { cc, gross, net, total: net * 1.08 + 10 };
   };
   const pct1 = n => (Math.round(n * 10) / 10).toString();
-  const REB = window.REBATES || { byGrade: {} };
-  const rebateOf = g => { const o = store.get("sa_reb", {}); return o[g.name] ?? REB.byGrade[g.name] ?? 0; };
+  // Rebate: rebates.json (dikemas kini harian oleh GitHub Actions dari laman promo Toyota MY); data.js = sandaran
+  let REB = window.REBATES || { byGrade: {} };
+  // Nilai yang SA ubah hanya sah untuk bulan promo yang sama
+  const rebOverrides = () => { const o = store.get("sa_reb2", {}); return o.month === REB.month ? o.values || {} : {}; };
+  const setRebOverride = (name, val) => { store.set("sa_reb2", { month: REB.month, values: { ...rebOverrides(), [name]: val } }); };
+  const rebateOf = g => rebOverrides()[g.name] ?? REB.byGrade[g.name] ?? 0;
   // Kira satu varian ikut tetapan v (rebate tolak dari harga; insurans ikut harga OTR penuh)
   const calc = (g, v) => {
     const r = v.rate / 100, n = v.years, ins = insurance(g, v.ncd), insFin = v.insIn ? ins.total : 0;
-    const reb = v.reb ? Math.min(rebateOf(g), g.price) : 0, net = g.price - reb;
+    const reb = Math.min(rebateOf(g), g.price), net = g.price - reb;
     let dep;
     if (v.mode === "rm") dep = Math.min(Math.max(0, v.depRM), net);
     else if (v.mode === "target") dep = Math.min(net, Math.max(0, net + insFin - (v.target * 12 * n) / (1 + r * n)));
@@ -217,8 +234,6 @@
           <select id="ncd">${NCDS.map(n => `<option value="${n}" ${n == pref.ncd ? "selected" : ""}>NCD ${n}%</option>`).join("")}</select>
           <label class="chk"><input type="checkbox" id="insIn" ${pref.insIn ? "checked" : ""}> ${t("insIn")}</label>
         </div>
-        <label>${t("rebH")}</label>
-        <label class="chk" style="padding:12px"><input type="checkbox" id="reb" ${pref.reb ? "checked" : ""}> ${t("rebChk")}</label>
         <div id="rebBox"></div>
       </div>
       <div class="card result" id="res"></div>
@@ -238,20 +253,17 @@
     };
     const rebInputs = picks => {
       const box = $("#rebBox");
-      if (!v.reb) { box.innerHTML = ""; box.dataset.key = ""; return; }
-      const key = picks.join(",");
+      const key = picks.join(",") + "|" + REB.month;
       if (box.dataset.key !== key) {
         box.dataset.key = key;
         box.innerHTML = [...new Set(picks)].map(i => `<label>${t("rebLabel", esc(GRADES[i].name))}</label><input class="rebv" data-g="${i}" type="number" inputmode="numeric" min="0" step="500" value="${rebateOf(GRADES[i])}">`).join("") +
-          `<p class="note" style="margin:6px 0 0">${t("rebNote", REB.month || "")}</p>`;
-        box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => {
-          const o = store.get("sa_reb", {}); o[GRADES[+inp.dataset.g].name] = Math.max(0, +inp.value || 0); store.set("sa_reb", o); update();
-        });
+          `<p class="note" style="margin:6px 0 0">${t("rebNote", REB.month || "", REB.updatedAt || "")}</p>`;
+        box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, +inp.value || 0)); update(); });
       }
     };
     const update = () => {
       const dv = +$("#depv").value || 0;
-      v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked, reb: $("#reb").checked };
+      v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked };
       if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
       store.set("sa_loan2", v);
       const picks = [...view.querySelectorAll(".gsel")].map(s => +s.value);
@@ -287,7 +299,7 @@
       depInput(); update();
     });
     depInput();
-    view.querySelectorAll(".card select, #rate, #insIn, #reb").forEach(e => e.oninput = update);
+    view.querySelectorAll(".card select, #rate, #insIn").forEach(e => e.oninput = update);
     $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "loan-poster.png")); };
     $("#share").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => shareBlob(b, "loan-poster.png")); };
     update();
@@ -479,7 +491,7 @@
   function brosur() {
     view.innerHTML = `
       <h2>${t("broH")}</h2><p class="sub">${t("broSub")}</p>
-      <div class="card"><label>${t("custWA")}</label><input id="cust" inputmode="tel" placeholder="${t("eg")} 0123456789"></div>
+      <div class="card"><label>${t("custWA")}</label><input id="cust" inputmode="tel" placeholder="${t("eg")} 012-345 6789" onblur="this.value=this.value&&window.__fmtPhone(this.value)"></div>
       <div class="list">${CARS.map((c, i) => `
         <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type} · ${t("from")} ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
         <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">Link</button></div></div>`).join("")}</div>
@@ -514,16 +526,15 @@
           <div><label>${t("depPct")}</label><input id="dep" type="number" value="${pref.dep}"></div>
           <div><label>${t("ratePct")}</label><input id="rate" type="number" step="0.01" value="${pref.rate}"></div>
         </div>
-        <label class="chk" style="padding:12px;margin-top:12px"><input type="checkbox" id="sreb" ${store.get("sa_gaji_reb", true) ? "checked" : ""}> ${t("salReb")}</label>
       </div>
       <div class="list" id="out"></div>
       <p class="note">${t("salNote", pref.years)}</p>
-      <p class="note">${t("salRebNote", REB.month || "")}</p>`;
+      <p class="note">${t("salRebNote", REB.month || "", REB.updatedAt || "")}</p>`;
     const run = () => {
-      const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0, useReb = $("#sreb").checked;
-      store.set("sa_gaji", sal); store.set("sa_gaji_reb", useReb);
-      // Rebate auto: nilai laman promo Toyota MY (atau nilai yang diubah di tab Loan)
-      const list = GRADES.map((g, i) => { const reb = useReb ? Math.min(rebateOf(g), g.price) : 0, net = g.price - reb; return { g, i, reb, net, m: monthly(net, dep, rate, pref.years) }; })
+      const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0;
+      store.set("sa_gaji", sal);
+      // Rebate sentiasa ditolak: nilai laman promo Toyota MY (atau nilai yang diubah di tab Loan bulan ini)
+      const list = GRADES.map((g, i) => { const reb = Math.min(rebateOf(g), g.price), net = g.price - reb; return { g, i, reb, net, m: monthly(net, dep, rate, pref.years) }; })
         .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.30).sort((a, b) => b.net - a.net);
       const tags = t("tags");
       $("#out").innerHTML = list.length ? list.map(x => {
@@ -531,7 +542,7 @@
         const price = x.reb ? `<s>${RM(x.g.price)}</s> ${RM(x.net)} ${t("afterRebS")}` : RM(x.g.price);
         return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${price} · ${Math.round(x.r * 100)}% ${t("ofSal")}</small>${x.reb ? `<small style="display:block;color:var(--green);font-weight:700">Rebate -${RM(x.reb)}</small>` : ""}</div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${tg[0]}">${tg[1]}</span></div></a>`;
       }).join("") : `<div class="card">${t("salNone")}</div>`;
-      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate, reb: useReb }); });
+      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); });
     };
     view.querySelectorAll("input").forEach(e => e.oninput = run); run();
   }
@@ -551,7 +562,8 @@
       </div>
       <p class="note">${t("accNote")}</p>`;
     $("#lsel").querySelectorAll("button").forEach(b => b.onclick = () => setLang(b.dataset.l));
-    $("#sv").onclick = () => { store.set("sa_profile", { name: $("#n").value.trim(), phone: $("#ph").value.trim(), branch: $("#br").value.trim() }); toast(t("savedProf")); };
+    $("#ph").onblur = () => { $("#ph").value = fmtPhone($("#ph").value); };
+    $("#sv").onclick = () => { const ph = fmtPhone($("#ph").value); $("#ph").value = ph; store.set("sa_profile", { name: $("#n").value.trim(), phone: ph, branch: $("#br").value.trim() }); toast(t("savedProf")); };
   }
 
   // ---------- router ----------
@@ -567,4 +579,11 @@
   addEventListener("hashchange", route);
   applyChrome();
   route();
+  // Ambil rebate terkini (rebates.json) tanpa cache; papar semula jika berbeza
+  fetch("rebates.json?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.byGrade) return;
+    const changed = JSON.stringify(j.byGrade) !== JSON.stringify(REB.byGrade) || j.month !== REB.month;
+    REB = j;
+    if (changed && /^#?(loan|gaji)/.test(location.hash.slice(1))) route();
+  }).catch(() => {});
 })();
