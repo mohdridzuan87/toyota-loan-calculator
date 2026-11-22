@@ -153,8 +153,8 @@
   };
   window.__fmtPhone = fmtPhone;
   const profile = () => { const p = store.get("sa_profile", { name: "", phone: "", branch: "" }); return { ...p, phone: fmtPhone(p.phone) }; };
-  // sa_loan2: kadar lalai 2.3% (Wan, 22 Nov 2026)
-  const loanPref = () => ({ mode: "pct", dep: 10, depRM: 10000, target: 1000, rate: 2.3, years: 9, ncd: 0, insIn: false, reb: false, ...store.get("sa_loan2", {}) });
+  // sa_loan3: kadar lalai 2.3% (Wan, 22 Nov 2026)
+  const loanPref = () => ({ mode: "pct", dep: 0, depRM: 10000, target: 1000, rate: 2.3, years: 9, ncd: 0, insIn: false, reb: false, ...store.get("sa_loan3", {}) });
 
   // Anggaran insurans komprehensif (tarif Semenanjung, kereta persendirian):
   // premium asas ikut cc untuk RM1,000 pertama + RM26 setiap RM1,000 seterusnya, tolak NCD, + SST 8% + duti setem RM10.
@@ -324,7 +324,7 @@
       const dv = parseMoney($("#depv").value);
       v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked };
       if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
-      store.set("sa_loan2", v);
+      store.set("sa_loan3", v);
       const picks = [...view.querySelectorAll(".gsel")].map(s => +s.value);
       store.set("sa_sel", sel.map((x, k) => picks[k] ?? x));
       rebInputs(picks);
@@ -742,7 +742,7 @@
         const price = x.reb ? `<s>${RM(x.g.price)}</s> ${RM(x.net)} ${t("afterRebS")}` : RM(x.g.price);
         return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${price} · ${Math.round(x.r * 100)}% ${t("ofSal")}</small>${x.reb ? `<small style="display:block;color:var(--green);font-weight:700">Rebate -${RM(x.reb)}</small>` : ""}</div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${tg[0]}">${tg[1]}</span></div></a>`;
       }).join("") : `<div class="card">${t("salNone")}</div>`;
-      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); });
+      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan3", { ...pref, mode: "pct", dep, rate }); });
     };
     view.querySelectorAll("input").forEach(e => e.oninput = run); run();
   }
