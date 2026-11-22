@@ -31,3 +31,22 @@ window.CARS = [
   { id: "vellfire", name: "Vellfire", type: "MPV", img: "assets/cars/vellfire.jpg", url: U + "vellfire.html",
     grades: [["Vellfire 2.5", "Petrol", 448000], ["Vellfire 2.5 HEV Executive Lounge", "HEV", 549900]] }
 ];
+
+// E-brochure rasmi (salinan dalam brochures/, sumber asal di bawah). Dikemas kini 22 Nov 2026.
+const BR = "https://www.toyota.com.my/content/dam/malaysia/model-brochures/brochures/";
+window.BROCHURES = {
+  "vios": ["vios.pdf", BR + "vios/april-2026/toyota-vios-e-brochure.pdf"],
+  "yaris": ["yaris.pdf", BR + "yaris/november-2026/v4/yaris-e-brochure.pdf"],
+  "yaris-cross": ["yaris-cross.pdf", BR + "yaris-cross/october-2026/all-new-yaris-cross-hev-e-brochure.pdf"],
+  "corolla": ["corolla.pdf", BR + "corolla/march-2026/v3/corolla-e-brochure.pdf"],
+  "corolla-cross": ["corolla-cross.pdf", BR + "corolla-cross-hev/2026/october/corolla-cross-hev-e-brochure.pdf"],
+  "camry": ["camry.pdf", BR + "camry-hev/2025/v1/Camry-HEV-Brochure.pdf"],
+  "veloz": ["veloz.pdf", BR + "veloz/november-2026/veloz-e-brochure.pdf"],
+  "zenix": ["zenix.pdf", BR + "august-2025/innova-zenix/v2/Innova-Zenix-e-Brochure.pdf"],
+  "fortuner": ["fortuner.pdf", BR + "fortuner/2026/july/v2/fortuner-e-brochure.pdf"],
+  "hilux": ["hilux.pdf", BR + "hilux/2026/october/hilux-gr-s-rogue-e-brochure.pdf"],
+  "hiace": ["hiace.pdf", BR + "hiace/october-2026/hiace-e-brochure.pdf"],
+  "harrier": ["harrier.pdf", BR + "harrier-hev/october-2026/v4/harrier-hev-e-brochure.pdf"],
+  "alphard": ["alphard-vellfire.pdf", BR + "alphard-and-vellfire/november-2026/vellfire-alphard-e-brochure.pdf"],
+  "vellfire": ["alphard-vellfire.pdf", BR + "alphard-and-vellfire/november-2026/vellfire-alphard-e-brochure.pdf"]
+};

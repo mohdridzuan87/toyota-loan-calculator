@@ -3,7 +3,7 @@
 Alat percuma untuk Sales Advisor Toyota (static, GitHub Pages):
 
 - **Loan poster** – kira ansuran (kadar flat) dan jana poster PNG 1080x1350 siap nama & nombor SA; mod banding 2 varian.
-- **Brosur** – hantar pautan rasmi toyota.com.my + senarai harga ke WhatsApp customer.
+- **Brosur** – e-brochure PDF rasmi (salinan dalam `brochures/`) dicop jalur nama & nombor SA (boleh ditekan ke WhatsApp) guna pdf-lib, kongsi terus; atau hantar pautan + harga ke WhatsApp customer. Sumber PDF asal dalam `data.js` (`BROCHURES`).
 - **Ikut gaji** – masukkan gaji, dapat senarai varian dalam had 20/25/30% gaji.
 - **Akaun** – nama, nombor, cawangan disimpan dalam pelayar sahaja.
 

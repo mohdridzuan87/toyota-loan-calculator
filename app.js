@@ -159,7 +159,7 @@
     ctx.fillText("Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my", W / 2, 1332);
   }
 
-  function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast("Poster dimuat turun"); }
+  function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast("Fail dimuat turun"); }
   async function shareBlob(blob, name) {
     const file = new File([blob], name, { type: "image/png" });
     if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch {} }
@@ -167,21 +167,97 @@
   }
 
   // ---------- BROSUR ----------
+  const BROCH = window.BROCHURES || {};
+  let pdfLibP;
+  const loadPdfLib = () => pdfLibP || (pdfLibP = new Promise((res, rej) => {
+    if (window.PDFLib) return res(window.PDFLib);
+    const s = document.createElement("script"); s.src = "vendor/pdf-lib.min.js";
+    s.onload = () => res(window.PDFLib); s.onerror = () => { pdfLibP = null; rej(new Error("pdf-lib gagal dimuat")); };
+    document.head.appendChild(s);
+  }));
+  // Helvetica hanya sokong aksara Latin (WinAnsi)
+  const latin = s => String(s || "").replace(/[^\x20-\x7E -ÿ]/g, "").trim();
+
+  async function stampBrochure(car) {
+    const p = profile(), [file] = BROCH[car.id];
+    const [L, bytes] = await Promise.all([loadPdfLib(), fetch("brochures/" + file).then(r => { if (!r.ok) throw new Error("PDF tiada"); return r.arrayBuffer(); })]);
+    const { PDFDocument, StandardFonts, rgb, PDFString, PDFName } = L;
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    const bold = await doc.embedFont(StandardFonts.HelveticaBold), reg = await doc.embedFont(StandardFonts.Helvetica);
+    const name = latin(p.name), phone = latin(p.phone), branch = latin(p.branch);
+    const wa = "https://wa.me/" + waNum(p.phone);
+    const link = (page, rect) => {
+      const annot = doc.context.register(doc.context.obj({
+        Type: "Annot", Subtype: "Link", Rect: rect, Border: [0, 0, 0],
+        A: { Type: "Action", S: "URI", URI: PDFString.of(wa) }
+      }));
+      page.node.addAnnot(annot);
+    };
+    const red = rgb(0.92, 0.04, 0.12), white = rgb(1, 1, 1);
+    doc.getPages().forEach((page, i) => {
+      const { width: w, height: h } = page.getSize();
+      const u = Math.min(w, h);
+      if (i === 0) {
+        // jalur merah di bawah kulit depan
+        const bh = u * 0.11, pad = u * 0.04;
+        page.drawRectangle({ x: 0, y: 0, width: w, height: bh, color: red });
+        const ns = bh * 0.3, ss = bh * 0.17, ps = bh * 0.32;
+        page.drawText(name, { x: pad, y: bh * 0.52, size: ns, font: bold, color: white });
+        page.drawText(`Sales Advisor Toyota${branch ? " · " + branch : ""}`, { x: pad, y: bh * 0.22, size: ss, font: reg, color: white });
+        const pw = bold.widthOfTextAtSize(phone, ps);
+        page.drawText(phone, { x: w - pad - pw, y: bh * 0.44, size: ps, font: bold, color: white });
+        const tip = "Tekan untuk WhatsApp";
+        page.drawText(tip, { x: w - pad - reg.widthOfTextAtSize(tip, ss), y: bh * 0.18, size: ss, font: reg, color: white });
+        link(page, [0, 0, w, bh]);
+      } else {
+        // label kecil di setiap muka surat
+        const fs = u * 0.016, txt = `${name} · ${phone} · WhatsApp`;
+        const tw = bold.widthOfTextAtSize(txt, fs), px = fs * 0.8, bw = tw + px * 2, bh = fs * 2;
+        const x = w - bw - fs, y = fs;
+        page.drawRectangle({ x, y, width: bw, height: bh, color: red, opacity: 0.92 });
+        page.drawText(txt, { x: x + px, y: y + fs * 0.65, size: fs, font: bold, color: white });
+        link(page, [x, y, x + bw, y + bh]);
+      }
+    });
+    doc.setTitle(`Toyota ${car.name} e-brochure`);
+    doc.setAuthor(`${name} · Sales Advisor Toyota`);
+    const out = await doc.save();
+    const fname = `Toyota-${car.name.replace(/\s+/g, "-")}-e-brochure-${(name.split(" ")[0] || "SA").replace(/[^\w-]/g, "")}.pdf`;
+    return new File([out], fname, { type: "application/pdf" });
+  }
+
+  function brosurMsg(c, withLink) {
+    const p = profile();
+    const harga = c.grades.map(g => `• ${g[0]}: ${RM(g[2])}`).join("\n");
+    return `Hi! Saya ${p.name}, Sales Advisor Toyota${p.branch ? " " + p.branch : ""}.\n\n` +
+      (withLink ? `Ini e-brochure rasmi Toyota ${c.name}:\n${BROCH[c.id] ? BROCH[c.id][1] : c.url}\n\n` : `Ini e-brochure rasmi Toyota ${c.name}.\n\n`) +
+      `Harga OTR (Semenanjung, tanpa insurans):\n${harga}\n\n*Harga boleh berubah bila-bila masa.\nNak test drive atau kira loan? Boleh message saya: ${p.phone}`;
+  }
+
   function brosur() {
     view.innerHTML = `
-      <h2>Brosur & info rasmi</h2><p class="sub">Pilih model, mesej WhatsApp siap dengan pautan rasmi Toyota, nama & nombor awak.</p>
-      <div class="card"><label>Nombor WhatsApp customer (pilihan)</label><input id="cust" inputmode="tel" placeholder="cth. 0123456789"></div>
+      <h2>Brosur rasmi</h2><p class="sub"><b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Link</b>: hantar pautan + harga ke nombor customer.</p>
+      <div class="card"><label>Nombor WhatsApp customer (untuk Link)</label><input id="cust" inputmode="tel" placeholder="cth. 0123456789"></div>
       <div class="list">${CARS.map((c, i) => `
-        <div class="car"><img src="${c.img}" alt="${c.name}"><div class="t"><b>${c.name}</b><small>${c.type} · dari ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
-        <button class="btn wa" data-i="${i}">Hantar</button></div>`).join("")}</div>
-      <p class="note">Pautan membuka laman model rasmi toyota.com.my (e-brochure & spesifikasi). Harga OTR Semenanjung, tanpa insurans.</p>`;
+        <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type} · dari ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
+        <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">Link</button></div></div>`).join("")}</div>
+      <p class="note">E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.</p>`;
     view.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
       if (!needProfile()) return;
-      const c = CARS[+b.dataset.i], p = profile();
-      const harga = c.grades.map(g => `• ${g[0]}: ${RM(g[2])}`).join("\n");
-      const msg = `Hi! Saya ${p.name}, Sales Advisor Toyota${p.branch ? " " + p.branch : ""}.\n\nIni info & e-brochure rasmi Toyota ${c.name}:\n${c.url}\n\nHarga OTR (Semenanjung, tanpa insurans):\n${harga}\n\n*Harga boleh berubah bila-bila masa.\nNak test drive atau kira loan? Boleh message saya: ${p.phone}`;
-      const n = waNum($("#cust").value);
-      window.open(`https://wa.me/${n}?text=${encodeURIComponent(msg)}`, "_blank");
+      const c = CARS[+b.dataset.i];
+      window.open(`https://wa.me/${waNum($("#cust").value)}?text=${encodeURIComponent(brosurMsg(c, true))}`, "_blank");
+    });
+    view.querySelectorAll("[data-pdf]").forEach(b => b.onclick = async () => {
+      if (!needProfile() || b.disabled) return;
+      const c = CARS[+b.dataset.pdf], label = b.textContent;
+      b.disabled = true; b.textContent = "…"; toast("Menyediakan brochure…");
+      try {
+        const f = await stampBrochure(c);
+        if (navigator.canShare && navigator.canShare({ files: [f] })) {
+          try { await navigator.share({ files: [f], title: f.name, text: brosurMsg(c, false) }); } catch {}
+        } else saveBlob(f, f.name);
+      } catch (e) { toast("Gagal: " + e.message); }
+      b.disabled = false; b.textContent = label;
     });
   }
 
