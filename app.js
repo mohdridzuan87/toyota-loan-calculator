@@ -42,6 +42,8 @@
       insNote: "Insurans: anggaran premium komprehensif (tarif Semenanjung, ikut cc & harga, termasuk SST 8% + duti setem RM10). Harga sebenar ikut syarikat insurans.",
       pCmp: n => `PERBANDINGAN LOAN · ${n} VARIAN`, pPkg: "PAKEJ LOAN TOYOTA", pFrom: "Ansuran bulanan dari", pMonthly: "Ansuran sebulan",
       pAfter: "Selepas rebate", pAfterS: "Lepas rebate", pIns: " + insurans", pInsS: " + ins.", pTenure: "Tempoh", pRate: "Kadar",
+      bPrice: "Harga kereta (OTR)", bAfter: "Harga selepas rebate", bIns: (n, l) => `Insurans anggaran (NCD ${n}%)${l ? " · dalam loan" : " · bayar tunai"}`,
+      bInsS: "Insurans", bLoan: "Jumlah loan (anggaran)", bRate: "Kadar faedah · tempoh", bTitle: "PECAHAN HARGA",
       pPerMonth: " /bulan", pDiff: m => `beza ${m} sebulan`, pDiff2: m => `Beza ${m} sebulan`, pName: "Nama awak",
       saved: "Fail dimuat turun", noShare: "Telefon tak sokong kongsi terus — fail dimuat turun",
       tapWA: "Tekan untuk WhatsApp",
@@ -92,6 +94,8 @@
       insNote: "Insurance: estimated comprehensive premium (Peninsular tariff, by cc & price, incl. 8% SST + RM10 stamp duty). Actual price depends on the insurer.",
       pCmp: n => `LOAN COMPARISON · ${n} VARIANTS`, pPkg: "TOYOTA LOAN PACKAGE", pFrom: "Monthly instalment from", pMonthly: "Monthly instalment",
       pAfter: "After rebate", pAfterS: "After rebate", pIns: " + insurance", pInsS: " + ins.", pTenure: "Tenure", pRate: "Rate",
+      bPrice: "Car price (OTR)", bAfter: "Price after rebate", bIns: (n, l) => `Insurance est. (NCD ${n}%)${l ? " · in loan" : " · paid upfront"}`,
+      bInsS: "Insurance", bLoan: "Total loan (est.)", bRate: "Interest rate · tenure", bTitle: "PRICE BREAKDOWN",
       pPerMonth: " /month", pDiff: m => `${m} difference per month`, pDiff2: m => `${m} difference per month`, pName: "Your name",
       saved: "File downloaded", noShare: "This phone can't share directly — file downloaded",
       tapWA: "Tap to WhatsApp",
@@ -316,20 +320,30 @@
     const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0b1b3a"); g.addColorStop(1, "#16346e");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     ctx.textAlign = "center"; ctx.fillStyle = "#f5c542"; F(800, 34); ctx.fillText(rows.length > 1 ? t("pCmp", rows.length) : t("pPkg"), W / 2, rows.length > 2 ? 88 : 96);
-    const priceLbl = (r, short) => (r.reb ? t(short ? "pAfterS" : "pAfter") : (short && rows.length > 2 ? "OTR" : t("otr"))) + (r.insFin ? t(short ? "pInsS" : "pIns") : "") + (rows.length > 2 ? "" : "*");
 
     if (rows.length === 1) {
       const r = rows[0];
-      ctx.fillStyle = "#fff"; fit(ctx, r.g.name.toUpperCase(), 960, 64); ctx.fillText(r.g.name.toUpperCase(), W / 2, 176);
-      rr(ctx, 60, 214, 960, 500, 32); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[0], 60, 214, 960, 500); ctx.restore();
-      ctx.fillStyle = "#fff"; F(600, 34); ctx.fillText(t("pFrom"), W / 2, 772);
-      ctx.fillStyle = "#f5c542"; F(800, 124); ctx.fillText(RM(r.m), W / 2, 884);
-      const items = [[priceLbl(r, false), RM(r.net + r.insFin)], [`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("pTenure"), t("yrs", v.years)], [t("pRate"), `${v.rate}%`]];
-      items.forEach(([k, val], i) => {
-        const x = 60 + (i % 2) * 490, y = 920 + Math.floor(i / 2) * 102;
-        rr(ctx, x, y, 470, 90, 20); ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fill();
-        ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 420, 24, 600); ctx.fillText(k, x + 26, y + 36);
-        ctx.fillStyle = "#fff"; F(800, 34); ctx.fillText(val, x + 26, y + 76);
+      ctx.fillStyle = "#fff"; fit(ctx, r.g.name.toUpperCase(), 960, 58); ctx.fillText(r.g.name.toUpperCase(), W / 2, 158);
+      rr(ctx, 60, 186, 960, 330, 28); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[0], 60, 186, 960, 330); ctx.restore();
+      // panel ansuran
+      rr(ctx, 60, 534, 960, 126, 24); ctx.fillStyle = "rgba(245,197,66,.15)"; ctx.fill();
+      ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(600, 28); ctx.fillText(t("pFrom"), 90, 578);
+      ctx.fillStyle = "#f5c542"; F(800, 72); ctx.fillText(RM(r.m), 90, 644);
+      const mw = ctx.measureText(RM(r.m)).width; F(700, 30); ctx.fillText(t("pPerMonth"), 96 + mw, 644);
+      ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 34); ctx.fillText(t("yrs", v.years), 990, 590);
+      ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(`@ ${v.rate}%`, 990, 634);
+      // pecahan harga
+      const rowsB = [[t("bPrice"), RM(r.g.price)]];
+      if (r.reb) rowsB.push([t("rebate"), "-" + RM(r.reb), "#4ade80"], [t("bAfter"), RM(r.net)]);
+      rowsB.push([`${t("deposit")} (${pct1(r.depPct)}%)`, RM(r.dep)], [t("bIns", v.ncd, v.insIn), RM(r.ins.total)],
+        [t("bLoan"), RM(r.fin), "#f5c542"], [t("bRate"), `${v.rate}% · ${t("yrs", v.years)}`]);
+      const y0 = 680, rh = Math.min(64, 432 / rowsB.length);
+      rr(ctx, 60, y0, 960, rh * rowsB.length + 12, 24); ctx.fillStyle = "rgba(255,255,255,.07)"; ctx.fill();
+      rowsB.forEach(([k, val, col], i) => {
+        const y = y0 + 6 + i * rh, base = y + rh * 0.64;
+        if (i) { ctx.fillStyle = "rgba(255,255,255,.12)"; ctx.fillRect(90, y, 900, 1); }
+        ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 560, 26, 600); ctx.fillText(k, 90, base);
+        ctx.textAlign = "right"; ctx.fillStyle = col || "#fff"; F(800, 30); ctx.fillText(val, 990, base);
       });
     } else if (rows.length > 2) {
       // 3-4 varian: kad baris (gambar kiri, angka kanan); kad ansuran terendah diserlahkan
@@ -344,8 +358,12 @@
         const mm = RM(r.m) + t("pPerMonth");
         ctx.fillStyle = "#f5c542"; fit(ctx, mm, tw, sz(68 * Math.min(1, s + .15))); ctx.fillText(mm, tx, y + ch * 0.56);
         ctx.fillStyle = "#b9c6e4";
-        const l1 = `${priceLbl(r, true)} ${RM(r.net + r.insFin)}`, l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · Loan ${RM(r.fin)}`;
-        fit(ctx, l2, tw, sz(24 * Math.min(1, s + .2)), 600); ctx.fillText(l1, tx, y + ch * 0.75);
+        const l1 = `OTR ${RM(r.g.price)}${r.reb ? ` · ${t("rebate")} -${RM(r.reb)}` : ""} · ${t("bInsS")} ${RM(r.ins.total)}${r.insFin ? t("inLoan") : ""}`;
+        const l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · Loan ${RM(r.fin)}`;
+        const fs = sz(24 * Math.min(1, s + .2));
+        const fsz = txt => { let z = fs; F(600, z); while (ctx.measureText(txt).width > tw && z > 12) F(600, --z); return z; };
+        F(600, Math.min(fsz(l1), fsz(l2))); // saiz sama untuk kedua-dua baris
+        ctx.fillText(l1, tx, y + ch * 0.75);
         ctx.fillText(l2, tx, y + ch * 0.75 + sz(30 * Math.min(1, s + .2)));
       });
       const ms = rows.map(r => r.m);
@@ -360,9 +378,13 @@
         wrap(ctx, r.g.name, x + w / 2, 512, w - 40, 42);
         ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(t("pMonthly"), x + w / 2, 640);
         ctx.fillStyle = "#f5c542"; fit(ctx, RM(r.m), w - 40, 80); ctx.fillText(RM(r.m), x + w / 2, 726);
-        [[priceLbl(r, true), RM(r.net + r.insFin)], [`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], ["Loan", RM(r.fin)]].forEach(([k, val], j) => {
-          const y = 800 + j * 60; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 250, 24, 600); ctx.fillText(k, x + 30, y);
-          ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 26); ctx.fillText(val, x + w - 30, y);
+        const br = [["OTR", RM(r.g.price)]];
+        if (rows.some(q => q.reb)) br.push([t("rebate"), r.reb ? "-" + RM(r.reb) : "-", "#4ade80"]);
+        br.push([`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("bInsS") + (r.insFin ? t("inLoan") : ""), RM(r.ins.total)], ["Loan", RM(r.fin), "#f5c542"]);
+        const step = br.length > 4 ? 44 : 52;
+        br.forEach(([k, val, col], j) => {
+          const y = 782 + j * step; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 250, 23, 600); ctx.fillText(k, x + 30, y);
+          ctx.textAlign = "right"; ctx.fillStyle = col || "#fff"; F(800, 25); ctx.fillText(val, x + w - 30, y);
         });
       });
       ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(700, 34);
