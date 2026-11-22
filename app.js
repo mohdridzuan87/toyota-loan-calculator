@@ -68,7 +68,7 @@
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
       accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
       cTitle: "ANGGARAN LOAN", cSub: "Bandingkan ansuran bulanan setiap varian", cMixed: "Anggaran Loan Toyota",
-      cPrice: "Harga kenderaan (OTR)", cReb: "Rebate", cDep: "Deposit (selepas rebate)", cIns: "Insurans (anggaran)", cLoan: "Jumlah loan (anggaran)", cRate: "Kadar faedah (anggaran)",
+      cPrice: "Harga kenderaan (OTR)", cColour: "Harga warna premium", cReb: "Rebate", cDep: "Deposit (selepas rebate)", cIns: "Insurans (anggaran)", cLoan: "Jumlah loan (anggaran)", cRate: "Kadar faedah (anggaran)",
       cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
       fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
       pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
@@ -129,7 +129,7 @@
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
       accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
       cTitle: "LOAN ESTIMATE", cSub: "Compare the monthly instalment of each variant", cMixed: "Toyota Loan Estimate",
-      cPrice: "Vehicle price (OTR)", cReb: "Rebate", cDep: "Down payment (after rebate)", cIns: "Insurance (est.)", cLoan: "Loan amount (est.)", cRate: "Interest rate (est.)",
+      cPrice: "Vehicle price (OTR)", cColour: "Premium colour price", cReb: "Rebate", cDep: "Down payment (after rebate)", cIns: "Insurance (est.)", cLoan: "Loan amount (est.)", cRate: "Interest rate (est.)",
       cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
       fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
       pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
@@ -376,8 +376,8 @@
              ${r.dep >= r.net && r.net > 0 ? `<p class="note" style="margin:2px 0 6px">${t("tooLow")}</p>` : ""}`
           : `<div class="k">${esc(r.g.name)}</div><div class="v">${RM(r.m)}${sm} ${t("perMonth")}</small></div>`;
         return `<div class="res">${head}
-          ${r.g.colour ? `<div class="kv"><span>${t("colLabel")}</span><span>${esc(r.g.colour.name)}${r.g.colour.price ? " (+" + RM(r.g.colour.price) + ")" : ""}</span></div>` : ""}
-          <div class="kv"><span>${t("otr")}</span><span>${RM(r.g.price)}</span></div>
+          <div class="kv"><span>${t("otr")}</span><span>${RM(r.g.basePrice != null ? r.g.basePrice : r.g.price)}</span></div>
+          ${r.g.colour && r.g.colour.price ? `<div class="kv"><span>${t("colLabel")}: ${esc(r.g.colour.name)}</span><span>+${RM(r.g.colour.price)}</span></div>` : ""}
           ${r.reb ? `<div class="kv"><span>${t("rebate")}</span><span>-${RM(r.reb)}</span></div><div class="kv"><span>${t("afterReb")}</span><b>${RM(r.net)}</b></div>` : ""}
           <div class="kv"><span>${t("insEst", v.ncd)}${v.insIn ? t("inLoan") : ""}</span><span>${RM(r.ins.total)}</span></div>
           <div class="kv"><span>${t("deposit")} ${pct1(r.depPct)}%</span><span>${RM(r.dep)}</span></div>
@@ -518,6 +518,7 @@
     let cw = (W - pad * 2 - gap * (L.cols - 1)) / L.cols, ch = (areaBot - areaTop - gap * (L.rows - 1)) / L.rows;
     if (rows.length === 1) cw = Math.min(cw, 1100);
     const k = Math.min(cw / 900, ch / 1150);
+    const colRow = rows.some(q => q.g.colour && q.g.colour.price > 0); // baris harga warna dalam jadual (semua kad sama tinggi)
     rows.forEach((r, i) => {
       const col = i % L.cols, row = Math.floor(i / L.cols);
       const x = rows.length === 1 ? (W - cw) / 2 : pad + col * (cw + gap), y = areaTop + row * (ch + gap);
@@ -538,7 +539,7 @@
       const nx = bcx + br + 26 * k, nmax = x + cw - nx - 28 * k;
       ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
-      const FIX = 690 * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
+      const FIX = (690 + (colRow ? 54 : 0)) * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
       if (!(r.g.colour && r.g.colour.img)) { // gambar warna sudah ada bayang sendiri
         ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
         ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
@@ -556,8 +557,11 @@
         ctx.textAlign = "left"; ctx.fillStyle = NAVY; F(700, fz); ctx.fillText(lab, cx0 + rc + 14 * k, cy0 + fz * .34);
       }
       // jadual berselang warna
+      const cPrice = r.g.colour && r.g.colour.price > 0 ? r.g.colour.price : 0;
       const rowsT = [
-        [t("cPrice"), RM(r.g.price)], [t("cReb"), RM(r.reb)], [t("cDep"), RM(r.dep)],
+        [t("cPrice"), RM(r.g.basePrice != null ? r.g.basePrice : r.g.price)],
+        ...(colRow ? [[t("cColour"), cPrice ? "+" + RM(cPrice) : "-"]] : []),
+        [t("cReb"), RM(r.reb)], [t("cDep"), RM(r.dep)],
         [t("cIns") + (v.ncd ? " · NCD " + v.ncd + "%" : ""), RM(r.ins.total)], [t("cLoan"), RM(r.fin), "hi"], [t("cRate"), v.rate + "%"]
       ];
       const tx = x + 32 * k, tr = x + cw - 32 * k, ty = imgTop + imgH, rh = 54 * k;
