@@ -64,11 +64,11 @@
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
       accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
-      cTitle: "PENGIRAAN LOAN KERETA", cSub: "Pilih varian yang sesuai dengan awak", cMixed: "Perbandingan Loan Toyota",
-      cPrice: "Harga Kereta", cReb: "Rebate", cDep: "Deposit selepas Rebate", cIns: "Insurans (Anggaran)", cLoan: "Jumlah Loan (Anggaran)", cRate: "Kadar Faedah (Anggaran)",
-      cLow: "Bulanan Terendah", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
-      fElig: "Nak semak kelayakan? Jom semak hari ini sementara tawaran masih ada.", fContact: "Hubungi saya untuk semakan kelayakan percuma", fWA: ["WhatsApp Saya", "Sekarang"],
-      pDisc: "Anggaran tertakluk pada terma dan syarat. Kadar faedah boleh berubah. Harga boleh berubah bila-bila masa; harga Semenanjung Malaysia sahaja.",
+      cTitle: "ANGGARAN LOAN", cSub: "Bandingkan ansuran bulanan setiap varian", cMixed: "Anggaran Loan Toyota",
+      cPrice: "Harga kenderaan (OTR)", cReb: "Rebate", cDep: "Deposit (selepas rebate)", cIns: "Insurans (anggaran)", cLoan: "Jumlah loan (anggaran)", cRate: "Kadar faedah (anggaran)",
+      cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
+      fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
+      pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
       photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", photoDel: "Buang gambar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
@@ -122,11 +122,11 @@
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
       accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
-      cTitle: "CAR LOAN CALCULATION", cSub: "Choose the variant that suits you", cMixed: "Toyota Loan Comparison",
-      cPrice: "Car Price", cReb: "Rebate", cDep: "Downpayment after Rebate", cIns: "Insurance (Est.)", cLoan: "Total Loan (Est.)", cRate: "Interest Rate (Est.)",
-      cLow: "Lowest Monthly", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
-      fElig: "Want to check your eligibility? Let's do it today while this offer lasts.", fContact: "Contact me for a free eligibility check", fWA: ["WhatsApp", "Me Now"],
-      pDisc: "Estimates subject to terms & conditions. Interest rate subject to change. Prices may change at any time; Peninsular Malaysia prices only.",
+      cTitle: "LOAN ESTIMATE", cSub: "Compare the monthly instalment of each variant", cMixed: "Toyota Loan Estimate",
+      cPrice: "Vehicle price (OTR)", cReb: "Rebate", cDep: "Down payment (after rebate)", cIns: "Insurance (est.)", cLoan: "Loan amount (est.)", cRate: "Interest rate (est.)",
+      cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
+      fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
+      pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
       photo: "Profile photo (for posters)", photoAdd: "Choose photo", photoDel: "Remove photo",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
@@ -381,27 +381,28 @@
     const ctx = cv.getContext("2d");
     const F = (w, s, it) => ctx.font = (it ? "italic " : "") + w + " " + Math.round(s) + 'px "Plus Jakarta Sans", sans-serif';
     const fitF = (text, maxW, size, w, it) => { let z = size; F(w, z, it); while (ctx.measureText(text).width > maxW && z > 8) F(w, --z, it); return z; };
+    const GOLD = "#f5c542", SOFT = "#b9c6e4", PANEL = "#f2f5fa";
 
-    // ---- latar: kelabu cerah + garis serong halus + sapuan merah
-    const bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, "#f7f8fa"); bg.addColorStop(1, "#e9ecf1");
+    // ---- latar: navy gelap + jalur serong halus
+    const bg = ctx.createLinearGradient(0, 0, 0, H); bg.addColorStop(0, "#0a1733"); bg.addColorStop(1, "#15336a");
     ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
-    ctx.save(); ctx.globalAlpha = .5; ctx.strokeStyle = "#fff"; ctx.lineWidth = 3;
-    for (let i = -H; i < W; i += 90) { ctx.beginPath(); ctx.moveTo(i, H); ctx.lineTo(i + H * .9, 0); ctx.stroke(); }
+    ctx.save(); ctx.strokeStyle = "rgba(255,255,255,.045)"; ctx.lineWidth = 34;
+    for (let i = -H; i < W; i += 150) { ctx.beginPath(); ctx.moveTo(i, H); ctx.lineTo(i + H * .6, 0); ctx.stroke(); }
     ctx.restore();
-    ctx.strokeStyle = RED; ctx.lineWidth = 5;
-    ctx.beginPath(); ctx.moveTo(-20, H * .7); ctx.quadraticCurveTo(W * .18, H * .76, W * .32, H * .8); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(W * .82, H - 6); ctx.quadraticCurveTo(W * .92, H * .985, W + 20, H * .955); ctx.stroke();
 
     // ---- kepala
     const hs = L.hs, pad = 60 * Math.max(hs, .7);
+    // jalur merah serong di penjuru kanan atas + perkataan TOYOTA
+    ctx.fillStyle = RED; ctx.beginPath(); ctx.moveTo(W - 470 * hs, 0); ctx.lineTo(W, 0); ctx.lineTo(W, 150 * hs); ctx.lineTo(W - 530 * hs, 150 * hs); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(W - 500 * hs, 0); ctx.lineTo(W - 486 * hs, 0); ctx.lineTo(W - 546 * hs, 150 * hs); ctx.lineTo(W - 560 * hs, 150 * hs); ctx.closePath(); ctx.fill();
+    ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 54 * hs); ctx.letterSpacing = 4 * hs + "px"; ctx.fillText("TOYOTA", W - pad, 96 * hs); ctx.letterSpacing = "0px";
     const same = rows.every(r => r.g.car.id === rows[0].g.car.id);
     const title = same ? "Toyota " + rows[0].g.car.name : t("cMixed");
-    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
-    ctx.fillStyle = NAVY; F(800, 36 * hs); ctx.letterSpacing = 4 * hs + "px"; ctx.fillText(t("cTitle"), pad, 70 * hs); ctx.letterSpacing = "0px";
-    ctx.fillStyle = RED; ctx.fillRect(pad, 88 * hs, 92 * hs, 8 * hs);
-    ctx.fillStyle = NAVY; fitF(title, W - pad * 2 - 300 * hs, 112 * hs, 800); ctx.fillText(title, pad, 205 * hs);
-    ctx.fillStyle = MUTE; F(600, 40 * hs); ctx.fillText(t("cSub"), pad, 265 * hs);
-    ctx.textAlign = "right"; ctx.fillStyle = "#111"; F(800, 54 * hs); ctx.letterSpacing = 3 * hs + "px"; ctx.fillText("TOYOTA", W - pad, 120 * hs); ctx.letterSpacing = "0px";
+    // tag pil merah
+    ctx.textAlign = "left"; F(800, 30 * hs); ctx.letterSpacing = 3 * hs + "px"; const tg = t("cTitle"), tgw = ctx.measureText(tg).width + 44 * hs;
+    rr(ctx, pad, 38 * hs, tgw, 56 * hs, 28 * hs); ctx.fillStyle = RED; ctx.fill(); ctx.fillStyle = "#fff"; ctx.fillText(tg, pad + 22 * hs, 77 * hs); ctx.letterSpacing = "0px";
+    ctx.fillStyle = "#fff"; fitF(title, W - pad * 2 - 560 * hs, 112 * hs, 800); ctx.fillText(title, pad, 210 * hs);
+    ctx.fillStyle = GOLD; F(600, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs);
 
     // ---- kad varian
     const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
@@ -415,121 +416,115 @@
     });
 
     function drawCard(r, i, x, y, cw, ch, k, img) {
-      // kad putih + bayang
-      ctx.save(); ctx.shadowColor = "rgba(15,23,42,.14)"; ctx.shadowBlur = 30 * k; ctx.shadowOffsetY = 10 * k;
-      rr(ctx, x, y, cw, ch, 26 * k); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
-      // lencana nombor serong
-      ctx.fillStyle = NAVY; ctx.beginPath();
-      ctx.moveTo(x - 6 * k, y - 6 * k); ctx.lineTo(x + 150 * k, y - 6 * k); ctx.lineTo(x + 118 * k, y + 116 * k); ctx.lineTo(x - 6 * k, y + 116 * k); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; F(800, 62 * k); ctx.fillText(String(i + 1), x + 62 * k, y + 78 * k);
-      // nama varian + garis merah
-      const nx = x + 188 * k, nmax = cw - 188 * k - 30 * k;
-      ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 58 * k, 800); ctx.fillText(r.g.name, nx, y + 82 * k);
-      const fw = ctx.measureText(r.g.name.split(" ")[0]).width;
-      ctx.fillStyle = RED; ctx.fillRect(nx, y + 100 * k, fw, 7 * k);
+      // kad putih + bayang + jalur merah di atas
+      ctx.save(); ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 34 * k; ctx.shadowOffsetY = 12 * k;
+      rr(ctx, x, y, cw, ch, 30 * k); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
+      ctx.save(); rr(ctx, x, y, cw, ch, 30 * k); ctx.clip(); ctx.fillStyle = RED; ctx.fillRect(x, y, cw, 12 * k); ctx.restore();
+      // bulatan emas bernombor
+      const br = 46 * k, bcx = x + 38 * k + br, bcy = y + 40 * k + br;
+      ctx.beginPath(); ctx.arc(bcx, bcy, br, 0, Math.PI * 2); ctx.fillStyle = GOLD; ctx.fill();
+      ctx.lineWidth = 5 * k; ctx.strokeStyle = NAVY; ctx.stroke();
+      ctx.fillStyle = NAVY; ctx.textAlign = "center"; F(800, 56 * k); ctx.fillText(String(i + 1), bcx, bcy + 20 * k);
+      // nama varian
+      const nx = bcx + br + 26 * k, nmax = x + cw - nx - 28 * k;
+      ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
-      const FIX = 690 * k, imgTop = y + 126 * k, imgH = Math.max(ch - FIX - 126 * k, 120 * k);
-      ctx.save(); ctx.fillStyle = "rgba(0,0,0,.07)"; ctx.beginPath();
+      const FIX = 690 * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
+      ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
       ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       contain(ctx, img, x + 30 * k, imgTop, cw - 60 * k, imgH * .9, .85);
-      // jadual pecahan harga
+      // jadual berselang warna
       const rowsT = [
         [t("cPrice"), RM(r.g.price)], [t("cReb"), RM(r.reb)], [t("cDep"), RM(r.dep)],
-        [t("cIns") + (v.ncd ? " · NCD " + v.ncd + "%" : ""), RM(r.ins.total)], [t("cLoan"), RM(r.fin), "#1f4fa3"], [t("cRate"), v.rate + "%"]
+        [t("cIns") + (v.ncd ? " · NCD " + v.ncd + "%" : ""), RM(r.ins.total)], [t("cLoan"), RM(r.fin), "hi"], [t("cRate"), v.rate + "%"]
       ];
-      const tx = x + 36 * k, tr = x + cw - 36 * k, ty = imgTop + imgH, rh = 56 * k;
-      rowsT.forEach(([lab, val, colr], j) => {
+      const tx = x + 32 * k, tr = x + cw - 32 * k, ty = imgTop + imgH, rh = 54 * k;
+      rowsT.forEach(([lab, val, hi], j) => {
         const yy = ty + j * rh;
-        ctx.fillStyle = LINE; ctx.fillRect(tx, yy, tr - tx, Math.max(1, 2 * k));
-        ctx.textAlign = "left"; ctx.fillStyle = INK; fitF(lab, (tr - tx) * .62, 29 * k, 600); ctx.fillText(lab, tx + 14 * k, yy + rh * .68);
-        ctx.textAlign = "right"; ctx.fillStyle = colr || NAVY; F(800, 33 * k); ctx.fillText(val, tr - 4 * k, yy + rh * .68);
+        if (hi) { rr(ctx, tx, yy, tr - tx, rh, 12 * k); ctx.fillStyle = NAVY; ctx.fill(); }
+        else if (j % 2 === 0) { rr(ctx, tx, yy, tr - tx, rh, 12 * k); ctx.fillStyle = PANEL; ctx.fill(); }
+        ctx.textAlign = "left"; ctx.fillStyle = hi ? "#fff" : INK; fitF(lab, (tr - tx) * .62, 28 * k, 600); ctx.fillText(lab, tx + 18 * k, yy + rh * .67);
+        ctx.textAlign = "right"; ctx.fillStyle = hi ? GOLD : NAVY; F(800, 32 * k); ctx.fillText(val, tr - 18 * k, yy + rh * .67);
       });
-      const tEnd = ty + rowsT.length * rh; ctx.fillStyle = LINE; ctx.fillRect(tx, tEnd, tr - tx, Math.max(1, 2 * k));
-      // bulanan terendah
+      // panel ansuran bulanan
+      const pY = ty + rowsT.length * rh + 14 * k, pH = 150 * k;
+      const pg = ctx.createLinearGradient(tx, pY, tr, pY + pH); pg.addColorStop(0, "#0a1733"); pg.addColorStop(1, "#1d4a8f");
+      rr(ctx, tx, pY, tr - tx, pH, 22 * k); ctx.fillStyle = pg; ctx.fill();
       const cx = x + cw / 2;
-      ctx.textAlign = "center"; ctx.fillStyle = "#111"; F(600, 30 * k); ctx.fillText(t("cLow"), cx, tEnd + 48 * k);
+      ctx.textAlign = "center"; ctx.fillStyle = SOFT; F(600, 28 * k); ctx.fillText(t("cLow"), cx, pY + 42 * k);
       const num = Math.round(r.m).toLocaleString("en-MY");
-      F(800, 44 * k); const wRM = ctx.measureText("RM").width; F(800, 108 * k); const wN = ctx.measureText(num).width; F(500, 30 * k); const wM = ctx.measureText(" " + t("cMonth")).width;
-      let bx = cx - (wRM + wN + wM) / 2; const by = tEnd + 148 * k;
-      ctx.textAlign = "left"; ctx.fillStyle = RED; F(800, 44 * k); ctx.fillText("RM", bx, by); bx += wRM;
-      F(800, 108 * k); ctx.fillText(num, bx, by); bx += wN;
-      ctx.fillStyle = "#333"; F(500, 30 * k); ctx.fillText(" " + t("cMonth"), bx, by);
-      // kotak tempoh: tempoh dipilih, -2, -4 tahun
+      F(800, 40 * k); const wRM = ctx.measureText("RM").width; F(800, 92 * k); const wN = ctx.measureText(num).width; F(500, 28 * k); const wM = ctx.measureText(" " + t("cMonth")).width;
+      let bx = cx - (wRM + wN + wM) / 2; const by = pY + 122 * k;
+      ctx.textAlign = "left"; ctx.fillStyle = GOLD; F(800, 40 * k); ctx.fillText("RM", bx, by); bx += wRM;
+      F(800, 92 * k); ctx.fillText(num, bx, by); bx += wN;
+      ctx.fillStyle = "#fff"; F(500, 28 * k); ctx.fillText(" " + t("cMonth"), bx, by);
+      // chip tempoh: tempoh dipilih (merah) + 2 tempoh lebih pendek
       const ys = [v.years, v.years - 2, v.years - 4].filter(n => n >= 1);
-      const bTop = tEnd + 172 * k, bH = 150 * k, bg2 = 22 * k, bW = ((tr - tx) - bg2 * (ys.length - 1)) / ys.length;
+      const cTop = pY + pH + 14 * k, cH = 112 * k, cg = 16 * k, cW = ((tr - tx) - cg * (ys.length - 1)) / ys.length;
       ys.forEach((n, j) => {
-        const m = j === 0 ? r.m : calc(r.g, { ...v, mode: "rm", depRM: r.dep, years: n }).m;
-        const bxx = tx + j * (bW + bg2), hi = j === 0;
-        rr(ctx, bxx, bTop, bW, bH, 12 * k); ctx.fillStyle = "#fff"; ctx.fill();
-        ctx.lineWidth = Math.max(1, (hi ? 3 : 2) * k); ctx.strokeStyle = hi ? "#e8b931" : "#dfe3ea"; ctx.stroke();
-        const lab = t("cYears", n);
-        if (hi) {
-          ctx.save(); rr(ctx, bxx, bTop, bW, 46 * k, 12 * k); ctx.clip(); ctx.fillStyle = NAVY; ctx.fillRect(bxx, bTop, bW, 46 * k); ctx.restore();
-        }
-        // ikon kalendar + label
-        F(600, 25 * k); const lw = ctx.measureText(lab).width, iw = 24 * k, sx = bxx + (bW - lw - iw - 10 * k) / 2, ly = bTop + (hi ? 32 : 36) * k;
-        const ic = hi ? "#fff" : NAVY; ctx.strokeStyle = ic; ctx.lineWidth = Math.max(1, 2 * k);
-        ctx.strokeRect(sx, ly - 19 * k, iw, 21 * k); ctx.beginPath(); ctx.moveTo(sx, ly - 13 * k); ctx.lineTo(sx + iw, ly - 13 * k); ctx.stroke();
-        ctx.fillStyle = ic; for (let a = 0; a < 3; a++) for (let b = 0; b < 2; b++) ctx.fillRect(sx + 4 * k + a * 6.5 * k, ly - 9 * k + b * 5 * k, 3 * k, 3 * k);
-        ctx.textAlign = "left"; ctx.fillStyle = ic; ctx.fillText(lab, sx + iw + 10 * k, ly);
-        const vtxt = Math.round(m).toLocaleString("en-MY");
-        F(800, 22 * k); const a1 = ctx.measureText("RM").width; F(800, 46 * k); const a2 = ctx.measureText(vtxt).width;
-        let vx = bxx + (bW - a1 - a2) / 2; const vy = bTop + (hi ? 104 : 108) * k;
-        ctx.fillStyle = RED; F(800, 22 * k); ctx.fillText("RM", vx, vy); F(800, 46 * k); ctx.fillText(vtxt, vx + a1, vy);
-        if (hi && ys.length > 1) { ctx.textAlign = "center"; ctx.fillStyle = "#111"; F(600, 20 * k); ctx.fillText("★ " + t("cLowest"), bxx + bW / 2, bTop + 136 * k); }
+        const m = j === 0 ? r.m : calc(r.g, { ...v, mode: "rm", depRM: r.dep, years: n }).m, hi = j === 0, cxx = tx + j * (cW + cg);
+        rr(ctx, cxx, cTop, cW, cH, 18 * k); ctx.fillStyle = hi ? RED : PANEL; ctx.fill();
+        ctx.textAlign = "center"; ctx.fillStyle = hi ? "#fff" : MUTE; F(700, 24 * k); ctx.fillText(t("cYears", n).toUpperCase() + (hi && ys.length > 1 ? " · " + t("cLowest").toUpperCase() : ""), cxx + cW / 2, cTop + 36 * k);
+        const vt = Math.round(m).toLocaleString("en-MY");
+        F(800, 22 * k); const a1 = ctx.measureText("RM").width; F(800, 44 * k); const a2 = ctx.measureText(vt).width;
+        const vx = cxx + (cW - a1 - a2) / 2, vy = cTop + 90 * k; ctx.textAlign = "left";
+        ctx.fillStyle = hi ? GOLD : RED; F(800, 22 * k); ctx.fillText("RM", vx, vy);
+        ctx.fillStyle = hi ? "#fff" : NAVY; F(800, 44 * k); ctx.fillText(vt, vx + a1, vy);
       });
     }
 
-    // ---- kaki: profil | kelayakan | telefon | WhatsApp
+    // ---- kaki: bar navy bergaris emas
     const f = L.fs, fh = L.foot, fy = H - L.disc - fh, fx = pad * .8, fwid = W - fx * 2, narrow = W < 1500;
-    ctx.save(); ctx.shadowColor = "rgba(15,23,42,.12)"; ctx.shadowBlur = 24 * f; ctx.shadowOffsetY = 6 * f;
-    rr(ctx, fx, fy, fwid, fh, 22 * f); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
+    ctx.save(); ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 26 * f; ctx.shadowOffsetY = 8 * f;
+    const fg = ctx.createLinearGradient(fx, fy, fx + fwid, fy); fg.addColorStop(0, "#071127"); fg.addColorStop(1, "#102a57");
+    rr(ctx, fx, fy, fwid, fh, 26 * f); ctx.fillStyle = fg; ctx.fill(); ctx.restore();
+    rr(ctx, fx, fy, fwid, fh, 26 * f); ctx.lineWidth = 3 * f; ctx.strokeStyle = GOLD; ctx.stroke();
     const midY = fy + fh / 2, seg = narrow ? [0, .33, .63, 1] : [0, .25, .5, .76, 1];
     const sepX = q => fx + fwid * q;
-    ctx.fillStyle = "#d9dde5"; for (let q = 1; q < seg.length - 1; q++) ctx.fillRect(sepX(seg[q]), fy + fh * .22, Math.max(1, 2 * f), fh * .56);
+    ctx.fillStyle = "rgba(245,197,66,.35)"; for (let q = 1; q < seg.length - 1; q++) ctx.fillRect(sepX(seg[q]), fy + fh * .22, Math.max(1, 2 * f), fh * .56);
     // profil
     const pr = fh * .34, pcx = fx + 30 * f + pr;
-    ctx.save(); ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.fillStyle = "#e8ecf3"; ctx.fill(); ctx.clip();
+    ctx.save(); ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.fillStyle = "#24407a"; ctx.fill(); ctx.clip();
     if (photo) { const s2 = Math.max(2 * pr / photo.width, 2 * pr / photo.height); ctx.drawImage(photo, pcx - photo.width * s2 / 2, midY - photo.height * s2 / 2, photo.width * s2, photo.height * s2); }
-    else { ctx.fillStyle = NAVY; ctx.textAlign = "center"; F(800, pr * .8); ctx.fillText((p.name || "SA").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase(), pcx, midY + pr * .28); }
+    else { ctx.fillStyle = "#fff"; ctx.textAlign = "center"; F(800, pr * .8); ctx.fillText((p.name || "SA").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase(), pcx, midY + pr * .28); }
     ctx.restore();
-    ctx.strokeStyle = "#e3e7ee"; ctx.lineWidth = 3 * f; ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.stroke();
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 4 * f; ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.stroke();
     const px1 = pcx + pr + 22 * f, pw = sepX(seg[1]) - px1 - 16 * f;
-    ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(p.name || t("pName"), pw, 44 * f, 800); ctx.fillText(p.name || t("pName"), px1, midY - 2 * f);
-    ctx.fillStyle = MUTE; fitF(t("sa"), pw, 26 * f, 500); ctx.fillText(t("sa"), px1, midY + 36 * f);
-    // cop "trusted" + ayat kelayakan
-    const s1 = sepX(seg[1]), s1w = sepX(seg[2]) - s1, sr = fh * .3, scx = s1 + 26 * f + sr;
-    ctx.beginPath(); ctx.arc(scx, midY, sr, 0, Math.PI * 2); ctx.fillStyle = "#d4a72c"; ctx.fill();
-    ctx.beginPath(); ctx.arc(scx, midY, sr * .8, 0, Math.PI * 2); ctx.fillStyle = "#111"; ctx.fill();
-    ctx.beginPath(); ctx.arc(scx, midY, sr * .55, 0, Math.PI * 2); ctx.strokeStyle = "#fff"; ctx.lineWidth = 3 * f; ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(scx - sr * .25, midY); ctx.lineTo(scx - sr * .05, midY + sr * .2); ctx.lineTo(scx + sr * .3, midY - sr * .2); ctx.lineWidth = 6 * f; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke(); ctx.lineCap = "butt";
+    ctx.textAlign = "left"; ctx.fillStyle = "#fff"; fitF(p.name || t("pName"), pw, 44 * f, 800); ctx.fillText(p.name || t("pName"), px1, midY - 2 * f);
+    ctx.fillStyle = SOFT; fitF(t("sa"), pw, 26 * f, 500); ctx.fillText(t("sa"), px1, midY + 36 * f);
+    // tanda semak + ayat kelayakan
+    const s1 = sepX(seg[1]), s1w = sepX(seg[2]) - s1, sr = fh * .24, scx = s1 + 26 * f + sr;
+    ctx.beginPath(); ctx.arc(scx, midY, sr, 0, Math.PI * 2); ctx.fillStyle = GOLD; ctx.fill();
+    ctx.beginPath(); ctx.moveTo(scx - sr * .45, midY + sr * .02); ctx.lineTo(scx - sr * .1, midY + sr * .38); ctx.lineTo(scx + sr * .5, midY - sr * .32);
+    ctx.lineWidth = 7 * f; ctx.strokeStyle = NAVY; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke(); ctx.lineCap = "butt";
     const ex = scx + sr + 18 * f, ew = s1 + s1w - ex - 16 * f;
-    ctx.fillStyle = NAVY; F(700, 27 * f); ctx.textAlign = "left";
+    ctx.fillStyle = "#fff"; F(700, 27 * f); ctx.textAlign = "left";
     const words = t("fElig").split(" "), lines = []; let ln = "";
     for (const wd of words) { const tt = ln ? ln + " " + wd : wd; if (ctx.measureText(tt).width > ew && ln) { lines.push(ln); ln = wd; } else ln = tt; } lines.push(ln);
     const lh = 34 * f, ly0 = midY - (lines.length - 1) * lh / 2 + 9 * f; lines.forEach((l, q) => ctx.fillText(l, ex, ly0 + q * lh));
-    // telefon (atau WhatsApp jika poster sempit)
-    const s2x = sepX(seg[2]), cr = fh * .3, ccx = s2x + 26 * f + cr;
-    ctx.beginPath(); ctx.arc(ccx, midY, cr, 0, Math.PI * 2); ctx.fillStyle = narrow ? "#25d366" : NAVY; ctx.fill();
-    ctx.save(); const sc = cr * 1.25 / 24; ctx.translate(ccx - 12 * sc, midY - 12 * sc); ctx.scale(sc, sc); ctx.fillStyle = "#fff";
-    if (narrow) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); } ctx.fill(WA_PHONE); ctx.restore();
-    const nx2 = ccx + cr + 20 * f, nw2 = sepX(seg[3]) - nx2 - 18 * f;
-    ctx.fillStyle = NAVY; fitF(p.phone || "01x-xxx xxxx", nw2, 60 * f, 800); ctx.fillText(p.phone || "01x-xxx xxxx", nx2, midY + 8 * f);
-    ctx.fillStyle = INK; fitF(t("fContact"), nw2, 24 * f, 600); ctx.fillText(t("fContact"), nx2, midY + 44 * f);
-    // butang WhatsApp (poster lebar sahaja)
+    // nombor telefon
+    const s2x = sepX(seg[2]), cr = fh * .26, ccx = s2x + 26 * f + cr;
+    if (narrow) {
+      ctx.beginPath(); ctx.arc(ccx, midY, cr, 0, Math.PI * 2); ctx.fillStyle = "#25d366"; ctx.fill();
+      ctx.save(); const sc = cr * 1.25 / 24; ctx.translate(ccx - 12 * sc, midY - 12 * sc); ctx.scale(sc, sc);
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); ctx.fillStyle = "#fff"; ctx.fill(WA_PHONE); ctx.restore();
+    }
+    const nx2 = narrow ? ccx + cr + 20 * f : s2x + 26 * f, nw2 = sepX(seg[3]) - nx2 - 18 * f;
+    ctx.fillStyle = "#fff"; fitF(p.phone || "01x-xxx xxxx", nw2, 60 * f, 800); ctx.fillText(p.phone || "01x-xxx xxxx", nx2, midY + 8 * f);
+    ctx.fillStyle = GOLD; fitF(t("fContact"), nw2, 24 * f, 600); ctx.fillText(t("fContact"), nx2, midY + 44 * f);
+    // butang WhatsApp (poster lebar sahaja): pil hijau
     if (!narrow) {
-      const b0 = sepX(seg[3]) + 24 * f, bw2 = sepX(seg[4]) - b0 - 24 * f, bh2 = fh * .62, by2 = midY - bh2 / 2;
-      const gg = ctx.createLinearGradient(0, by2, 0, by2 + bh2); gg.addColorStop(0, "#2fb35a"); gg.addColorStop(1, "#1a8a43");
-      rr(ctx, b0, by2, bw2, bh2, 16 * f); ctx.fillStyle = gg; ctx.fill(); ctx.lineWidth = 3 * f; ctx.strokeStyle = "#e8b931"; ctx.stroke();
-      const ir = bh2 * .3, icx = b0 + 24 * f + ir;
+      const b0 = sepX(seg[3]) + 24 * f, bw2 = sepX(seg[4]) - b0 - 24 * f, bh2 = fh * .6, by2 = midY - bh2 / 2;
+      rr(ctx, b0, by2, bw2, bh2, bh2 / 2); ctx.fillStyle = "#1fa855"; ctx.fill();
+      const ir = bh2 * .3, icx = b0 + 26 * f + ir;
       ctx.save(); const s3 = ir * 2.1 / 24; ctx.translate(icx - 12 * s3, midY - 12 * s3); ctx.scale(s3, s3);
       ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); ctx.fillStyle = "#fff"; ctx.fill(WA_PHONE); ctx.restore();
-      const [w1, w2] = t("fWA"); const tw2 = bw2 - (icx + ir + 18 * f - b0) - 14 * f;
-      ctx.fillStyle = "#fff"; ctx.textAlign = "left"; fitF(w1.length > w2.length ? w1 : w2, tw2, 40 * f, 800);
-      ctx.fillText(w1, icx + ir + 18 * f, midY - 4 * f); ctx.fillText(w2, icx + ir + 18 * f, midY + 40 * f);
+      const [w1, w2] = t("fWA"); const tw2 = bw2 - (icx + ir + 18 * f - b0) - 22 * f;
+      ctx.fillStyle = "#fff"; ctx.textAlign = "left"; fitF(w1.length > w2.length ? w1 : w2, tw2, 36 * f, 800);
+      ctx.fillText(w1, icx + ir + 18 * f, midY - 4 * f); ctx.fillText(w2, icx + ir + 18 * f, midY + 38 * f);
     }
     // penafian
-    ctx.textAlign = "center"; ctx.fillStyle = "#8a93a3"; fitF(t("pDisc"), W * .76, 26 * f, 500, true);
+    ctx.textAlign = "center"; ctx.fillStyle = "#9fb0d2"; fitF(t("pDisc"), W * .86, 26 * f, 500, true);
     ctx.fillText(t("pDisc"), W / 2, H - L.disc * .4);
   }
 
