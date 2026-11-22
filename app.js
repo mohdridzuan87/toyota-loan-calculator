@@ -69,7 +69,7 @@
       cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
       fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
       pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
-      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", colLabel: "Warna", colFree: "percuma", colPrice: "Harga warna (RM)", colNote: d => "Warna & harga ikut laman model Toyota MY" + (d ? " (disemak " + d + ")" : "") + ", dikemas kini 1hb & 15hb. Lalai = warna percuma. Harga warna hanya ada bila Toyota terbitkan; boleh isi sendiri.", photoDel: "Buang gambar", newColors: "Tukar warna latar",
+      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", colLabel: "Warna", colFree: "percuma", colPrice: "Harga warna (RM)", colNote: (d, stale) => "Warna ikut laman model Toyota MY" + (d ? " (disemak " + d + ")" : "") + "; harga warna & warna yang ada ikut varian dari PDF senarai harga Toyota. Lalai = warna percuma. Boleh isi harga sendiri." + (stale ? " ⚠ PDF senarai harga Toyota sudah dikemas kini; harga warna mungkin belum terkini." : ""), photoDel: "Buang gambar", newColors: "Tukar warna latar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
@@ -127,7 +127,7 @@
       cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
       fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
       pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
-      photo: "Profile photo (for posters)", photoAdd: "Choose photo", colLabel: "Colour", colFree: "free", colPrice: "Colour price (RM)", colNote: d => "Colours & prices from the Toyota MY model pages" + (d ? " (checked " + d + ")" : "") + ", updated on the 1st & 15th. Default = free colour. A colour price shows only when Toyota publishes one; you can enter your own.", photoDel: "Remove photo", newColors: "Shuffle background colours",
+      photo: "Profile photo (for posters)", photoAdd: "Choose photo", colLabel: "Colour", colFree: "free", colPrice: "Colour price (RM)", colNote: (d, stale) => "Colours from the Toyota MY model pages" + (d ? " (checked " + d + ")" : "") + "; colour prices and per-variant availability from Toyota's price-list PDFs. Default = free colour. You can enter your own price." + (stale ? " ⚠ Toyota's price-list PDF has been updated; colour prices may be out of date." : ""), photoDel: "Remove photo", newColors: "Shuffle background colours",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
@@ -180,15 +180,18 @@
   let COL = { byGrade: {}, updatedAt: "" };
   const colOverrides = () => { const o = store.get("sa_colp", {}); return o.at === COL.updatedAt ? o.v || {} : {}; };
   const setColOverride = (gName, cName, val) => store.set("sa_colp", { at: COL.updatedAt, v: { ...colOverrides(), [gName + "|" + cName]: val } });
-  const colourList = gName => (COL.byGrade[gName] && COL.byGrade[gName].colours) || [];
-  const colourPrice = (gName, c) => { const o = colOverrides()[gName + "|" + c.name]; return o != null ? o : c.price || 0; };
-  // Warna dipilih: ikut simpanan; lalai = warna percuma pertama
+  // colour-prices.json: harga warna + ketersediaan ikut varian, dari jadual PDF senarai harga Toyota (rasmi); utama berbanding laman model
+  let CP = { byGrade: {}, updatedAt: "", stale: false };
+  const cpEntry = (gName, cName) => (CP.byGrade[gName] || {})[cName];
+  const colourList = gName => ((COL.byGrade[gName] && COL.byGrade[gName].colours) || []).filter(c => { const e = cpEntry(gName, c.name); return !e || e.avail !== false; });
+  const colourPrice = (gName, c) => { const o = colOverrides()[gName + "|" + c.name]; if (o != null) return o; const e = cpEntry(gName, c.name); return e && e.price != null ? e.price : c.price || 0; };
+  // Warna dipilih: ikut simpanan; lalai = warna percuma (padan gambar jika boleh); jika tiada yang percuma, yang paling murah
   const chosenColour = g => {
     const list = colourList(g.name); if (!list.length) return null;
     const saved = store.get("sa_col", {})[g.name];
-    // Lalai: warna dalam gambar kereta jika percuma, jika tidak warna percuma pertama
     const IMG_COLOUR = { fortuner: "Super White II" };
-    const c = list.find(x => x.name === saved) || list.find(x => x.name === IMG_COLOUR[g.car.id] && !colourPrice(g.name, x)) || list.find(x => !colourPrice(g.name, x)) || list[0];
+    const cheapest = [...list].sort((a, b) => colourPrice(g.name, a) - colourPrice(g.name, b))[0];
+    const c = list.find(x => x.name === saved) || list.find(x => x.name === IMG_COLOUR[g.car.id] && !colourPrice(g.name, x)) || list.find(x => !colourPrice(g.name, x)) || cheapest;
     return { ...c, price: colourPrice(g.name, c) };
   };
   const withColour = g => { const c = chosenColour(g); return c ? { ...g, basePrice: g.price, price: g.price + c.price, colour: c } : g; };
@@ -326,7 +329,7 @@
       store.set("sa_sel", sel.map((x, k) => picks[k] ?? x));
       rebInputs(picks);
       if (!keepBoxes) picks.forEach((i, k) => renderColours(k, GRADES[i]));
-      $("#colNote").textContent = picks.some(i => colourList(GRADES[i].name).length) ? t("colNote", COL.updatedAt || "") : "";
+      $("#colNote").textContent = picks.some(i => colourList(GRADES[i].name).length) ? t("colNote", COL.updatedAt || "", !!CP.stale) : "";
       const rows = picks.map(i => calc(withColour(GRADES[i]), v));
       const tg = v.mode === "target", sm = `<small style="font-size:14px;font-weight:600">`;
       $("#res").innerHTML = rows.map(r => {
@@ -792,7 +795,7 @@
   route();
   // Ambil harga (prices.json) & rebate (rebates.json) terkini tanpa cache — dikemas kini GitHub Actions 1hb & 15hb
   const getJSON = f => fetch(f + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
-  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json")]).then(([pr, rb, cj]) => {
+  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json")]).then(([pr, rb, cj, cpj]) => {
     let changed = false;
     if (pr && pr.byGrade) {
       for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }
@@ -803,6 +806,7 @@
       REB = rb;
     }
     if (cj && cj.byGrade) { COL = cj; changed = true; }
+    if (cpj && cpj.byGrade) { CP = cpj; changed = true; }
     if (changed && !/^akaun/.test(location.hash.slice(1))) route();
   });
 })();

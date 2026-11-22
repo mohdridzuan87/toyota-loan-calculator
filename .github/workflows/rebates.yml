@@ -20,13 +20,15 @@ jobs:
         run: node scripts/update-prices.mjs
       - name: Warna (laman model)
         run: node scripts/update-colours.mjs
+      - name: Semak PDF harga warna (versi baharu?)
+        run: node scripts/check-colour-pdfs.mjs
       - name: Rebate (monthly-promo)
         run: node scripts/update-rebates.mjs
       - name: Commit jika berubah
         run: |
-          if git diff --quiet -- prices.json rebates.json colours.json; then echo "Tiada perubahan"; exit 0; fi
+          if git diff --quiet -- prices.json rebates.json colours.json colour-prices.json assets/cars/col; then echo "Tiada perubahan"; exit 0; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add prices.json rebates.json colours.json
+          git add prices.json rebates.json colours.json colour-prices.json assets/cars/col
           git commit -m "Harga, rebate & warna Toyota dikemas kini automatik"
           git push

@@ -1,0 +1,94 @@
+{
+ "_note": "Jadual 'Colours Availability' dari PDF senarai harga Toyota Malaysia (Individual Private), dibaca 22 Nov 2026. Kemas kini bila Toyota keluarkan PDF baharu; kemudian jalankan: node scripts/build-colour-prices.mjs",
+ "tables": {
+  "vios": {"pdf":"vios-hev/july-2026/1.0-pm(ip)-vios.pdf","cols":["1.5E AT","1.5G AT","1.5 HEV AT","1.5 HEV GR-S AT"],"rows":[
+   {"code":"089","name":"Platinum White Pearl","price":400,"avail":[1,1,1,1]},
+   {"code":"218","name":"Attitude Black","price":0,"avail":[1,1,1,1]},
+   {"code":"R77","name":"Spicy Scarlet SE","price":0,"avail":[1,1,1,1]},
+   {"code":"1D4","name":"Silver Metallic","price":0,"avail":[1,1,1,0]},
+   {"code":"8X2","name":"Nebula Blue Metallic","price":0,"avail":[1,1,0,0]},
+   {"code":"1K3","name":"Celestite Grey Metallic","price":0,"avail":[0,0,1,0]},
+   {"code":"XM1","name":"(2-tone) Spicy Scarlet SE","price":1500,"avail":[0,0,0,1]},
+   {"code":"2PS","name":"(2-tone) Platinum White Pearl","price":1800,"avail":[0,0,0,1]}]},
+  "corollaCross": {"pdf":"corolla-cross/july-2026/v2/1.0-pm(ip)-corolla-cross-price-list.pdf","cols":["1.8V A/T","1.8 HEV A/T","1.8 HEV GR-S A/T"],"rows":[
+   {"code":"089","name":"Platinum White Pearl","price":800,"avail":[1,1,0]},
+   {"code":"3R3","name":"Red Mica Metallic","price":0,"avail":[1,1,0]},
+   {"code":"B88","name":"Dark Turquoise","price":0,"avail":[1,1,0]},
+   {"code":"1D4","name":"Silver Metallic","price":0,"avail":[1,1,0]},
+   {"code":"1K3","name":"Celestite Grey Metallic","price":0,"avail":[0,1,0]},
+   {"code":"2PS","name":"(2-tone) Platinum White Pearl","price":2000,"avail":[0,0,1]},
+   {"code":"2QL","name":"(2-tone) Red Mica Metallic","price":1500,"avail":[0,0,1]},
+   {"code":"XM2","name":"(2-tone) Dark Turquoise","price":1500,"avail":[0,0,1]}]},
+  "corolla": {"pdf":"corolla/july-2026/1.0-pm-(ipte)-corolla.pdf","cols":["1.8G A/T","1.8GR Sport A/T"],"rows":[
+   {"code":"089","name":"Platinum White Pearl","price":800,"avail":[1,0]},
+   {"code":"1H5","name":"Cement Gray Metallic","price":0,"avail":[1,0]},
+   {"code":"218","name":"Attitude Black","price":0,"avail":[1,1]},
+   {"code":"1K0","name":"Metal Stream Metallic","price":0,"avail":[1,0]},
+   {"code":"2PS","name":"(2-tone) Platinum White Pearl","price":2000,"avail":[0,1]},
+   {"code":"2QL","name":"(2-tone) Red Mica Metallic","price":1500,"avail":[0,1]}]},
+  "yarisCross": {"pdf":"toyota-yaris-cros-and-hev/july-2026/1.0-pm(ip)-yaris-cross.pdf","cols":["1.5S","1.5S HEV"],"rows":[
+   {"code":"089","name":"Platinum Pearl White","price":400,"avail":[1,1]},
+   {"code":"218","name":"Attitude Black","price":0,"avail":[1,1]},
+   {"code":"1D4","name":"Silver Metallic","price":0,"avail":[1,1]},
+   {"code":"R77","name":"Spicy Scarlet SE","price":0,"avail":[1,1]},
+   {"code":"B88","name":"Dark Turquoise","price":0,"avail":[1,1]}]},
+  "camry": {"pdf":"camry-hev-and-ice/july-2026/1.0-pm-(ipte)-camry.pdf","cols":["Camry 2.5V A/T","Camry 2.5 HEV"],"surcharge":{"codes":["3U5","089","1L5"],"price":800},"rows":[
+   {"code":"3U5","name":"Emotional Red 2","avail":[1,1]},
+   {"code":"089","name":"Platinum White Pearl Mica","avail":[1,1]},
+   {"code":"1L5","name":"Precious Metal","avail":[1,1]},
+   {"code":"218","name":"Attitude Black Mica","avail":[1,1]},
+   {"code":"1H5","name":"Cement Grey Metallic","avail":[1,1]},
+   {"code":"8X8","name":"Dark Blue Mica","avail":[1,1]}]},
+  "zenix": {"pdf":"zenix/july-2026/1.0-pm-(ipte)-innova-zenix.pdf","cols":["2.0V","2.0 HEV"],"surcharge":{"codes":["089"],"price":1000},"rows":[
+   {"code":"089","name":"Platinum White Pearl","avail":[1,1]},
+   {"code":"1D6","name":"Silver Metallic","avail":[1,1]},
+   {"code":"1G3","name":"Grey Metallic","avail":[1,1]},
+   {"code":"218","name":"Attitude Black Mica","avail":[1,1]}]},
+  "fortuner": {"pdf":"fortuner/july-2026/v4/1.0-pm-(ipte)-fortuner-price-list.pdf","cols":["2.4 A/T 4x4","2.8 VRZ A/T 4x4","2.7 SRZ A/T 4x4"],"surcharge":{"codes":["2VM","2UE"],"price":1500},"rows":[
+   {"code":"2VM","name":"Bronze Mica Metallic with Black Roof","avail":[0,1,0]},
+   {"code":"2UE","name":"Super White 2 with Black Roof","avail":[0,1,0]},
+   {"code":"4T3","name":"Bronze Mica Metallic","avail":[1,0,1]},
+   {"code":"040","name":"Super White 2","avail":[1,0,1]},
+   {"code":"1D4","name":"Silver Metallic","avail":[1,1,1]},
+   {"code":"218","name":"Attitude Black","avail":[1,1,1]},
+   {"code":"1F8","name":"Medium Silver Metallic","avail":[1,1,1]},
+   {"code":"4W9","name":"Phantom Brown Metallic","avail":[1,1,1]}]},
+  "hilux": {"pdf":"hilux/july-2026/v3/1.0-pm-(ipte)-hilux-price-list.pdf","cols":["HILUX D/CAB GR-S","HILUX D/CAB","HILUX S/CAB"],"rows":[
+   {"code":"3T6","name":"Crimson Spark Red Metallic","price":0,"avail":[1,1,0]},
+   {"code":"218","name":"Attitude Black","price":0,"avail":[1,1,0]},
+   {"code":"040","name":"Super White 2","price":0,"avail":[1,1,0]},
+   {"code":"4T3","name":"Bronze Mica Metallic","price":0,"avail":[0,1,0]},
+   {"code":"4W9","name":"Phantom Brown Metallic","price":0,"avail":[0,1,0]},
+   {"code":"1F8","name":"Medium Silver Metallic","price":0,"avail":[0,1,0]},
+   {"code":"1D4","name":"Silver Metallic","price":0,"avail":[0,1,0]},
+   {"code":"058","name":"Solid White","price":0,"avail":[0,0,1]}]},
+  "veloz": {"pdf":"veloz/july-2026/1.0-pm-veloz-price-list.pdf","cols":["Veloz 1.5 A/T"],"surcharge":{"codes":["XL2","XL3"],"price":1300},"rows":[
+   {"code":"XL2","name":"Silver Metallic with Black Roof","avail":[1]},
+   {"code":"XL3","name":"Blue Metallic with Black Roof","avail":[1]},
+   {"code":"W09","name":"White","avail":[1]},
+   {"code":"R67","name":"Red Metallic","avail":[1]},
+   {"code":"X16","name":"Metallic Bluish Black","avail":[1]}]},
+  "harrier": {"pdf":"harrier-hev/november-2026/1.0-pm-ipte-cpte-harrier.pdf","cols":["2.5 HEV"],"surcharge":{"codes":["089","219"],"price":800},"rows":[
+   {"code":"089","name":"Platinum White Pearl Mica","avail":[1]},
+   {"code":"219","name":"Precious Black","avail":[1]},
+   {"code":"1G3","name":"Grey Metallic","avail":[1]}]}
+ },
+ "textOnly": {
+  "_note": "PDF tanpa jadual warna: harga dari ayat 'Additional Price of RM ... for ...' (ketersediaan ikut varian tidak diketahui)",
+  "yaris": {"pdf":"yaris/november-2026/1.0-pm(ipte)-yaris-price-list.pdf","grades":["Yaris 1.5E AT","Yaris 1.5G AT"],"prices":[["Platinum White Pearl",400],["(2-tone) Red Mica Metallic",1500],["(2-tone) Platinum White Pearl",1800]]},
+  "vellfire": {"pdf":"vellfire/august-2026/1.0-pm-toyota-vellfire-price-list.pdf","grades":["Vellfire 2.5","Vellfire 2.5 HEV Executive Lounge"],"prices":[["Platinum White Pearl",1000],["Precious Metal",1000]]},
+  "alphard": {"pdf":"alphard/august-2026/1.0-pm-toyota-alphard-price-list.pdf","grades":["Alphard 2.4T Executive Lounge"],"prices":[["Platinum White Pearl",1000],["Precious Metal",1000],["Precious Leo-Blond",1000]]}
+ },
+ "gradeColumns": {
+  "vios": {"Vios 1.5E AT":"1.5E AT","Vios 1.5G AT":"1.5G AT","Vios 1.5 HEV AT":"1.5 HEV AT","Vios 1.5 HEV GR Sport":"1.5 HEV GR-S AT"},
+  "corollaCross": {"Corolla Cross 1.8V AT":"1.8V A/T","Corolla Cross HEV":"1.8 HEV A/T","Corolla Cross HEV GR Sport":"1.8 HEV GR-S A/T"},
+  "corolla": {"Corolla 1.8G":"1.8G A/T","Corolla GR Sport":"1.8GR Sport A/T"},
+  "yarisCross": {"Yaris Cross 1.5S":"1.5S","Yaris Cross 1.5S HEV":"1.5S HEV"},
+  "camry": {"Camry 2.5V AT":"Camry 2.5V A/T","Camry 2.5 HEV":"Camry 2.5 HEV"},
+  "zenix": {"Innova Zenix 2.0V":"2.0V","Innova Zenix 2.0 HEV":"2.0 HEV"},
+  "fortuner": {"Fortuner 2.4 AT 4WD":"2.4 A/T 4x4","Fortuner 2.8 VRZ AT 4WD":"2.8 VRZ A/T 4x4","Fortuner 2.7 SRZ AT 4WD":"2.7 SRZ A/T 4x4"},
+  "hilux": {"Hilux GR Sport 2.8 AT 4WD":"HILUX D/CAB GR-S","Hilux Double Cab 2.8 Rogue AT 4WD":"HILUX D/CAB","Hilux Double Cab 2.4V AT 4WD":"HILUX D/CAB","Hilux Double Cab 2.4E AT 4WD":"HILUX D/CAB","Hilux Double Cab 2.4E MT 4WD":"HILUX D/CAB","Hilux Single Cab 2.4 MT 4WD":"HILUX S/CAB"},
+  "veloz": {"Veloz 1.5 AT":"Veloz 1.5 A/T"},
+  "harrier": {"Harrier 2.5 HEV":"2.5 HEV"}
+ }
+}

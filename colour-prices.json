@@ -1,0 +1,864 @@
+{
+ "updatedAt": "2026-11-22",
+ "stale": false,
+ "changedPdfs": [],
+ "sources": {
+  "vios": "vios-hev/july-2026/1.0-pm(ip)-vios.pdf",
+  "corollaCross": "corolla-cross/july-2026/v2/1.0-pm(ip)-corolla-cross-price-list.pdf",
+  "corolla": "corolla/july-2026/1.0-pm-(ipte)-corolla.pdf",
+  "yarisCross": "toyota-yaris-cros-and-hev/july-2026/1.0-pm(ip)-yaris-cross.pdf",
+  "camry": "camry-hev-and-ice/july-2026/1.0-pm-(ipte)-camry.pdf",
+  "zenix": "zenix/july-2026/1.0-pm-(ipte)-innova-zenix.pdf",
+  "fortuner": "fortuner/july-2026/v4/1.0-pm-(ipte)-fortuner-price-list.pdf",
+  "hilux": "hilux/july-2026/v3/1.0-pm-(ipte)-hilux-price-list.pdf",
+  "veloz": "veloz/july-2026/1.0-pm-veloz-price-list.pdf",
+  "harrier": "harrier-hev/november-2026/1.0-pm-ipte-cpte-harrier.pdf",
+  "yaris": "yaris/november-2026/1.0-pm(ipte)-yaris-price-list.pdf",
+  "vellfire": "vellfire/august-2026/1.0-pm-toyota-vellfire-price-list.pdf",
+  "alphard": "alphard/august-2026/1.0-pm-toyota-alphard-price-list.pdf"
+ },
+ "byGrade": {
+  "Vios 1.5E AT": {
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Nebula Blue Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "8X2"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   }
+  },
+  "Vios 1.5G AT": {
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Nebula Blue Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "8X2"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   }
+  },
+  "Vios 1.5 HEV AT": {
+   "Celestite Grey Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1K3"
+   },
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   },
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Attitude Black": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   }
+  },
+  "Vios 1.5 HEV GR Sport": {
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   },
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Attitude Black": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "2-tone Platinum White Pearl": {
+    "price": 1800,
+    "avail": true,
+    "code": "2PS"
+   },
+   "2-Tone Spicy Scarlet SE": {
+    "price": 1500,
+    "avail": true,
+    "code": "XM1"
+   }
+  },
+  "Corolla Cross 1.8V AT": {
+   "Celestite Grey Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "1K3"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Red Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3R3"
+   },
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Dark Turquoise": {
+    "price": 0,
+    "avail": true,
+    "code": "B88"
+   }
+  },
+  "Corolla Cross HEV": {
+   "Celestite Grey Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1K3"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Red Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3R3"
+   },
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Dark Turquoise": {
+    "price": 0,
+    "avail": true,
+    "code": "B88"
+   }
+  },
+  "Corolla Cross HEV GR Sport": {
+   "2-tone Platinum White Pearl": {
+    "price": 2000,
+    "avail": true,
+    "code": "2PS"
+   },
+   "2-tone Dark Turquoise": {
+    "price": 1500,
+    "avail": true,
+    "code": "XM2"
+   },
+   "2-tone Red Mica Metallic": {
+    "price": 1500,
+    "avail": true,
+    "code": "2QL"
+   }
+  },
+  "Corolla 1.8G": {
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Metal Stream Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1K0"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Cement Gray Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1H5"
+   }
+  },
+  "Corolla GR Sport": {
+   "2-tone Platinum White Pearl": {
+    "price": 2000,
+    "avail": true,
+    "code": "2PS"
+   },
+   "2-tone Red Mica Metallic": {
+    "price": 1500,
+    "avail": true,
+    "code": "2QL"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   }
+  },
+  "Yaris Cross 1.5S": {
+   "Dark Turquoise": {
+    "price": 0,
+    "avail": true,
+    "code": "B88"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Attitude Black": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Platinum Pearl White": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   }
+  },
+  "Yaris Cross 1.5S HEV": {
+   "Dark Turquoise": {
+    "price": 0,
+    "avail": true,
+    "code": "B88"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Attitude Black": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Spicy Scarlet SE": {
+    "price": 0,
+    "avail": true,
+    "code": "R77"
+   },
+   "Platinum Pearl White": {
+    "price": 400,
+    "avail": true,
+    "code": "089"
+   }
+  },
+  "Camry 2.5V AT": {
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Emotional Red II": {
+    "price": 800,
+    "avail": true,
+    "code": "3U5"
+   },
+   "Cement Gray Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1H5"
+   },
+   "Precious Metal": {
+    "price": 800,
+    "avail": true,
+    "code": "1L5"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Dark Blue Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "8X8"
+   }
+  },
+  "Camry 2.5 HEV": {
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Emotional Red II": {
+    "price": 800,
+    "avail": true,
+    "code": "3U5"
+   },
+   "Cement Gray Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1H5"
+   },
+   "Precious Metal": {
+    "price": 800,
+    "avail": true,
+    "code": "1L5"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Dark Blue Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "8X8"
+   }
+  },
+  "Innova Zenix 2.0V": {
+   "Grey Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1G3"
+   },
+   "Platinum White Pearl": {
+    "price": 1000,
+    "avail": true,
+    "code": "089"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D6"
+   }
+  },
+  "Innova Zenix 2.0 HEV": {
+   "Grey Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1G3"
+   },
+   "Platinum White Pearl": {
+    "price": 1000,
+    "avail": true,
+    "code": "089"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D6"
+   }
+  },
+  "Fortuner 2.4 AT 4WD": {
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   }
+  },
+  "Fortuner 2.8 VRZ AT 4WD": {
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": false,
+    "code": "040"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Super White II with Black Roof": {
+    "price": 1500,
+    "avail": true,
+    "code": "2UE"
+   },
+   "Bronze Mica Metallic with Black Roof": {
+    "price": 1500,
+    "avail": true,
+    "code": "2VM"
+   }
+  },
+  "Fortuner 2.7 SRZ AT 4WD": {
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   }
+  },
+  "Hilux GR Sport 2.8 AT 4WD": {
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   }
+  },
+  "Hilux Double Cab 2.8 Rogue AT 4WD": {
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Solid White": {
+    "price": 0,
+    "avail": false,
+    "code": "058"
+   }
+  },
+  "Hilux Double Cab 2.4V AT 4WD": {
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Solid White": {
+    "price": 0,
+    "avail": false,
+    "code": "058"
+   }
+  },
+  "Hilux Double Cab 2.4E AT 4WD": {
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Solid White": {
+    "price": 0,
+    "avail": false,
+    "code": "058"
+   }
+  },
+  "Hilux Double Cab 2.4E MT 4WD": {
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4T3"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "4W9"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": true,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": true,
+    "code": "040"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1F8"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1D4"
+   },
+   "Solid White": {
+    "price": 0,
+    "avail": false,
+    "code": "058"
+   }
+  },
+  "Hilux Single Cab 2.4 MT 4WD": {
+   "Bronze Mica Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "4T3"
+   },
+   "Phantom Brown Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "4W9"
+   },
+   "Crimson Spark Red Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "3T6"
+   },
+   "Attitude Black Mica": {
+    "price": 0,
+    "avail": false,
+    "code": "218"
+   },
+   "Super White II": {
+    "price": 0,
+    "avail": false,
+    "code": "040"
+   },
+   "Medium Silver Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "1F8"
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": false,
+    "code": "1D4"
+   },
+   "Solid White": {
+    "price": 0,
+    "avail": true,
+    "code": "058"
+   }
+  },
+  "Veloz 1.5 AT": {
+   "Blue Metallic with Black Roof": {
+    "price": 1300,
+    "avail": true,
+    "code": "XL3"
+   },
+   "Silver Metallic with Black Roof": {
+    "price": 1300,
+    "avail": true,
+    "code": "XL2"
+   },
+   "Metallic Bluish Black": {
+    "price": 0,
+    "avail": true,
+    "code": "X16"
+   },
+   "Red Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "R67"
+   },
+   "White": {
+    "price": 0,
+    "avail": true,
+    "code": "W09"
+   }
+  },
+  "Harrier 2.5 HEV": {
+   "Platinum White Pearl": {
+    "price": 800,
+    "avail": true,
+    "code": "089"
+   },
+   "Grey Metallic": {
+    "price": 0,
+    "avail": true,
+    "code": "1G3"
+   },
+   "Precious Black": {
+    "price": 800,
+    "avail": true,
+    "code": "219"
+   }
+  },
+  "Yaris 1.5E AT": {
+   "2-tone Red Mica Metallic": {
+    "price": 1500,
+    "avail": true
+   },
+   "2-tone Platinum White Pearl": {
+    "price": 1800,
+    "avail": true
+   },
+   "Red Mica Metallic": {
+    "price": 0,
+    "avail": true
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true
+   },
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true
+   }
+  },
+  "Yaris 1.5G AT": {
+   "2-tone Red Mica Metallic": {
+    "price": 1500,
+    "avail": true
+   },
+   "2-tone Platinum White Pearl": {
+    "price": 1800,
+    "avail": true
+   },
+   "Red Mica Metallic": {
+    "price": 0,
+    "avail": true
+   },
+   "Silver Metallic": {
+    "price": 0,
+    "avail": true
+   },
+   "Platinum White Pearl": {
+    "price": 400,
+    "avail": true
+   }
+  },
+  "Vellfire 2.5": {
+   "Neutral Black": {
+    "price": 0,
+    "avail": true
+   },
+   "Precious Metal": {
+    "price": 1000,
+    "avail": true
+   },
+   "Platinum White Pearl": {
+    "price": 1000,
+    "avail": true
+   }
+  },
+  "Vellfire 2.5 HEV Executive Lounge": {
+   "Neutral Black": {
+    "price": 0,
+    "avail": true
+   },
+   "Precious Metal": {
+    "price": 1000,
+    "avail": true
+   },
+   "Platinum White Pearl": {
+    "price": 1000,
+    "avail": true
+   }
+  },
+  "Alphard 2.4T Executive Lounge": {
+   "Platinum White Pearl": {
+    "price": 1000,
+    "avail": true
+   },
+   "Precious Metal": {
+    "price": 1000,
+    "avail": true
+   },
+   "Neutral Black": {
+    "price": 0,
+    "avail": true
+   },
+   "Precious Leo-Blond": {
+    "price": 1000,
+    "avail": true
+   }
+  }
+ }
+}
