@@ -64,6 +64,12 @@
       accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
       name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
       accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
+      cTitle: "PENGIRAAN LOAN KERETA", cSub: "Pilih varian yang sesuai dengan awak", cMixed: "Perbandingan Loan Toyota",
+      cPrice: "Harga Kereta", cReb: "Rebate", cDep: "Deposit selepas Rebate", cIns: "Insurans (Anggaran)", cLoan: "Jumlah Loan (Anggaran)", cRate: "Kadar Faedah (Anggaran)",
+      cLow: "Bulanan Terendah", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
+      fElig: "Nak semak kelayakan? Jom semak hari ini sementara tawaran masih ada.", fContact: "Hubungi saya untuk semakan kelayakan percuma", fWA: ["WhatsApp Saya", "Sekarang"],
+      pDisc: "Anggaran tertakluk pada terma dan syarat. Kadar faedah boleh berubah. Harga boleh berubah bila-bila masa; harga Semenanjung Malaysia sahaja.",
+      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", photoDel: "Buang gambar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
@@ -116,6 +122,12 @@
       accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
       name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
       accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
+      cTitle: "CAR LOAN CALCULATION", cSub: "Choose the variant that suits you", cMixed: "Toyota Loan Comparison",
+      cPrice: "Car Price", cReb: "Rebate", cDep: "Downpayment after Rebate", cIns: "Insurance (Est.)", cLoan: "Total Loan (Est.)", cRate: "Interest Rate (Est.)",
+      cLow: "Lowest Monthly", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
+      fElig: "Want to check your eligibility? Let's do it today while this offer lasts.", fContact: "Contact me for a free eligibility check", fWA: ["WhatsApp", "Me Now"],
+      pDisc: "Estimates subject to terms & conditions. Interest rate subject to change. Prices may change at any time; Peninsular Malaysia prices only.",
+      photo: "Profile photo (for posters)", photoAdd: "Choose photo", photoDel: "Remove photo",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
@@ -333,97 +345,192 @@
   };
   const fit = (ctx, text, maxW, size, weight = 800) => { let s = size; do { ctx.font = `${weight} ${s}px "Plus Jakarta Sans", sans-serif`; s -= 2; } while (ctx.measureText(text).width > maxW && s > 20); };
 
+  // Gambar kereta lutsinar (assets/cars/cut) ikut varian: GR Sport / HEV ada gambar sendiri
+  const CUTS = new Set(["vios","vios-hev","vios-grs","yaris","yaris-cross","yaris-cross-hev","corolla","corolla-grs","corolla-cross","corolla-cross-hev","corolla-cross-grs","camry","camry-hev","veloz","zenix","zenix-hev","fortuner","hilux","hilux-grs","hiace","harrier","alphard","vellfire","vellfire-hev"]);
+  const cutOf = g => {
+    const id = g.car.id, gr = /GR Sport/i.test(g.name), hev = /HEV/i.test(g.name);
+    const k = gr && CUTS.has(id + "-grs") ? id + "-grs" : hev && CUTS.has(id + "-hev") ? id + "-hev" : id;
+    return CUTS.has(k) ? "assets/cars/cut/" + k + ".png" : g.car.img;
+  };
+  const contain = (ctx, img, x, y, w, h, bias = .5) => {
+    if (!img) return;
+    const s = Math.min(w / img.width, h / img.height), dw = img.width * s, dh = img.height * s;
+    ctx.drawImage(img, x + (w - dw) / 2, y + (h - dh) * bias, dw, dh);
+  };
+  const NAVY = "#0b1f4b", RED = "#e4002b", INK = "#1f2937", MUTE = "#6b7280", LINE = "#e3e7ee";
+  // Saiz poster ikut bilangan varian (ikut format contoh Wan)
+  const LAYOUT = {
+    1: { W: 1500, H: 2000, cols: 1, rows: 1, hs: 1, fs: .85, head: 330, foot: 200, disc: 70 },
+    2: { W: 2000, H: 2000, cols: 2, rows: 1, hs: 1, fs: 1, head: 320, foot: 220, disc: 70 },
+    3: { W: 2000, H: 1125, cols: 3, rows: 1, hs: .72, fs: .66, head: 215, foot: 145, disc: 46 },
+    4: { W: 1125, H: 2000, cols: 2, rows: 2, hs: .62, fs: .6, head: 205, foot: 140, disc: 56 }
+  };
+  const WA_BUBBLE = new Path2D("M3.6 20.4l1.25-3.9A8.6 8.6 0 1 1 8.1 19.6z");
+  const WA_PHONE = new Path2D("M9.3 7.3c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2 0 .5-.1.7l-.6.7c-.1.2-.1.4 0 .5.6 1 1.5 1.9 2.5 2.5.2.1.4.1.5 0l.7-.7c.2-.2.5-.2.7-.1l1.8.8c.2.1.4.3.4.5 0 .5-.1 1.2-.6 1.6-.5.4-1.2.6-2 .5-1.5-.2-3-1-4.2-2.3-1.3-1.2-2.1-2.7-2.3-4.2-.1-.7.1-1.3.6-1.7z");
+
   let drawSeq = 0;
   async function drawPoster(rows, v) {
     const seq = ++drawSeq;
     await document.fonts.ready;
-    const imgs = await Promise.all(rows.map(r => loadImg(r.g.car.img)));
+    const p = profile(), photoSrc = store.get("sa_photo", "");
+    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadImg(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
     if (seq !== drawSeq) return;
     const cv = $("#cv"); if (!cv) return;
-    const ctx = cv.getContext("2d"), W = 1080, H = 1350, p = profile();
-    const F = (w, s) => ctx.font = `${w} ${s}px "Plus Jakarta Sans", sans-serif`;
-    const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0b1b3a"); g.addColorStop(1, "#16346e");
-    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.textAlign = "center"; ctx.fillStyle = "#f5c542"; F(800, 34); ctx.fillText(rows.length > 1 ? t("pCmp", rows.length) : t("pPkg"), W / 2, rows.length > 2 ? 88 : 96);
+    const L = LAYOUT[rows.length] || LAYOUT[1], { W, H } = L;
+    if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
+    const ctx = cv.getContext("2d");
+    const F = (w, s, it) => ctx.font = (it ? "italic " : "") + w + " " + Math.round(s) + 'px "Plus Jakarta Sans", sans-serif';
+    const fitF = (text, maxW, size, w, it) => { let z = size; F(w, z, it); while (ctx.measureText(text).width > maxW && z > 8) F(w, --z, it); return z; };
 
-    if (rows.length === 1) {
-      const r = rows[0];
-      ctx.fillStyle = "#fff"; fit(ctx, r.g.name.toUpperCase(), 960, 58); ctx.fillText(r.g.name.toUpperCase(), W / 2, 158);
-      rr(ctx, 60, 186, 960, 330, 28); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[0], 60, 186, 960, 330); ctx.restore();
-      // panel ansuran
-      rr(ctx, 60, 534, 960, 126, 24); ctx.fillStyle = "rgba(245,197,66,.15)"; ctx.fill();
-      ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(600, 28); ctx.fillText(t("pFrom"), 90, 578);
-      ctx.fillStyle = "#f5c542"; F(800, 72); ctx.fillText(RM(r.m), 90, 644);
-      const mw = ctx.measureText(RM(r.m)).width; F(700, 30); ctx.fillText(t("pPerMonth"), 96 + mw, 644);
-      ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 34); ctx.fillText(t("yrs", v.years), 990, 590);
-      ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(`@ ${v.rate}%`, 990, 634);
-      // pecahan harga
-      const rowsB = [[t("bPrice"), RM(r.g.price)]];
-      if (r.reb) rowsB.push([t("rebate"), "-" + RM(r.reb), "#4ade80"], [t("bAfter"), RM(r.net)]);
-      rowsB.push([`${t("deposit")} (${pct1(r.depPct)}%)`, RM(r.dep)], [t("bIns", v.ncd, v.insIn), RM(r.ins.total)],
-        [t("bLoan"), RM(r.fin), "#f5c542"], [t("bRate"), `${v.rate}% · ${t("yrs", v.years)}`]);
-      const y0 = 680, rh = Math.min(64, 432 / rowsB.length);
-      rr(ctx, 60, y0, 960, rh * rowsB.length + 12, 24); ctx.fillStyle = "rgba(255,255,255,.07)"; ctx.fill();
-      rowsB.forEach(([k, val, col], i) => {
-        const y = y0 + 6 + i * rh, base = y + rh * 0.64;
-        if (i) { ctx.fillStyle = "rgba(255,255,255,.12)"; ctx.fillRect(90, y, 900, 1); }
-        ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 560, 26, 600); ctx.fillText(k, 90, base);
-        ctx.textAlign = "right"; ctx.fillStyle = col || "#fff"; F(800, 30); ctx.fillText(val, 990, base);
+    // ---- latar: kelabu cerah + garis serong halus + sapuan merah
+    const bg = ctx.createLinearGradient(0, 0, W, H); bg.addColorStop(0, "#f7f8fa"); bg.addColorStop(1, "#e9ecf1");
+    ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+    ctx.save(); ctx.globalAlpha = .5; ctx.strokeStyle = "#fff"; ctx.lineWidth = 3;
+    for (let i = -H; i < W; i += 90) { ctx.beginPath(); ctx.moveTo(i, H); ctx.lineTo(i + H * .9, 0); ctx.stroke(); }
+    ctx.restore();
+    ctx.strokeStyle = RED; ctx.lineWidth = 5;
+    ctx.beginPath(); ctx.moveTo(-20, H * .7); ctx.quadraticCurveTo(W * .18, H * .76, W * .32, H * .8); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(W * .82, H - 6); ctx.quadraticCurveTo(W * .92, H * .985, W + 20, H * .955); ctx.stroke();
+
+    // ---- kepala
+    const hs = L.hs, pad = 60 * Math.max(hs, .7);
+    const same = rows.every(r => r.g.car.id === rows[0].g.car.id);
+    const title = same ? "Toyota " + rows[0].g.car.name : t("cMixed");
+    ctx.textAlign = "left"; ctx.textBaseline = "alphabetic";
+    ctx.fillStyle = NAVY; F(800, 36 * hs); ctx.letterSpacing = 4 * hs + "px"; ctx.fillText(t("cTitle"), pad, 70 * hs); ctx.letterSpacing = "0px";
+    ctx.fillStyle = RED; ctx.fillRect(pad, 88 * hs, 92 * hs, 8 * hs);
+    ctx.fillStyle = NAVY; fitF(title, W - pad * 2 - 300 * hs, 112 * hs, 800); ctx.fillText(title, pad, 205 * hs);
+    ctx.fillStyle = MUTE; F(600, 40 * hs); ctx.fillText(t("cSub"), pad, 265 * hs);
+    ctx.textAlign = "right"; ctx.fillStyle = "#111"; F(800, 54 * hs); ctx.letterSpacing = 3 * hs + "px"; ctx.fillText("TOYOTA", W - pad, 120 * hs); ctx.letterSpacing = "0px";
+
+    // ---- kad varian
+    const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
+    let cw = (W - pad * 2 - gap * (L.cols - 1)) / L.cols, ch = (areaBot - areaTop - gap * (L.rows - 1)) / L.rows;
+    if (rows.length === 1) cw = Math.min(cw, 1100);
+    const k = Math.min(cw / 900, ch / 1150);
+    rows.forEach((r, i) => {
+      const col = i % L.cols, row = Math.floor(i / L.cols);
+      const x = rows.length === 1 ? (W - cw) / 2 : pad + col * (cw + gap), y = areaTop + row * (ch + gap);
+      drawCard(r, i, x, y, cw, ch, k, imgs[i]);
+    });
+
+    function drawCard(r, i, x, y, cw, ch, k, img) {
+      // kad putih + bayang
+      ctx.save(); ctx.shadowColor = "rgba(15,23,42,.14)"; ctx.shadowBlur = 30 * k; ctx.shadowOffsetY = 10 * k;
+      rr(ctx, x, y, cw, ch, 26 * k); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
+      // lencana nombor serong
+      ctx.fillStyle = NAVY; ctx.beginPath();
+      ctx.moveTo(x - 6 * k, y - 6 * k); ctx.lineTo(x + 150 * k, y - 6 * k); ctx.lineTo(x + 118 * k, y + 116 * k); ctx.lineTo(x - 6 * k, y + 116 * k); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = "#fff"; ctx.textAlign = "center"; F(800, 62 * k); ctx.fillText(String(i + 1), x + 62 * k, y + 78 * k);
+      // nama varian + garis merah
+      const nx = x + 188 * k, nmax = cw - 188 * k - 30 * k;
+      ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 58 * k, 800); ctx.fillText(r.g.name, nx, y + 82 * k);
+      const fw = ctx.measureText(r.g.name.split(" ")[0]).width;
+      ctx.fillStyle = RED; ctx.fillRect(nx, y + 100 * k, fw, 7 * k);
+      // gambar kereta
+      const FIX = 690 * k, imgTop = y + 126 * k, imgH = Math.max(ch - FIX - 126 * k, 120 * k);
+      ctx.save(); ctx.fillStyle = "rgba(0,0,0,.07)"; ctx.beginPath();
+      ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      contain(ctx, img, x + 30 * k, imgTop, cw - 60 * k, imgH * .9, .85);
+      // jadual pecahan harga
+      const rowsT = [
+        [t("cPrice"), RM(r.g.price)], [t("cReb"), RM(r.reb)], [t("cDep"), RM(r.dep)],
+        [t("cIns") + (v.ncd ? " · NCD " + v.ncd + "%" : ""), RM(r.ins.total)], [t("cLoan"), RM(r.fin), "#1f4fa3"], [t("cRate"), v.rate + "%"]
+      ];
+      const tx = x + 36 * k, tr = x + cw - 36 * k, ty = imgTop + imgH, rh = 56 * k;
+      rowsT.forEach(([lab, val, colr], j) => {
+        const yy = ty + j * rh;
+        ctx.fillStyle = LINE; ctx.fillRect(tx, yy, tr - tx, Math.max(1, 2 * k));
+        ctx.textAlign = "left"; ctx.fillStyle = INK; fitF(lab, (tr - tx) * .62, 29 * k, 600); ctx.fillText(lab, tx + 14 * k, yy + rh * .68);
+        ctx.textAlign = "right"; ctx.fillStyle = colr || NAVY; F(800, 33 * k); ctx.fillText(val, tr - 4 * k, yy + rh * .68);
       });
-    } else if (rows.length > 2) {
-      // 3-4 varian: kad baris (gambar kiri, angka kanan); kad ansuran terendah diserlahkan
-      const top = 130, area = 900, gap = 18, n = rows.length, ch = (area - gap * (n - 1)) / n;
-      const lo = Math.min(...rows.map(r => r.m));
-      rows.forEach((r, i) => {
-        const y = top + i * (ch + gap), x = 60, w = 960, iw = Math.min(380, ch * 1.6);
-        rr(ctx, x, y, w, ch, 24); ctx.fillStyle = r.m === lo ? "rgba(245,197,66,.16)" : "rgba(255,255,255,.08)"; ctx.fill();
-        rr(ctx, x + 12, y + 12, iw, ch - 24, 16); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[i], x + 12, y + 12, iw, ch - 24); ctx.restore();
-        const tx = x + iw + 36, tw = w - iw - 60, s = ch / 280, sz = k => Math.round(k);
-        ctx.textAlign = "left"; ctx.fillStyle = "#fff"; fit(ctx, r.g.name, tw, sz(36 * Math.min(1, s + .1))); ctx.fillText(r.g.name, tx, y + ch * 0.25);
-        const mm = RM(r.m) + t("pPerMonth");
-        ctx.fillStyle = "#f5c542"; fit(ctx, mm, tw, sz(68 * Math.min(1, s + .15))); ctx.fillText(mm, tx, y + ch * 0.56);
-        ctx.fillStyle = "#b9c6e4";
-        const l1 = `${t("otrS")} ${RM(r.g.price)}${r.reb ? ` · ${t("rebate")} -${RM(r.reb)}` : ""} · ${t("bInsS")} ${RM(r.ins.total)}${r.insFin ? t("inLoan") : ""}`;
-        const l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · ${t("loanS")} ${RM(r.fin)}`;
-        const fs = sz(24 * Math.min(1, s + .2));
-        const fsz = txt => { let z = fs; F(600, z); while (ctx.measureText(txt).width > tw && z > 12) F(600, --z); return z; };
-        F(600, Math.min(fsz(l1), fsz(l2))); // saiz sama untuk kedua-dua baris
-        ctx.fillText(l1, tx, y + ch * 0.75);
-        ctx.fillText(l2, tx, y + ch * 0.75 + sz(30 * Math.min(1, s + .2)));
+      const tEnd = ty + rowsT.length * rh; ctx.fillStyle = LINE; ctx.fillRect(tx, tEnd, tr - tx, Math.max(1, 2 * k));
+      // bulanan terendah
+      const cx = x + cw / 2;
+      ctx.textAlign = "center"; ctx.fillStyle = "#111"; F(600, 30 * k); ctx.fillText(t("cLow"), cx, tEnd + 48 * k);
+      const num = Math.round(r.m).toLocaleString("en-MY");
+      F(800, 44 * k); const wRM = ctx.measureText("RM").width; F(800, 108 * k); const wN = ctx.measureText(num).width; F(500, 30 * k); const wM = ctx.measureText(" " + t("cMonth")).width;
+      let bx = cx - (wRM + wN + wM) / 2; const by = tEnd + 148 * k;
+      ctx.textAlign = "left"; ctx.fillStyle = RED; F(800, 44 * k); ctx.fillText("RM", bx, by); bx += wRM;
+      F(800, 108 * k); ctx.fillText(num, bx, by); bx += wN;
+      ctx.fillStyle = "#333"; F(500, 30 * k); ctx.fillText(" " + t("cMonth"), bx, by);
+      // kotak tempoh: tempoh dipilih, -2, -4 tahun
+      const ys = [v.years, v.years - 2, v.years - 4].filter(n => n >= 1);
+      const bTop = tEnd + 172 * k, bH = 150 * k, bg2 = 22 * k, bW = ((tr - tx) - bg2 * (ys.length - 1)) / ys.length;
+      ys.forEach((n, j) => {
+        const m = j === 0 ? r.m : calc(r.g, { ...v, mode: "rm", depRM: r.dep, years: n }).m;
+        const bxx = tx + j * (bW + bg2), hi = j === 0;
+        rr(ctx, bxx, bTop, bW, bH, 12 * k); ctx.fillStyle = "#fff"; ctx.fill();
+        ctx.lineWidth = Math.max(1, (hi ? 3 : 2) * k); ctx.strokeStyle = hi ? "#e8b931" : "#dfe3ea"; ctx.stroke();
+        const lab = t("cYears", n);
+        if (hi) {
+          ctx.save(); rr(ctx, bxx, bTop, bW, 46 * k, 12 * k); ctx.clip(); ctx.fillStyle = NAVY; ctx.fillRect(bxx, bTop, bW, 46 * k); ctx.restore();
+        }
+        // ikon kalendar + label
+        F(600, 25 * k); const lw = ctx.measureText(lab).width, iw = 24 * k, sx = bxx + (bW - lw - iw - 10 * k) / 2, ly = bTop + (hi ? 32 : 36) * k;
+        const ic = hi ? "#fff" : NAVY; ctx.strokeStyle = ic; ctx.lineWidth = Math.max(1, 2 * k);
+        ctx.strokeRect(sx, ly - 19 * k, iw, 21 * k); ctx.beginPath(); ctx.moveTo(sx, ly - 13 * k); ctx.lineTo(sx + iw, ly - 13 * k); ctx.stroke();
+        ctx.fillStyle = ic; for (let a = 0; a < 3; a++) for (let b = 0; b < 2; b++) ctx.fillRect(sx + 4 * k + a * 6.5 * k, ly - 9 * k + b * 5 * k, 3 * k, 3 * k);
+        ctx.textAlign = "left"; ctx.fillStyle = ic; ctx.fillText(lab, sx + iw + 10 * k, ly);
+        const vtxt = Math.round(m).toLocaleString("en-MY");
+        F(800, 22 * k); const a1 = ctx.measureText("RM").width; F(800, 46 * k); const a2 = ctx.measureText(vtxt).width;
+        let vx = bxx + (bW - a1 - a2) / 2; const vy = bTop + (hi ? 104 : 108) * k;
+        ctx.fillStyle = RED; F(800, 22 * k); ctx.fillText("RM", vx, vy); F(800, 46 * k); ctx.fillText(vtxt, vx + a1, vy);
+        if (hi && ys.length > 1) { ctx.textAlign = "center"; ctx.fillStyle = "#111"; F(600, 20 * k); ctx.fillText("★ " + t("cLowest"), bxx + bW / 2, bTop + 136 * k); }
       });
-      const ms = rows.map(r => r.m);
-      ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(700, 30);
-      ctx.fillText(`${t("yrs", v.years)} · ${v.rate}% · ${t("pDiff", RM(Math.max(...ms) - Math.min(...ms)))}`, W / 2, 1076);
-    } else {
-      rows.forEach((r, i) => {
-        const x = 60 + i * 490, w = 470;
-        rr(ctx, x, 140, w, 860, 28); ctx.fillStyle = "rgba(255,255,255,.08)"; ctx.fill();
-        rr(ctx, x + 16, 156, w - 32, 300, 20); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[i], x + 16, 156, w - 32, 300); ctx.restore();
-        ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(800, 34);
-        wrap(ctx, r.g.name, x + w / 2, 512, w - 40, 42);
-        ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(t("pMonthly"), x + w / 2, 640);
-        ctx.fillStyle = "#f5c542"; fit(ctx, RM(r.m), w - 40, 80); ctx.fillText(RM(r.m), x + w / 2, 726);
-        const br = [[t("otrS"), RM(r.g.price)]];
-        if (rows.some(q => q.reb)) br.push([t("rebate"), r.reb ? "-" + RM(r.reb) : "-", "#4ade80"]);
-        br.push([`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("bInsS") + (r.insFin ? t("inLoan") : ""), RM(r.ins.total)], [t("loanS"), RM(r.fin), "#f5c542"]);
-        const step = br.length > 4 ? 44 : 52;
-        br.forEach(([k, val, col], j) => {
-          const y = 782 + j * step; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 250, 23, 600); ctx.fillText(k, x + 30, y);
-          ctx.textAlign = "right"; ctx.fillStyle = col || "#fff"; F(800, 25); ctx.fillText(val, x + w - 30, y);
-        });
-      });
-      ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(700, 34);
-      ctx.fillText(`${t("pDiff2", RM(Math.abs(rows[0].m - rows[1].m)))} · ${t("yrs", v.years)} · ${v.rate}%`, W / 2, 1070);
     }
-    // jalur SA
-    ctx.fillStyle = "#eb0a1e"; ctx.fillRect(0, 1180, W, 120);
-    ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(800, 40); ctx.fillText(p.name || t("pName"), 60, 1232);
-    F(600, 26); ctx.fillText(`${t("sa")}${p.branch ? " · " + p.branch : ""}`, 60, 1272);
-    ctx.textAlign = "right"; F(800, 42); ctx.fillText(p.phone || "01x-xxx xxxx", W - 60, 1250);
-    ctx.textAlign = "center"; ctx.fillStyle = "#b9c6e4"; F(500, 17);
-    wrap(ctx, t("foot"), W / 2, rows.length === 1 ? 1140 : 1122, 960, 22);
-    ctx.fillStyle = "#0b1b3a"; ctx.fillRect(0, 1300, W, 50); ctx.fillStyle = "#b9c6e4"; F(500, 18);
-    ctx.fillText(t("footSrc"), W / 2, 1332);
+
+    // ---- kaki: profil | kelayakan | telefon | WhatsApp
+    const f = L.fs, fh = L.foot, fy = H - L.disc - fh, fx = pad * .8, fwid = W - fx * 2, narrow = W < 1500;
+    ctx.save(); ctx.shadowColor = "rgba(15,23,42,.12)"; ctx.shadowBlur = 24 * f; ctx.shadowOffsetY = 6 * f;
+    rr(ctx, fx, fy, fwid, fh, 22 * f); ctx.fillStyle = "#fff"; ctx.fill(); ctx.restore();
+    const midY = fy + fh / 2, seg = narrow ? [0, .33, .63, 1] : [0, .25, .5, .76, 1];
+    const sepX = q => fx + fwid * q;
+    ctx.fillStyle = "#d9dde5"; for (let q = 1; q < seg.length - 1; q++) ctx.fillRect(sepX(seg[q]), fy + fh * .22, Math.max(1, 2 * f), fh * .56);
+    // profil
+    const pr = fh * .34, pcx = fx + 30 * f + pr;
+    ctx.save(); ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.fillStyle = "#e8ecf3"; ctx.fill(); ctx.clip();
+    if (photo) { const s2 = Math.max(2 * pr / photo.width, 2 * pr / photo.height); ctx.drawImage(photo, pcx - photo.width * s2 / 2, midY - photo.height * s2 / 2, photo.width * s2, photo.height * s2); }
+    else { ctx.fillStyle = NAVY; ctx.textAlign = "center"; F(800, pr * .8); ctx.fillText((p.name || "SA").split(/\s+/).map(w => w[0]).slice(0, 2).join("").toUpperCase(), pcx, midY + pr * .28); }
+    ctx.restore();
+    ctx.strokeStyle = "#e3e7ee"; ctx.lineWidth = 3 * f; ctx.beginPath(); ctx.arc(pcx, midY, pr, 0, Math.PI * 2); ctx.stroke();
+    const px1 = pcx + pr + 22 * f, pw = sepX(seg[1]) - px1 - 16 * f;
+    ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(p.name || t("pName"), pw, 44 * f, 800); ctx.fillText(p.name || t("pName"), px1, midY - 2 * f);
+    ctx.fillStyle = MUTE; fitF(t("sa"), pw, 26 * f, 500); ctx.fillText(t("sa"), px1, midY + 36 * f);
+    // cop "trusted" + ayat kelayakan
+    const s1 = sepX(seg[1]), s1w = sepX(seg[2]) - s1, sr = fh * .3, scx = s1 + 26 * f + sr;
+    ctx.beginPath(); ctx.arc(scx, midY, sr, 0, Math.PI * 2); ctx.fillStyle = "#d4a72c"; ctx.fill();
+    ctx.beginPath(); ctx.arc(scx, midY, sr * .8, 0, Math.PI * 2); ctx.fillStyle = "#111"; ctx.fill();
+    ctx.beginPath(); ctx.arc(scx, midY, sr * .55, 0, Math.PI * 2); ctx.strokeStyle = "#fff"; ctx.lineWidth = 3 * f; ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(scx - sr * .25, midY); ctx.lineTo(scx - sr * .05, midY + sr * .2); ctx.lineTo(scx + sr * .3, midY - sr * .2); ctx.lineWidth = 6 * f; ctx.lineCap = "round"; ctx.lineJoin = "round"; ctx.stroke(); ctx.lineCap = "butt";
+    const ex = scx + sr + 18 * f, ew = s1 + s1w - ex - 16 * f;
+    ctx.fillStyle = NAVY; F(700, 27 * f); ctx.textAlign = "left";
+    const words = t("fElig").split(" "), lines = []; let ln = "";
+    for (const wd of words) { const tt = ln ? ln + " " + wd : wd; if (ctx.measureText(tt).width > ew && ln) { lines.push(ln); ln = wd; } else ln = tt; } lines.push(ln);
+    const lh = 34 * f, ly0 = midY - (lines.length - 1) * lh / 2 + 9 * f; lines.forEach((l, q) => ctx.fillText(l, ex, ly0 + q * lh));
+    // telefon (atau WhatsApp jika poster sempit)
+    const s2x = sepX(seg[2]), cr = fh * .3, ccx = s2x + 26 * f + cr;
+    ctx.beginPath(); ctx.arc(ccx, midY, cr, 0, Math.PI * 2); ctx.fillStyle = narrow ? "#25d366" : NAVY; ctx.fill();
+    ctx.save(); const sc = cr * 1.25 / 24; ctx.translate(ccx - 12 * sc, midY - 12 * sc); ctx.scale(sc, sc); ctx.fillStyle = "#fff";
+    if (narrow) { ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); } ctx.fill(WA_PHONE); ctx.restore();
+    const nx2 = ccx + cr + 20 * f, nw2 = sepX(seg[3]) - nx2 - 18 * f;
+    ctx.fillStyle = NAVY; fitF(p.phone || "01x-xxx xxxx", nw2, 60 * f, 800); ctx.fillText(p.phone || "01x-xxx xxxx", nx2, midY + 8 * f);
+    ctx.fillStyle = INK; fitF(t("fContact"), nw2, 24 * f, 600); ctx.fillText(t("fContact"), nx2, midY + 44 * f);
+    // butang WhatsApp (poster lebar sahaja)
+    if (!narrow) {
+      const b0 = sepX(seg[3]) + 24 * f, bw2 = sepX(seg[4]) - b0 - 24 * f, bh2 = fh * .62, by2 = midY - bh2 / 2;
+      const gg = ctx.createLinearGradient(0, by2, 0, by2 + bh2); gg.addColorStop(0, "#2fb35a"); gg.addColorStop(1, "#1a8a43");
+      rr(ctx, b0, by2, bw2, bh2, 16 * f); ctx.fillStyle = gg; ctx.fill(); ctx.lineWidth = 3 * f; ctx.strokeStyle = "#e8b931"; ctx.stroke();
+      const ir = bh2 * .3, icx = b0 + 24 * f + ir;
+      ctx.save(); const s3 = ir * 2.1 / 24; ctx.translate(icx - 12 * s3, midY - 12 * s3); ctx.scale(s3, s3);
+      ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); ctx.fillStyle = "#fff"; ctx.fill(WA_PHONE); ctx.restore();
+      const [w1, w2] = t("fWA"); const tw2 = bw2 - (icx + ir + 18 * f - b0) - 14 * f;
+      ctx.fillStyle = "#fff"; ctx.textAlign = "left"; fitF(w1.length > w2.length ? w1 : w2, tw2, 40 * f, 800);
+      ctx.fillText(w1, icx + ir + 18 * f, midY - 4 * f); ctx.fillText(w2, icx + ir + 18 * f, midY + 40 * f);
+    }
+    // penafian
+    ctx.textAlign = "center"; ctx.fillStyle = "#8a93a3"; fitF(t("pDisc"), W * .76, 26 * f, 500, true);
+    ctx.fillText(t("pDisc"), W / 2, H - L.disc * .4);
   }
 
   function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(t("saved")); }
@@ -568,6 +675,8 @@
       <div class="card">
         <label>${t("langLbl")}</label>
         <div class="seg" id="lsel" style="margin-bottom:4px"><button data-l="ms" class="${lang === "ms" ? "on" : ""}">Bahasa Melayu</button><button data-l="en" class="${lang === "en" ? "on" : ""}">English</button></div>
+        <label>${t("photo")}</label>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:4px"><img id="phImg" alt="" style="width:64px;height:64px;border-radius:50%;object-fit:cover;background:var(--soft);flex:none" ${store.get("sa_photo", "") ? `src="${store.get("sa_photo", "")}"` : ""}><label class="btn ghost" style="margin:0;cursor:pointer;padding:10px 14px">${t("photoAdd")}<input id="phFile" type="file" accept="image/*" hidden></label><button class="btn ghost" id="phDel" type="button" style="padding:10px 14px">${t("photoDel")}</button></div>
         <label>${t("name")}</label><input id="n" value="${esc(p.name)}" placeholder="${t("eg")} Wan Jasni">
         <label>${t("phone")}</label><input id="ph" inputmode="tel" value="${esc(p.phone)}" placeholder="${t("eg")} 012-345 6789">
         <label>${t("branch")}</label><input id="br" value="${esc(p.branch)}" placeholder="${t("eg")} Toyota Shah Alam">
@@ -575,6 +684,18 @@
       </div>
       <p class="note">${t("accNote")}</p>`;
     $("#lsel").querySelectorAll("button").forEach(b => b.onclick = () => setLang(b.dataset.l));
+    $("#phFile").onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      const img = new Image(), url = URL.createObjectURL(f);
+      img.onload = () => {
+        const S = 400, c = document.createElement("canvas"); c.width = c.height = S;
+        const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
+        c.getContext("2d").drawImage(img, (S - w) / 2, (S - h) / 2 - (h > S ? (h - S) * .15 : 0), w, h);
+        const data = c.toDataURL("image/jpeg", .85); store.set("sa_photo", data); $("#phImg").src = data; URL.revokeObjectURL(url); toast(t("savedProf"));
+      };
+      img.src = url;
+    };
+    $("#phDel").onclick = () => { try { localStorage.removeItem("sa_photo"); } catch {} $("#phImg").removeAttribute("src"); toast(t("savedProf")); };
     $("#ph").onblur = () => { $("#ph").value = fmtPhone($("#ph").value); };
     $("#sv").onclick = () => { const ph = fmtPhone($("#ph").value); $("#ph").value = ph; store.set("sa_profile", { name: $("#n").value.trim(), phone: ph, branch: $("#br").value.trim() }); toast(t("savedProf")); };
   }
