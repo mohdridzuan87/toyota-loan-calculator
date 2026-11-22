@@ -59,7 +59,11 @@ canvas{width:100%;height:auto;border-radius:14px;display:block;margin:12px 0}
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
 .list{display:grid;gap:10px}
-.car{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px}
+.docs{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;align-items:center;border-top:1px solid var(--line);padding-top:8px;font-size:12px}
+.docs>span{color:var(--mute);font-weight:700;margin-right:2px}
+.docs a{color:var(--ink);text-decoration:none;font-weight:700;border:1px solid var(--line);background:var(--soft);border-radius:999px;padding:5px 10px}
+.docs a.pl{border-color:var(--red);color:var(--red)}
+.car{flex-wrap:wrap;display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:10px}
 .car img{width:92px;height:62px;object-fit:cover;border-radius:10px;flex:none;background:#fff}
 .car .t{flex:1;min-width:0}
 .car b{display:block}

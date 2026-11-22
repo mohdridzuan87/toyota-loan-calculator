@@ -55,6 +55,7 @@
       msgPrice: "Harga OTR (Semenanjung, tanpa insurans):", msgChange: "*Harga boleh berubah bila-bila masa.",
       msgCta: ph => `Nak pandu uji atau kira loan? WhatsApp saya: ${ph}`,
       broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Pautan</b>: hantar pautan + harga ke nombor pelanggan.",
+      docMax: "MaxCheck (servis berkala)", docPrice: "Senarai harga",
       custWA: "Nombor WhatsApp pelanggan (untuk Pautan)", eg: "cth.", from: "dari",
       broNote: "E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.",
       preparing: "Menyediakan brochure…", failed: "Gagal: ",
@@ -116,6 +117,7 @@
       msgPrice: "OTR price (Peninsular, without insurance):", msgChange: "*Prices may change at any time.",
       msgCta: ph => `Keen on a test drive or a loan calculation? Message me: ${ph}`,
       broH: "Official brochures", broSub: "<b>PDF</b>: official e-brochure with your name & number, share straight to WhatsApp. <b>Link</b>: send the link + prices to the customer's number.",
+      docMax: "MaxCheck (periodic service)", docPrice: "Price list",
       custWA: "Customer's WhatsApp number (for Link)", eg: "e.g.", from: "from",
       broNote: "E-brochures are copies of the official toyota.com.my files; the app only adds a name & number strip (tap to WhatsApp you). OTR prices for Peninsular, without insurance.",
       preparing: "Preparing brochure…", failed: "Failed: ",
@@ -732,13 +734,23 @@
       `\n\n${t("msgPrice")}\n${harga}\n\n${t("msgChange")}\n${t("msgCta", p.phone)}`;
   }
 
+  // PDF MaxCheck & senarai harga rasmi (docs.json, dikemas kini GitHub Actions 1hb & 15hb)
+  let DOCS = null;
+  function docsRow(c) {
+    if (!DOCS) return "";
+    const a = (x, cls, tl) => `<a class="${cls}" href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.label || tl)}</a>`;
+    const mc = (DOCS.maxcheck || {})[c.id] || [], pl = (DOCS.priceList || {})[c.id] || [];
+    return (mc.length ? `<div class="docs"><span>${t("docMax")}</span>${mc.map(x => a(x, "mc", "PDF")).join("")}</div>` : "") +
+      (pl.length ? `<div class="docs" style="border:0;padding-top:0"><span>${t("docPrice")}</span>${pl.map(x => a({ url: x.url, label: "PDF" }, "pl", "PDF")).join("")}</div>` : "");
+  }
+
   function brosur() {
     view.innerHTML = `
       <h2>${t("broH")}</h2><p class="sub">${t("broSub")}</p>
       <div class="card"><label>${t("custWA")}</label><input id="cust" inputmode="tel" placeholder="${t("eg")} 012-345 6789" onblur="this.value=this.value&&window.__fmtPhone(this.value)"></div>
       <div class="list">${CARS.map((c, i) => `
         <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type === "Pickup" ? t("pickup") : c.type} · ${t("from")} ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
-        <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">${t("link")}</button></div></div>`).join("")}</div>
+        <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">${t("link")}</button></div>${docsRow(c)}</div>`).join("")}</div>
       <p class="note">${t("broNote")}</p>`;
     view.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
       if (!needProfile()) return;
@@ -882,8 +894,9 @@
   route();
   // Ambil harga (prices.json) & rebate (rebates.json) terkini tanpa cache — dikemas kini GitHub Actions 1hb & 15hb
   const getJSON = f => fetch(f + "?ts=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).catch(() => null);
-  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json"), getJSON("promos.json")]).then(([pr, rb, cj, cpj, pj]) => {
+  Promise.all([getJSON("prices.json"), getJSON("rebates.json"), getJSON("colours.json"), getJSON("colour-prices.json"), getJSON("promos.json"), getJSON("docs.json")]).then(([pr, rb, cj, cpj, pj, dj]) => {
     let changed = false;
+    if (dj && dj.maxcheck) { DOCS = dj; changed = true; }
     if (pr && pr.byGrade) {
       PRICE_AT = pr.updatedAt || ""; changed = true;
       for (const g of GRADES) { const p = pr.byGrade[g.name]; if (p && p !== g.price) { g.price = p; changed = true; } }

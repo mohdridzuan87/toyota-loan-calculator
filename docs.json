@@ -1,0 +1,219 @@
+{
+ "source": {
+  "priceList": "https://www.toyota.com.my/en/price-and-model-tools/price-list.html",
+  "maxcheck": "https://www.toyota.com.my/en/servicing-and-support/maxcheck.html"
+ },
+ "priceList": {
+  "vios": [
+   {
+    "label": "Vios",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/vios-hev/july-2026/1.0-pm(ip)-vios.pdf"
+   }
+  ],
+  "yaris": [
+   {
+    "label": "Yaris",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/yaris/november-2026/1.0-pm(ipte)-yaris-price-list.pdf"
+   }
+  ],
+  "yaris-cross": [
+   {
+    "label": "Yaris Cross",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/toyota-yaris-cros-and-hev/july-2026/1.0-pm(ip)-yaris-cross.pdf"
+   }
+  ],
+  "corolla": [
+   {
+    "label": "Corolla",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/corolla/july-2026/1.0-pm-(ipte)-corolla.pdf"
+   }
+  ],
+  "corolla-cross": [
+   {
+    "label": "Corolla Cross",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/corolla-cross/july-2026/v2/1.0-pm(ip)-corolla-cross-price-list.pdf"
+   }
+  ],
+  "camry": [
+   {
+    "label": "Camry",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/camry-hev-and-ice/july-2026/1.0-pm-(ipte)-camry.pdf"
+   }
+  ],
+  "veloz": [
+   {
+    "label": "Veloz",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/veloz/july-2026/1.0-pm-veloz-price-list.pdf"
+   }
+  ],
+  "zenix": [
+   {
+    "label": "Innova Zenix",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/zenix/july-2026/1.0-pm-(ipte)-innova-zenix.pdf"
+   }
+  ],
+  "fortuner": [
+   {
+    "label": "Fortuner",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/fortuner/july-2026/v4/1.0-pm-(ipte)-fortuner-price-list.pdf"
+   }
+  ],
+  "hilux": [
+   {
+    "label": "Hilux",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/hilux/july-2026/v3/1.0-pm-(ipte)-hilux-price-list.pdf"
+   }
+  ],
+  "hiace": [
+   {
+    "label": "Hiace",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/hiace/july-2026/v2/1.0-pm-hiace-pv-price-list.pdf"
+   }
+  ],
+  "harrier": [
+   {
+    "label": "Harrier",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/harrier-hev/november-2026/1.0-pm-ipte-cpte-harrier.pdf"
+   }
+  ],
+  "alphard": [
+   {
+    "label": "Alphard",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/alphard/august-2026/1.0-pm-toyota-alphard-price-list.pdf"
+   }
+  ],
+  "vellfire": [
+   {
+    "label": "Vellfire",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/vellfire/august-2026/1.0-pm-toyota-vellfire-price-list.pdf"
+   }
+  ]
+ },
+ "maxcheck": {
+  "vios": [
+   {
+    "label": "Petrol",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/vios-july-2026.pdf"
+   },
+   {
+    "label": "GR Sport",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/vios-grs-july-2026.pdf"
+   },
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/vios-hev-july-2026.pdf"
+   }
+  ],
+  "yaris": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/yaris-july-2026.pdf"
+   }
+  ],
+  "yaris-cross": [
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/yaris-cross-hev-july-2026.pdf"
+   },
+   {
+    "label": "Petrol",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/yaris-cross-bsuv-july-2026.pdf"
+   }
+  ],
+  "corolla": [
+   {
+    "label": "Altis",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/corolla-altis-july-2026.pdf"
+   },
+   {
+    "label": "GR Sport",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/corolla-gr-sport-july-2026.pdf"
+   }
+  ],
+  "corolla-cross": [
+   {
+    "label": "Petrol",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/corolla-cross-july-2026.pdf"
+   },
+   {
+    "label": "GR Sport",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/corolla-cross-gr-s-july-2026.pdf"
+   },
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/corolla-cross-hev-july-2026.pdf"
+   }
+  ],
+  "camry": [
+   {
+    "label": "Petrol",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/camry-july-2026.pdf"
+   },
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/camry-hev-july-2026.pdf"
+   }
+  ],
+  "veloz": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/veloz-july-2026.pdf"
+   }
+  ],
+  "zenix": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/innova-zenix-hev-july-2026.pdf"
+   }
+  ],
+  "fortuner": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/fortuner-july-2026.pdf"
+   }
+  ],
+  "hilux": [
+   {
+    "label": "Standard",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/hilux-july-2026.pdf"
+   },
+   {
+    "label": "GR Sport",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/hilux-grs-july-2026.pdf"
+   }
+  ],
+  "hiace": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/hiace-july-2026.pdf"
+   }
+  ],
+  "harrier": [
+   {
+    "label": "Standard",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/harrier-july-2026.pdf"
+   },
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/harrier-hev-july-2026.pdf"
+   }
+  ],
+  "alphard": [
+   {
+    "label": "",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/alphard-july-2026.pdf"
+   }
+  ],
+  "vellfire": [
+   {
+    "label": "Standard",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/vellfire-july-2026.pdf"
+   },
+   {
+    "label": "HEV",
+    "url": "https://www.toyota.com.my/content/dam/malaysia/price-list-maintenance-packages/periodic-maintenance/july-2026/vellfire-hev-july-2026.pdf"
+   }
+  ]
+ },
+ "updatedAt": "2026-11-22"
+}
