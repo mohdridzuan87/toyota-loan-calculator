@@ -175,6 +175,16 @@
     return { g, ins, insFin, reb, net, dep, depPct: net ? dep / net * 100 : 0, fin, m: fin * (1 + r * n) / (12 * n) };
   };
 
+  // Nombor RM: papar pemisah ribu semasa menaip (20000 -> 20,000; 1500.5 -> 1,500.5)
+  const parseMoney = s => +String(s ?? "").replace(/[^\d.]/g, "") || 0;
+  const fmtMoney = n => { const [i, d] = String(n ?? "").replace(/[^\d.]/g, "").split("."); const ii = (i || "").replace(/^0+(?=\d)/, ""); return (ii ? (+ii).toLocaleString("en-MY") : (d !== undefined ? "0" : "")) + (d !== undefined ? "." + d.slice(0, 2) : ""); };
+  document.addEventListener("input", e => {
+    const el = e.target; if (!el.classList || !el.classList.contains("money")) return;
+    const pos = el.selectionStart, before = el.value.slice(0, pos).replace(/[^\d.]/g, "").length;
+    el.value = fmtMoney(el.value);
+    let k = 0, p = 0; while (p < el.value.length && k < before) { if (/[\d.]/.test(el.value[p])) k++; p++; }
+    try { el.setSelectionRange(p, p); } catch {}
+  }, true);
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const toast = msg => { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2200); };
   const waNum = p => { let d = (p || "").replace(/\D/g, ""); if (d.startsWith("0")) d = "6" + d; return d; };
@@ -246,8 +256,8 @@
     let v = pref;
     const depInput = () => {
       const box = $("#depBox");
-      if (v.mode === "rm") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="0" step="500" value="${v.depRM}" placeholder="${t("phDepRM")}">`;
-      else if (v.mode === "target") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="100" step="50" value="${v.target}" placeholder="${t("phTarget")}"><p class="note" style="margin:6px 0 0">${t("targetNote")}</p>`;
+      if (v.mode === "rm") box.innerHTML = `<input id="depv" class="money" type="text" inputmode="decimal" value="${fmtMoney(v.depRM)}" placeholder="${t("phDepRM")}">`;
+      else if (v.mode === "target") box.innerHTML = `<input id="depv" class="money" type="text" inputmode="decimal" value="${fmtMoney(v.target)}" placeholder="${t("phTarget")}"><p class="note" style="margin:6px 0 0">${t("targetNote")}</p>`;
       else box.innerHTML = `<input id="depv" type="number" inputmode="decimal" min="0" max="90" step="1" value="${v.dep}" placeholder="${t("phDepPct")}">`;
       $("#depv").oninput = update;
     };
@@ -256,13 +266,13 @@
       const key = picks.join(",") + "|" + REB.month;
       if (box.dataset.key !== key) {
         box.dataset.key = key;
-        box.innerHTML = [...new Set(picks)].map(i => `<label>${t("rebLabel", esc(GRADES[i].name))}</label><input class="rebv" data-g="${i}" type="number" inputmode="numeric" min="0" step="500" value="${rebateOf(GRADES[i])}">`).join("") +
+        box.innerHTML = [...new Set(picks)].map(i => `<label>${t("rebLabel", esc(GRADES[i].name))}</label><input class="rebv money" data-g="${i}" type="text" inputmode="decimal" value="${fmtMoney(rebateOf(GRADES[i]))}">`).join("") +
           `<p class="note" style="margin:6px 0 0">${t("rebNote", REB.month || "", REB.updatedAt || "")}</p>`;
-        box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, +inp.value || 0)); update(); });
+        box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, parseMoney(inp.value))); update(); });
       }
     };
     const update = () => {
-      const dv = +$("#depv").value || 0;
+      const dv = parseMoney($("#depv").value);
       v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked };
       if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
       store.set("sa_loan2", v);
@@ -521,7 +531,7 @@
     view.innerHTML = `
       <h2>${t("salH")}</h2><p class="sub">${t("salSub")}</p>
       <div class="card">
-        <label>${t("salIn")}</label><input id="sal" type="number" inputmode="numeric" value="${last}">
+        <label>${t("salIn")}</label><input id="sal" class="money" type="text" inputmode="decimal" value="${fmtMoney(last)}">
         <div class="row">
           <div><label>${t("depPct")}</label><input id="dep" type="number" value="${pref.dep}"></div>
           <div><label>${t("ratePct")}</label><input id="rate" type="number" step="0.01" value="${pref.rate}"></div>
@@ -531,7 +541,7 @@
       <p class="note">${t("salNote", pref.years)}</p>
       <p class="note">${t("salRebNote", REB.month || "", REB.updatedAt || "")}</p>`;
     const run = () => {
-      const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0;
+      const sal = parseMoney($("#sal").value), dep = +$("#dep").value || 0, rate = +$("#rate").value || 0;
       store.set("sa_gaji", sal);
       // Rebate sentiasa ditolak: nilai laman promo Toyota MY (atau nilai yang diubah di tab Loan bulan ini)
       const list = GRADES.map((g, i) => { const reb = Math.min(rebateOf(g), g.price), net = g.price - reb; return { g, i, reb, net, m: monthly(net, dep, rate, pref.years) }; })
@@ -555,7 +565,7 @@
       <div class="card">
         <label>${t("langLbl")}</label>
         <div class="seg" id="lsel" style="margin-bottom:4px"><button data-l="ms" class="${lang === "ms" ? "on" : ""}">Bahasa Melayu</button><button data-l="en" class="${lang === "en" ? "on" : ""}">English</button></div>
-        <label>${t("name")}</label><input id="n" value="${esc(p.name)}" placeholder="${t("eg")} Wan">
+        <label>${t("name")}</label><input id="n" value="${esc(p.name)}" placeholder="${t("eg")} Wan Jasni">
         <label>${t("phone")}</label><input id="ph" inputmode="tel" value="${esc(p.phone)}" placeholder="${t("eg")} 012-345 6789">
         <label>${t("branch")}</label><input id="br" value="${esc(p.branch)}" placeholder="${t("eg")} Toyota Shah Alam">
         <div style="margin-top:16px"><button class="btn red block" id="sv">${t("save")}</button></div>
