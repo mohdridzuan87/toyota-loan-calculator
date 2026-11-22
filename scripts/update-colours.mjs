@@ -1,10 +1,13 @@
 // Kemas kini colours.json: warna luaran + harga tambahan warna dari laman model Toyota Malaysia.
 // Dijalankan oleh GitHub Actions pada 1hb & 15hb, atau manual: node scripts/update-colours.mjs
-import { readFileSync, writeFileSync, existsSync } from "node:fs";
+import { readFileSync, writeFileSync, existsSync, mkdirSync, readdirSync, unlinkSync } from "node:fs";
+import { createHash } from "node:crypto";
 import vm from "node:vm";
 
 const BASE = "https://www.toyota.com.my/en/models/";
 const OUT = new URL("../colours.json", import.meta.url);
+const IMG_DIR = new URL("../assets/cars/col/", import.meta.url);
+const SITE = "https://www.toyota.com.my";
 
 const ctx = { window: {} }; vm.createContext(ctx);
 vm.runInContext(readFileSync(new URL("../data.js", import.meta.url), "utf8"), ctx);
@@ -64,19 +67,40 @@ for (const car of CARS) for (const [gname] of car.grades) {
     for (const c of ext.colors) {
       const name = clean(c.colorName), hex = (c.colorCode && c.colorCode.backgroundColor) || null;
       if (hex) known[name] = hex;
-      list.push({ name, hex: hex || hexFor(name.replace(/\s+with\s+.*$/i, "").replace(/^2-tone\s+/i, ""), known), price: num(c.additionalPrice), two: /2-tone|black roof/i.test(c.colorName) });
+      const imgSrc = c.folderUrl ? c.folderUrl + "/01.png" : c.imgUrl || "";
+      list.push({ name, hex: hex || hexFor(name.replace(/\s+with\s+.*$/i, "").replace(/^2-tone\s+/i, ""), known), price: num(c.additionalPrice), two: /2-tone|black roof/i.test(c.colorName), imgSrc });
     }
     for (const v of ext.variantColors || []) {
       if ((v.exclusiveTo || []).length && !v.exclusiveTo.includes(gname)) continue;
       const base = clean(v.colorName).replace(/\s+with\s+.*$/i, "");
       const name = clean(v.colorName), hex = (v.colorCode && v.colorCode.backgroundColor) || known[base] || hexFor(base, known);
-      if (!list.some(x => x.name === name)) list.push({ name, hex, price: num(v.additionalPrice), two: /2-tone|black roof/i.test(v.colorName) });
+      if (!list.some(x => x.name === name)) list.push({ name, hex, price: num(v.additionalPrice), two: /2-tone|black roof/i.test(v.colorName), imgSrc: v.imgUrl || "" });
     }
     src = BASE + page; break;
   }
   if (list && list.length) byGrade[gname] = { src, colours: list }; else missing.push(gname);
 }
 if (Object.keys(byGrade).length < 10) throw new Error("Terlalu sedikit data warna (" + Object.keys(byGrade).length + "); colours.json tidak diubah.");
+
+// ---- gambar kereta ikut warna: simpan salinan asal (dipotong tepi oleh app semasa melukis poster)
+mkdirSync(IMG_DIR, { recursive: true });
+const keep = new Set(); let got = 0, failed = 0;
+for (const { colours } of Object.values(byGrade)) for (const c of colours) {
+  if (!c.imgSrc) { delete c.imgSrc; continue; }
+  const url = c.imgSrc.startsWith("http") ? c.imgSrc : SITE + c.imgSrc;
+  const file = createHash("sha1").update(url).digest("hex").slice(0, 10) + ".png", path = new URL(file, IMG_DIR);
+  if (!existsSync(path)) {
+    try {
+      const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0 (toyota-loan-calculator colour updater)" } });
+      const buf = Buffer.from(await r.arrayBuffer());
+      if (!r.ok || buf.length < 2000 || buf.readUInt32BE(0) !== 0x89504e47) throw new Error("bukan PNG sah");
+      writeFileSync(path, buf); got++;
+    } catch { failed++; delete c.imgSrc; continue; }
+  }
+  c.img = "assets/cars/col/" + file; keep.add(file); delete c.imgSrc;
+}
+for (const f of readdirSync(IMG_DIR)) if (f.endsWith(".png") && !keep.has(f)) unlinkSync(new URL(f, IMG_DIR)); // buang gambar tidak digunakan
+console.log("Gambar warna: " + keep.size + " dipakai, " + got + " baharu, " + failed + " gagal");
 
 const prev = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : {};
 const same = JSON.stringify(prev.byGrade) === JSON.stringify(byGrade);

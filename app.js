@@ -382,7 +382,29 @@
 
   // Gambar kereta lutsinar (assets/cars/cut) ikut varian: GR Sport / HEV ada gambar sendiri
   const CUTS = new Set(["vios","vios-hev","vios-grs","yaris","yaris-cross","yaris-cross-hev","corolla","corolla-grs","corolla-cross","corolla-cross-hev","corolla-cross-grs","camry","camry-hev","veloz","zenix","zenix-hev","fortuner","hilux","hilux-grs","hiace","harrier","alphard","vellfire","vellfire-hev"]);
+  // Gambar kereta ikut warna dipilih (assets/cars/col, dari laman Toyota); dipotong tepi kosong sekali dan di-cache
+  const trimCache = {};
+  const loadCar = src => {
+    if (!/\/col\//.test(src)) return loadImg(src);
+    return trimCache[src] || (trimCache[src] = loadImg(src).then(img => {
+      if (!img) return null;
+      const w = img.width, h = img.height, c = document.createElement("canvas"); c.width = w; c.height = h;
+      const x = c.getContext("2d", { willReadFrequently: true }); x.drawImage(img, 0, 0);
+      let d; try { d = x.getImageData(0, 0, w, h).data; } catch { return img; }
+      let x0 = w, y0 = h, x1 = -1, y1 = -1;
+      for (let yy = 0; yy < h; yy++) for (let xx = 0; xx < w; xx++) {
+        const i = (yy * w + xx) * 4;
+        if (d[i + 3] > 24 && !(d[i] > 244 && d[i + 1] > 244 && d[i + 2] > 244)) { if (xx < x0) x0 = xx; if (xx > x1) x1 = xx; if (yy < y0) y0 = yy; if (yy > y1) y1 = yy; }
+      }
+      if (x1 < x0) return img;
+      x0 = Math.max(0, x0 - 4); y0 = Math.max(0, y0 - 4); x1 = Math.min(w - 1, x1 + 4); y1 = Math.min(h - 1, y1 + 4);
+      const o = document.createElement("canvas"); o.width = x1 - x0 + 1; o.height = y1 - y0 + 1;
+      o.getContext("2d").drawImage(c, x0, y0, o.width, o.height, 0, 0, o.width, o.height);
+      return o;
+    }));
+  };
   const cutOf = g => {
+    if (g.colour && g.colour.img) return g.colour.img;
     const id = g.car.id, gr = /GR Sport/i.test(g.name), hev = /HEV/i.test(g.name);
     const k = gr && CUTS.has(id + "-grs") ? id + "-grs" : hev && CUTS.has(id + "-hev") ? id + "-hev" : id;
     return CUTS.has(k) ? "assets/cars/cut/" + k + ".png" : g.car.img;
@@ -413,7 +435,7 @@
     const seq = ++drawSeq; lastDraw = { rows, v };
     await document.fonts.ready;
     const p = profile(), photoSrc = store.get("sa_photo", "");
-    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadImg(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
+    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
     if (seq !== drawSeq) return;
     const cv = $("#cv"); if (!cv) return;
     const L = LAYOUT[rows.length] || LAYOUT[1], { W, H } = L;
@@ -477,9 +499,12 @@
       ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
       const FIX = 690 * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
-      ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
-      ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
-      contain(ctx, img, x + 30 * k, imgTop, cw - 60 * k, imgH * .9, .85);
+      if (!(r.g.colour && r.g.colour.img)) { // gambar warna sudah ada bayang sendiri
+        ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
+        ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
+      }
+      const pillSp = r.g.colour ? 56 * k : 0; // ruang untuk label warna di atas gambar
+      contain(ctx, img, x + 30 * k, imgTop + pillSp, cw - 60 * k, imgH * .9 - pillSp, .85);
       if (r.g.colour) {
         const cc = r.g.colour, lab = cc.name + (cc.price ? "  +" + RM(cc.price) : "");
         const fz = fitF(lab, cw - 150 * k, 26 * k, 700), tw = ctx.measureText(lab).width, ph = 50 * k, px = x + 34 * k, py = imgTop + 4 * k;
