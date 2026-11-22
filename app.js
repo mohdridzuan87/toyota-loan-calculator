@@ -4,13 +4,121 @@
   const CARS = window.CARS;
   const GRADES = CARS.flatMap(c => c.grades.map(([name, fuel, price]) => ({ car: c, name, fuel, price })));
   const RM = n => "RM" + Math.round(n).toLocaleString("en-MY");
-  const FOOT = "*Harga boleh berubah bila-bila masa dari tarikh poster ini dikongsi. Harga berdasarkan untuk Semenanjung Malaysia sahaja. Anggaran ansuran, tertakluk pada terma dan syarat bank.";
 
   // ---------- storage (selamat jika disekat) ----------
   const store = {
     get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
   };
+
+  // ---------- bahasa / language ----------
+  let lang = store.get("sa_lang", "ms") === "en" ? "en" : "ms";
+  const I18N = {
+    ms: {
+      nav: ["Home", "Loan", "Brochure", "Gaji", "Akaun"],
+      foot: "*Harga boleh berubah bila-bila masa dari tarikh poster ini dikongsi. Harga berdasarkan untuk Semenanjung Malaysia sahaja. Anggaran ansuran, tertakluk pada terma dan syarat bank.",
+      footSrc: "Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my",
+      needProfile: "Isi nama & nombor di tab Akaun dulu",
+      new: "BARU", models: n => `${n} MODEL TOYOTA RASMI`,
+      heroH: name => `Hantar info rasmi, <em>siap nama & nombor ${name}</em>`, you: "awak",
+      heroP: "Customer minta brochure? Hantar terus ke WhatsApp.", openBroch: "Buka Brochure",
+      tLoan: ["Loan poster", "Percuma · tanpa had"], tCmp: ["Banding varian", "1 poster, 2-4 loan"],
+      tSal: ["Ikut gaji", "Gaji → senarai kereta"], tBro: ["Brochure", "Hantar ke WhatsApp"],
+      tProf: ["Lengkapkan profil", "Nama & nombor akan masuk dalam poster"],
+      loanH: "Loan poster", loanSub: "Kira ansuran & jana poster siap nama awak.",
+      one: "1 varian", cmp: n => `Banding ${n}`, variant: "Varian",
+      deposit: "Deposit", byMonthly: "Ikut bulanan", rate: "Kadar (% setahun)", tenure: "Tempoh", yrs: n => `${n} tahun`,
+      insH: "Insurans (anggaran)", insIn: "Masuk dalam loan", rebH: "Rebate / promo", rebChk: "Tolak rebate dari harga",
+      dl: "Muat turun PNG", share: "Kongsi",
+      phDepRM: "Deposit (RM)", phTarget: "Ansuran sasaran sebulan (RM)", phDepPct: "Deposit (%)",
+      targetNote: "Masukkan bulanan yang customer mahu, app kira deposit yang perlu.",
+      rebLabel: n => `Rebate ${n} (RM)`,
+      rebNote: m => `Lalai dari laman promo Toyota MY (${m}, "promo worth up to"; mungkin termasuk baucar). Ubah ikut rebate tunai sebenar dari cawangan.`,
+      depNeeded: "deposit diperlukan", noDep: m => `Tanpa deposit pun ansuran cuma ${m} sebulan.`, tooLow: "Sasaran terlalu rendah untuk varian ini.",
+      perMonth: "/bulan", otr: "Harga OTR", rebate: "Rebate", afterReb: "Harga selepas rebate",
+      insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
+      inst: (y, r) => `Ansuran ${y} tahun @ ${r}%`, upfront: "Bayaran awal (deposit + insurans)",
+      diff: t => `Beza ${t ? "deposit" : "sebulan"}`, hiLo: " (tertinggi vs terendah)", lowest: t => `${t ? "Deposit" : "Ansuran"} terendah`,
+      insNote: "Insurans: anggaran premium komprehensif (tarif Semenanjung, ikut cc & harga, termasuk SST 8% + duti setem RM10). Harga sebenar ikut syarikat insurans.",
+      pCmp: n => `PERBANDINGAN LOAN · ${n} VARIAN`, pPkg: "PAKEJ LOAN TOYOTA", pFrom: "Ansuran bulanan dari", pMonthly: "Ansuran sebulan",
+      pAfter: "Selepas rebate", pAfterS: "Lepas rebate", pIns: " + insurans", pInsS: " + ins.", pTenure: "Tempoh", pRate: "Kadar",
+      pPerMonth: " /bulan", pDiff: m => `beza ${m} sebulan`, pDiff2: m => `Beza ${m} sebulan`, pName: "Nama awak",
+      saved: "Fail dimuat turun", noShare: "Telefon tak sokong kongsi terus — fail dimuat turun",
+      tapWA: "Tekan untuk WhatsApp",
+      msgHi: (n, b) => `Hi! Saya ${n}, Sales Advisor Toyota${b ? " " + b : ""}.`,
+      msgLink: (c, u) => `Ini e-brochure rasmi Toyota ${c}:\n${u}`, msgNoLink: c => `Ini e-brochure rasmi Toyota ${c}.`,
+      msgPrice: "Harga OTR (Semenanjung, tanpa insurans):", msgChange: "*Harga boleh berubah bila-bila masa.",
+      msgCta: ph => `Nak test drive atau kira loan? Boleh message saya: ${ph}`,
+      broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Link</b>: hantar pautan + harga ke nombor customer.",
+      custWA: "Nombor WhatsApp customer (untuk Link)", eg: "cth.", from: "dari",
+      broNote: "E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.",
+      preparing: "Menyediakan brochure…", failed: "Gagal: ",
+      salH: "Ikut gaji", salSub: "Masukkan gaji kasar sebulan, dapat senarai kereta yang sesuai.", salIn: "Gaji kasar sebulan (RM)",
+      depPct: "Deposit (%)", ratePct: "Kadar (%)", ofSal: "gaji", tags: ["Selesa", "Sederhana", "Maksimum"],
+      salNote: y => `Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${y} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).`,
+      salNone: "Tiada model dalam had 30% gaji. Cuba tambah deposit.",
+      accH: "Akaun", accSub: "Nama & nombor ini masuk dalam poster dan mesej WhatsApp.",
+      name: "Nama", phone: "Nombor telefon", branch: "Cawangan (pilihan)", save: "Simpan",
+      accNote: "Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.", savedProf: "Profil disimpan",
+      langLbl: "Bahasa"
+    },
+    en: {
+      nav: ["Home", "Loan", "Brochure", "Salary", "Account"],
+      foot: "*Prices may change at any time from the date this poster is shared. Prices are for Peninsular Malaysia only. Estimated instalment, subject to bank terms and conditions.",
+      footSrc: "OTR price incl. SST, without insurance, individual private · source: toyota.com.my",
+      needProfile: "Fill in your name & number in the Account tab first",
+      new: "NEW", models: n => `${n} OFFICIAL TOYOTA MODELS`,
+      heroH: name => `Send official info, <em>with ${name} name & number</em>`, you: "your",
+      heroP: "Customer wants a brochure? Send it straight to WhatsApp.", openBroch: "Open Brochures",
+      tLoan: ["Loan poster", "Free · unlimited"], tCmp: ["Compare variants", "1 poster, 2-4 loans"],
+      tSal: ["By salary", "Salary → car list"], tBro: ["Brochure", "Send to WhatsApp"],
+      tProf: ["Complete your profile", "Your name & number go on the poster"],
+      loanH: "Loan poster", loanSub: "Calculate instalments & create a poster with your name.",
+      one: "1 variant", cmp: n => `Compare ${n}`, variant: "Variant",
+      deposit: "Down payment", byMonthly: "By monthly", rate: "Rate (% p.a.)", tenure: "Tenure", yrs: n => `${n} year${n > 1 ? "s" : ""}`,
+      insH: "Insurance (estimate)", insIn: "Include in loan", rebH: "Rebate / promo", rebChk: "Deduct rebate from price",
+      dl: "Download PNG", share: "Share",
+      phDepRM: "Down payment (RM)", phTarget: "Target monthly instalment (RM)", phDepPct: "Down payment (%)",
+      targetNote: "Enter the monthly amount the customer wants; the app works out the down payment needed.",
+      rebLabel: n => `Rebate ${n} (RM)`,
+      rebNote: m => `Default from Toyota MY promo page (${m}, "promo worth up to"; may include vouchers). Adjust to the actual cash rebate from your branch.`,
+      depNeeded: "down payment needed", noDep: m => `Even with zero down payment the instalment is only ${m} a month.`, tooLow: "Target is too low for this variant.",
+      perMonth: "/month", otr: "OTR price", rebate: "Rebate", afterReb: "Price after rebate",
+      insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
+      inst: (y, r) => `Instalment ${y} yr${y > 1 ? "s" : ""} @ ${r}%`, upfront: "Upfront (down payment + insurance)",
+      diff: t => `Difference ${t ? "in down payment" : "per month"}`, hiLo: " (highest vs lowest)", lowest: t => `Lowest ${t ? "down payment" : "instalment"}`,
+      insNote: "Insurance: estimated comprehensive premium (Peninsular tariff, by cc & price, incl. 8% SST + RM10 stamp duty). Actual price depends on the insurer.",
+      pCmp: n => `LOAN COMPARISON · ${n} VARIANTS`, pPkg: "TOYOTA LOAN PACKAGE", pFrom: "Monthly instalment from", pMonthly: "Monthly instalment",
+      pAfter: "After rebate", pAfterS: "After rebate", pIns: " + insurance", pInsS: " + ins.", pTenure: "Tenure", pRate: "Rate",
+      pPerMonth: " /month", pDiff: m => `${m} difference per month`, pDiff2: m => `${m} difference per month`, pName: "Your name",
+      saved: "File downloaded", noShare: "This phone can't share directly — file downloaded",
+      tapWA: "Tap to WhatsApp",
+      msgHi: (n, b) => `Hi! I'm ${n}, Toyota Sales Advisor${b ? " " + b : ""}.`,
+      msgLink: (c, u) => `Here is the official Toyota ${c} e-brochure:\n${u}`, msgNoLink: c => `Here is the official Toyota ${c} e-brochure.`,
+      msgPrice: "OTR price (Peninsular, without insurance):", msgChange: "*Prices may change at any time.",
+      msgCta: ph => `Keen on a test drive or a loan calculation? Message me: ${ph}`,
+      broH: "Official brochures", broSub: "<b>PDF</b>: official e-brochure with your name & number, share straight to WhatsApp. <b>Link</b>: send the link + prices to the customer's number.",
+      custWA: "Customer's WhatsApp number (for Link)", eg: "e.g.", from: "from",
+      broNote: "E-brochures are copies of the official toyota.com.my files; the app only adds a name & number strip (tap to WhatsApp you). OTR prices for Peninsular, without insurance.",
+      preparing: "Preparing brochure…", failed: "Failed: ",
+      salH: "By salary", salSub: "Enter gross monthly salary to get a list of suitable cars.", salIn: "Gross monthly salary (RM)",
+      depPct: "Down payment (%)", ratePct: "Rate (%)", ofSal: "of salary", tags: ["Comfortable", "Moderate", "Maximum"],
+      salNote: y => `Guide: <span class="tag ok">Comfortable</span> instalment ≤20% of salary, <span class="tag mid">Moderate</span> ≤25%, <span class="tag max">Maximum</span> ≤30%. Tenure ${y} years. Actual approval depends on the bank (DSR & other commitments).`,
+      salNone: "No model within 30% of salary. Try a higher down payment.",
+      accH: "Account", accSub: "This name & number appear on posters and WhatsApp messages.",
+      name: "Name", phone: "Phone number", branch: "Branch (optional)", save: "Save",
+      accNote: "Data is stored in this phone's browser only and never sent to any server.", savedProf: "Profile saved",
+      langLbl: "Language"
+    }
+  };
+  const t = (k, ...a) => { const v = I18N[lang][k] ?? I18N.ms[k]; return typeof v === "function" ? v(...a) : v; };
+  const setLang = l => { lang = l; store.set("sa_lang", l); applyChrome(); route(); };
+  function applyChrome() {
+    document.documentElement.lang = lang === "en" ? "en" : "ms";
+    document.querySelectorAll(".tabs a span").forEach((s, i) => s.textContent = t("nav")[i]);
+    const b = $("#lang"); if (b) { b.textContent = lang === "en" ? "BM" : "EN"; b.title = t("langLbl"); }
+  }
+
   const profile = () => store.get("sa_profile", { name: "", phone: "", branch: "" });
   // sa_loan2: kadar lalai 2.3% (Wan, 22 Nov 2026)
   const loanPref = () => ({ mode: "pct", dep: 10, depRM: 10000, target: 1000, rate: 2.3, years: 9, ncd: 0, insIn: false, reb: false, ...store.get("sa_loan2", {}) });
@@ -43,90 +151,89 @@
   };
 
   const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const toast = msg => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); setTimeout(() => t.classList.remove("show"), 2200); };
+  const toast = msg => { const el = $("#toast"); el.textContent = msg; el.classList.add("show"); setTimeout(() => el.classList.remove("show"), 2200); };
   const waNum = p => { let d = (p || "").replace(/\D/g, ""); if (d.startsWith("0")) d = "6" + d; return d; };
   const monthly = (price, depPct, rate, years) => {
     const fin = price * (1 - depPct / 100);
     return (fin + fin * (rate / 100) * years) / (years * 12);
   };
   const gradeOptions = sel => GRADES.map((g, i) => `<option value="${i}" ${i === sel ? "selected" : ""}>${g.name} · ${RM(g.price)}</option>`).join("");
-  const needProfile = () => { const p = profile(); if (!p.name || !p.phone) { toast("Isi nama & nombor di tab Akaun dulu"); return false; } return true; };
+  const needProfile = () => { const p = profile(); if (!p.name || !p.phone) { toast(t("needProfile")); return false; } return true; };
 
   // ---------- HOME ----------
   function home() {
     const p = profile();
+    const tile = (href, ic, [b, s]) => `<a class="tile" href="${href}"><div class="ic">${ic}</div><b>${b}</b><small>${s}</small></a>`;
     view.innerHTML = `
       <section class="hero">
         <div class="strip">${CARS.slice(0, 8).map(c => `<img src="${c.img}" alt="${c.name}">`).join("")}</div>
-        <span class="badge">BARU</span><small>${CARS.length} MODEL TOYOTA RASMI</small>
-        <h3>Hantar info rasmi, <em>siap nama & nombor ${p.name ? esc(p.name.split(" ")[0]) : "awak"}</em></h3>
-        <p>Customer minta brochure? Hantar terus ke WhatsApp.</p>
-        <a class="btn white" href="#brosur">Buka Brosur</a>
+        <span class="badge">${t("new")}</span><small>${t("models", CARS.length)}</small>
+        <h3>${t("heroH", p.name ? esc(p.name.split(" ")[0]) + (lang === "en" ? "'s" : "") : t("you"))}</h3>
+        <p>${t("heroP")}</p>
+        <a class="btn white" href="#brosur">${t("openBroch")}</a>
       </section>
       <div class="grid">
-        <a class="tile" href="#loan"><div class="ic">🧾</div><b>Loan poster</b><small>Percuma · tanpa had</small></a>
-        <a class="tile" href="#loan/banding"><div class="ic">⚖️</div><b>Banding 2 varian</b><small>1 poster, 2 loan</small></a>
-        <a class="tile" href="#gaji"><div class="ic">💼</div><b>Ikut gaji</b><small>Gaji → senarai kereta</small></a>
-        <a class="tile" href="#brosur"><div class="ic">📄</div><b>Brosur</b><small>Hantar ke WhatsApp</small></a>
-        <a class="tile wide" href="#akaun"><div class="ic">👤</div><div><b>${esc(p.name) || "Lengkapkan profil"}</b><small>${esc(p.phone) ||"Nama & nombor akan masuk dalam poster"}</small></div></a>
+        ${tile("#loan", "🧾", t("tLoan"))}${tile("#loan/banding", "⚖️", t("tCmp"))}${tile("#gaji", "💼", t("tSal"))}${tile("#brosur", "📄", t("tBro"))}
+        <a class="tile wide" href="#akaun"><div class="ic">👤</div><div><b>${esc(p.name) || t("tProf")[0]}</b><small>${esc(p.phone) || t("tProf")[1]}</small></div></a>
       </div>`;
   }
 
   // ---------- LOAN ----------
-  let loanMode = "satu";
-  function loan(sub) {
-    if (sub === "banding") loanMode = "banding";
+  // Bilangan varian dalam poster: 1 (pakej) atau 2/3/4 (banding)
+  let loanN = 1;
+  const loanHash = n => n === 1 ? "#loan" : n === 2 ? "#loan/banding" : `#loan/banding${n}`;
+  function loan() {
     const pref = loanPref();
-    const sel = store.get("sa_sel", [1, 2]);
+    const sel = store.get("sa_sel", []).slice(0, 4);
+    for (const d of [1, 2, 4, 6, 9, 12, 15, 20]) if (sel.length < 4 && !sel.includes(d)) sel.push(d);
     view.innerHTML = `
-      <h2>Loan poster</h2><p class="sub">Kira ansuran & jana poster siap nama awak.</p>
-      <div class="seg"><button data-m="satu" class="${loanMode === "satu" ? "on" : ""}">1 varian</button><button data-m="banding" class="${loanMode === "banding" ? "on" : ""}">Banding 2 varian</button></div>
+      <h2>${t("loanH")}</h2><p class="sub">${t("loanSub")}</p>
+      <div class="seg">${[1, 2, 3, 4].map(n => `<button data-n="${n}" class="${loanN === n ? "on" : ""}">${n === 1 ? t("one") : t("cmp", n)}</button>`).join("")}</div>
       <div class="card">
-        <label>Varian ${loanMode === "banding" ? "A" : ""}</label><select id="g1">${gradeOptions(sel[0])}</select>
-        ${loanMode === "banding" ? `<label>Varian B</label><select id="g2">${gradeOptions(sel[1])}</select>` : ""}
-        <label>Deposit</label>
+        ${Array.from({ length: loanN }, (_, k) => `<label>${t("variant")} ${loanN > 1 ? "ABCD"[k] : ""}</label><select class="gsel" data-k="${k}">${gradeOptions(sel[k])}</select>`).join("")}
+        <label>${t("deposit")}</label>
         <div class="seg" id="dm" style="margin-bottom:8px">
           <button data-d="pct" class="${pref.mode === "pct" ? "on" : ""}">%</button>
           <button data-d="rm" class="${pref.mode === "rm" ? "on" : ""}">RM</button>
-          <button data-d="target" class="${pref.mode === "target" ? "on" : ""}">Ikut bulanan</button>
+          <button data-d="target" class="${pref.mode === "target" ? "on" : ""}">${t("byMonthly")}</button>
         </div>
         <div id="depBox"></div>
         <div class="row">
-          <div><label>Kadar (% setahun)</label><input id="rate" type="number" min="0" max="10" step="0.01" value="${pref.rate}"></div>
-          <div><label>Tempoh</label><select id="yrs">${[9, 8, 7, 6, 5, 4, 3, 2, 1].map(y => `<option ${y == pref.years ? "selected" : ""} value="${y}">${y} tahun</option>`).join("")}</select></div>
+          <div><label>${t("rate")}</label><input id="rate" type="number" min="0" max="10" step="0.01" value="${pref.rate}"></div>
+          <div><label>${t("tenure")}</label><select id="yrs">${[9, 8, 7, 6, 5, 4, 3, 2, 1].map(y => `<option ${y == pref.years ? "selected" : ""} value="${y}">${t("yrs", y)}</option>`).join("")}</select></div>
         </div>
-        <label>Insurans (anggaran)</label>
+        <label>${t("insH")}</label>
         <div class="row">
           <select id="ncd">${NCDS.map(n => `<option value="${n}" ${n == pref.ncd ? "selected" : ""}>NCD ${n}%</option>`).join("")}</select>
-          <label class="chk"><input type="checkbox" id="insIn" ${pref.insIn ? "checked" : ""}> Masuk dalam loan</label>
+          <label class="chk"><input type="checkbox" id="insIn" ${pref.insIn ? "checked" : ""}> ${t("insIn")}</label>
         </div>
-        <label>Rebate / promo</label>
-        <label class="chk" style="padding:12px"><input type="checkbox" id="reb" ${pref.reb ? "checked" : ""}> Tolak rebate dari harga</label>
+        <label>${t("rebH")}</label>
+        <label class="chk" style="padding:12px"><input type="checkbox" id="reb" ${pref.reb ? "checked" : ""}> ${t("rebChk")}</label>
         <div id="rebBox"></div>
       </div>
       <div class="card result" id="res"></div>
       <div class="card">
         <canvas id="cv" width="1080" height="1350"></canvas>
-        <div class="actions"><button class="btn red" id="dl">Muat turun PNG</button><button class="btn wa" id="share">Kongsi</button></div>
-        <p class="note">${FOOT}</p>
+        <div class="actions"><button class="btn red" id="dl">${t("dl")}</button><button class="btn wa" id="share">${t("share")}</button></div>
+        <p class="note">${t("foot")}</p>
       </div>`;
-    view.querySelectorAll(".seg button").forEach(b => b.onclick = () => { loanMode = b.dataset.m; location.hash = loanMode === "banding" ? "#loan/banding" : "#loan"; route(); });
+    view.querySelectorAll(".seg button[data-n]").forEach(b => b.onclick = () => { location.hash = loanHash(+b.dataset.n); });
     let v = pref;
     const depInput = () => {
       const box = $("#depBox");
-      if (v.mode === "rm") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="0" step="500" value="${v.depRM}" placeholder="Deposit (RM)">`;
-      else if (v.mode === "target") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="100" step="50" value="${v.target}" placeholder="Ansuran sasaran sebulan (RM)"><p class="note" style="margin:6px 0 0">Masukkan bulanan yang customer mahu, app kira deposit yang perlu.</p>`;
-      else box.innerHTML = `<input id="depv" type="number" inputmode="decimal" min="0" max="90" step="1" value="${v.dep}" placeholder="Deposit (%)">`;
+      if (v.mode === "rm") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="0" step="500" value="${v.depRM}" placeholder="${t("phDepRM")}">`;
+      else if (v.mode === "target") box.innerHTML = `<input id="depv" type="number" inputmode="numeric" min="100" step="50" value="${v.target}" placeholder="${t("phTarget")}"><p class="note" style="margin:6px 0 0">${t("targetNote")}</p>`;
+      else box.innerHTML = `<input id="depv" type="number" inputmode="decimal" min="0" max="90" step="1" value="${v.dep}" placeholder="${t("phDepPct")}">`;
       $("#depv").oninput = update;
     };
     const rebInputs = picks => {
       const box = $("#rebBox");
-      if (!v.reb) { box.innerHTML = ""; return; }
-      const key = picks.map(i => i).join(",");
+      if (!v.reb) { box.innerHTML = ""; box.dataset.key = ""; return; }
+      const key = picks.join(",");
       if (box.dataset.key !== key) {
         box.dataset.key = key;
-        box.innerHTML = picks.map((i, k) => `<label>Rebate ${esc(GRADES[i].name)} (RM)</label><input class="rebv" data-g="${i}" type="number" inputmode="numeric" min="0" step="500" value="${rebateOf(GRADES[i])}">`).join("") +
-          `<p class="note" style="margin:6px 0 0">Lalai dari laman promo Toyota MY (${REB.month || ""}, "promo worth up to"; mungkin termasuk baucar). Ubah ikut rebate tunai sebenar dari cawangan.</p>`;
+        box.innerHTML = [...new Set(picks)].map(i => `<label>${t("rebLabel", esc(GRADES[i].name))}</label><input class="rebv" data-g="${i}" type="number" inputmode="numeric" min="0" step="500" value="${rebateOf(GRADES[i])}">`).join("") +
+          `<p class="note" style="margin:6px 0 0">${t("rebNote", REB.month || "")}</p>`;
         box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => {
           const o = store.get("sa_reb", {}); o[GRADES[+inp.dataset.g].name] = Math.max(0, +inp.value || 0); store.set("sa_reb", o); update();
         });
@@ -137,27 +244,32 @@
       v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked, reb: $("#reb").checked };
       if (v.mode === "rm") v.depRM = dv; else if (v.mode === "target") v.target = dv; else v.dep = dv;
       store.set("sa_loan2", v);
-      const picks = [+$("#g1").value]; if ($("#g2")) picks.push(+$("#g2").value);
-      store.set("sa_sel", [picks[0], picks[1] ?? sel[1]]);
+      const picks = [...view.querySelectorAll(".gsel")].map(s => +s.value);
+      store.set("sa_sel", sel.map((x, k) => picks[k] ?? x));
       rebInputs(picks);
       const rows = picks.map(i => calc(GRADES[i], v));
+      const tg = v.mode === "target", sm = `<small style="font-size:14px;font-weight:600">`;
       $("#res").innerHTML = rows.map(r => {
-        const head = v.mode === "target"
-          ? `<div class="k">${esc(r.g.name)} · deposit diperlukan</div><div class="v">${RM(r.dep)}<small style="font-size:14px;font-weight:600"> (${pct1(r.depPct)}%)</small></div>
-             ${r.dep === 0 && r.m < v.target ? `<p class="note" style="margin:2px 0 6px">Tanpa deposit pun ansuran cuma ${RM(r.m)} sebulan.</p>` : ""}
-             ${r.dep >= r.g.price ? `<p class="note" style="margin:2px 0 6px">Sasaran terlalu rendah untuk varian ini.</p>` : ""}`
-          : `<div class="k">${esc(r.g.name)}</div><div class="v">${RM(r.m)}<small style="font-size:14px;font-weight:600"> /bulan</small></div>`;
+        const head = tg
+          ? `<div class="k">${esc(r.g.name)} · ${t("depNeeded")}</div><div class="v">${RM(r.dep)}${sm} (${pct1(r.depPct)}%)</small></div>
+             ${r.dep === 0 && r.m < v.target ? `<p class="note" style="margin:2px 0 6px">${t("noDep", RM(r.m))}</p>` : ""}
+             ${r.dep >= r.net && r.net > 0 ? `<p class="note" style="margin:2px 0 6px">${t("tooLow")}</p>` : ""}`
+          : `<div class="k">${esc(r.g.name)}</div><div class="v">${RM(r.m)}${sm} ${t("perMonth")}</small></div>`;
         return `<div class="res">${head}
-          <div class="kv"><span>Harga OTR</span><span>${RM(r.g.price)}</span></div>
-          ${r.reb ? `<div class="kv"><span>Rebate</span><span>-${RM(r.reb)}</span></div><div class="kv"><span>Harga selepas rebate</span><b>${RM(r.net)}</b></div>` : ""}
-          <div class="kv"><span>Insurans anggaran (NCD ${v.ncd}%)${v.insIn ? " · dalam loan" : ""}</span><span>${RM(r.ins.total)}</span></div>
-          <div class="kv"><span>Deposit ${pct1(r.depPct)}%</span><span>${RM(r.dep)}</span></div>
-          <div class="kv"><span>Jumlah loan</span><span>${RM(r.fin)}</span></div>
-          <div class="kv"><span>Ansuran ${v.years} tahun @ ${v.rate}%</span><b>${RM(r.m)}/bulan</b></div>
-          ${v.insIn ? "" : `<div class="kv"><span>Bayaran awal (deposit + insurans)</span><span>${RM(r.dep + r.ins.total)}</span></div>`}</div>`;
+          <div class="kv"><span>${t("otr")}</span><span>${RM(r.g.price)}</span></div>
+          ${r.reb ? `<div class="kv"><span>${t("rebate")}</span><span>-${RM(r.reb)}</span></div><div class="kv"><span>${t("afterReb")}</span><b>${RM(r.net)}</b></div>` : ""}
+          <div class="kv"><span>${t("insEst", v.ncd)}${v.insIn ? t("inLoan") : ""}</span><span>${RM(r.ins.total)}</span></div>
+          <div class="kv"><span>${t("deposit")} ${pct1(r.depPct)}%</span><span>${RM(r.dep)}</span></div>
+          <div class="kv"><span>${t("loanAmt")}</span><span>${RM(r.fin)}</span></div>
+          <div class="kv"><span>${t("inst", v.years, v.rate)}</span><b>${RM(r.m)}${t("perMonth")}</b></div>
+          ${v.insIn ? "" : `<div class="kv"><span>${t("upfront")}</span><span>${RM(r.dep + r.ins.total)}</span></div>`}</div>`;
       }).join("") +
-        (rows.length === 2 ? `<div class="kv"><span>Beza ${v.mode === "target" ? "deposit" : "sebulan"}</span><b>${RM(Math.abs(v.mode === "target" ? rows[0].dep - rows[1].dep : rows[0].m - rows[1].m))}</b></div>` : "") +
-        `<p class="note" style="margin:0">Insurans: anggaran premium komprehensif (tarif Semenanjung, ikut cc & harga, termasuk SST 8% + duti setem RM10). Harga sebenar ikut syarikat insurans.</p>`;
+        (rows.length > 1 ? (() => {
+          const vals = rows.map(r => tg ? r.dep : r.m), lo = rows[vals.indexOf(Math.min(...vals))];
+          return `<div class="kv"><span>${t("diff", tg)}${rows.length > 2 ? t("hiLo") : ""}</span><b>${RM(Math.max(...vals) - Math.min(...vals))}</b></div>` +
+            (rows.length > 2 ? `<div class="kv"><span>${t("lowest", tg)}</span><span>${esc(lo.g.name)}</span></div>` : "");
+        })() : "") +
+        `<p class="note" style="margin:0">${t("insNote")}</p>`;
       drawPoster(rows, v);
     };
     $("#dm").querySelectorAll("button").forEach(b => b.onclick = () => {
@@ -181,7 +293,7 @@
   const rr = (ctx, x, y, w, h, r) => { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); };
   const wrap = (ctx, text, x, y, maxW, lh) => {
     const words = text.split(" "); let line = "";
-    for (const w of words) { const t = line ? line + " " + w : w; if (ctx.measureText(t).width > maxW && line) { ctx.fillText(line, x, y); line = w; y += lh; } else line = t; }
+    for (const w of words) { const tt = line ? line + " " + w : w; if (ctx.measureText(tt).width > maxW && line) { ctx.fillText(line, x, y); line = w; y += lh; } else line = tt; }
     ctx.fillText(line, x, y); return y;
   };
   const fit = (ctx, text, maxW, size, weight = 800) => { let s = size; do { ctx.font = `${weight} ${s}px "Plus Jakarta Sans", sans-serif`; s -= 2; } while (ctx.measureText(text).width > maxW && s > 20); };
@@ -197,21 +309,42 @@
     const F = (w, s) => ctx.font = `${w} ${s}px "Plus Jakarta Sans", sans-serif`;
     const g = ctx.createLinearGradient(0, 0, 0, H); g.addColorStop(0, "#0b1b3a"); g.addColorStop(1, "#16346e");
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
-    ctx.textAlign = "center"; ctx.fillStyle = "#f5c542"; F(800, 34); ctx.fillText(rows.length === 2 ? "PERBANDINGAN LOAN" : "PAKEJ LOAN TOYOTA", W / 2, 96);
+    ctx.textAlign = "center"; ctx.fillStyle = "#f5c542"; F(800, 34); ctx.fillText(rows.length > 1 ? t("pCmp", rows.length) : t("pPkg"), W / 2, rows.length > 2 ? 88 : 96);
+    const priceLbl = (r, short) => (r.reb ? t(short ? "pAfterS" : "pAfter") : (short && rows.length > 2 ? "OTR" : t("otr"))) + (r.insFin ? t(short ? "pInsS" : "pIns") : "") + (rows.length > 2 ? "" : "*");
 
     if (rows.length === 1) {
       const r = rows[0];
       ctx.fillStyle = "#fff"; fit(ctx, r.g.name.toUpperCase(), 960, 64); ctx.fillText(r.g.name.toUpperCase(), W / 2, 176);
       rr(ctx, 60, 214, 960, 500, 32); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[0], 60, 214, 960, 500); ctx.restore();
-      ctx.fillStyle = "#fff"; F(600, 34); ctx.fillText("Ansuran bulanan dari", W / 2, 772);
+      ctx.fillStyle = "#fff"; F(600, 34); ctx.fillText(t("pFrom"), W / 2, 772);
       ctx.fillStyle = "#f5c542"; F(800, 124); ctx.fillText(RM(r.m), W / 2, 884);
-      const items = [[(r.reb ? "Selepas rebate" : "Harga OTR") + (r.insFin ? " + insurans*" : "*"), RM(r.net + r.insFin)], [`Deposit ${pct1(r.depPct)}%`, RM(r.dep)], ["Tempoh", `${v.years} tahun`], ["Kadar", `${v.rate}%`]];
+      const items = [[priceLbl(r, false), RM(r.net + r.insFin)], [`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], [t("pTenure"), t("yrs", v.years)], [t("pRate"), `${v.rate}%`]];
       items.forEach(([k, val], i) => {
         const x = 60 + (i % 2) * 490, y = 920 + Math.floor(i / 2) * 102;
         rr(ctx, x, y, 470, 90, 20); ctx.fillStyle = "rgba(255,255,255,.1)"; ctx.fill();
-        ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; F(600, 24); ctx.fillText(k, x + 26, y + 36);
+        ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 420, 24, 600); ctx.fillText(k, x + 26, y + 36);
         ctx.fillStyle = "#fff"; F(800, 34); ctx.fillText(val, x + 26, y + 76);
       });
+    } else if (rows.length > 2) {
+      // 3-4 varian: kad baris (gambar kiri, angka kanan); kad ansuran terendah diserlahkan
+      const top = 130, area = 900, gap = 18, n = rows.length, ch = (area - gap * (n - 1)) / n;
+      const lo = Math.min(...rows.map(r => r.m));
+      rows.forEach((r, i) => {
+        const y = top + i * (ch + gap), x = 60, w = 960, iw = Math.min(380, ch * 1.6);
+        rr(ctx, x, y, w, ch, 24); ctx.fillStyle = r.m === lo ? "rgba(245,197,66,.16)" : "rgba(255,255,255,.08)"; ctx.fill();
+        rr(ctx, x + 12, y + 12, iw, ch - 24, 16); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[i], x + 12, y + 12, iw, ch - 24); ctx.restore();
+        const tx = x + iw + 36, tw = w - iw - 60, s = ch / 280, sz = k => Math.round(k);
+        ctx.textAlign = "left"; ctx.fillStyle = "#fff"; fit(ctx, r.g.name, tw, sz(36 * Math.min(1, s + .1))); ctx.fillText(r.g.name, tx, y + ch * 0.25);
+        const mm = RM(r.m) + t("pPerMonth");
+        ctx.fillStyle = "#f5c542"; fit(ctx, mm, tw, sz(68 * Math.min(1, s + .15))); ctx.fillText(mm, tx, y + ch * 0.56);
+        ctx.fillStyle = "#b9c6e4";
+        const l1 = `${priceLbl(r, true)} ${RM(r.net + r.insFin)}`, l2 = `${t("deposit")} ${RM(r.dep)} (${pct1(r.depPct)}%) · Loan ${RM(r.fin)}`;
+        fit(ctx, l2, tw, sz(24 * Math.min(1, s + .2)), 600); ctx.fillText(l1, tx, y + ch * 0.75);
+        ctx.fillText(l2, tx, y + ch * 0.75 + sz(30 * Math.min(1, s + .2)));
+      });
+      const ms = rows.map(r => r.m);
+      ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(700, 30);
+      ctx.fillText(`${t("yrs", v.years)} · ${v.rate}% · ${t("pDiff", RM(Math.max(...ms) - Math.min(...ms)))}`, W / 2, 1076);
     } else {
       rows.forEach((r, i) => {
         const x = 60 + i * 490, w = 470;
@@ -219,41 +352,41 @@
         rr(ctx, x + 16, 156, w - 32, 300, 20); ctx.save(); ctx.clip(); ctx.fillStyle = "#fff"; ctx.fill(); cover(ctx, imgs[i], x + 16, 156, w - 32, 300); ctx.restore();
         ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(800, 34);
         wrap(ctx, r.g.name, x + w / 2, 512, w - 40, 42);
-        ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText("Ansuran sebulan", x + w / 2, 640);
+        ctx.fillStyle = "#b9c6e4"; F(600, 26); ctx.fillText(t("pMonthly"), x + w / 2, 640);
         ctx.fillStyle = "#f5c542"; fit(ctx, RM(r.m), w - 40, 80); ctx.fillText(RM(r.m), x + w / 2, 726);
-        [[(r.reb ? "Lepas rebate" : "Harga OTR") + (r.insFin ? " + ins.*" : "*"), RM(r.net + r.insFin)], [`Deposit ${pct1(r.depPct)}%`, RM(r.dep)], ["Loan", RM(r.fin)]].forEach(([k, val], j) => {
-          const y = 800 + j * 60; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; F(600, 24); ctx.fillText(k, x + 30, y);
+        [[priceLbl(r, true), RM(r.net + r.insFin)], [`${t("deposit")} ${pct1(r.depPct)}%`, RM(r.dep)], ["Loan", RM(r.fin)]].forEach(([k, val], j) => {
+          const y = 800 + j * 60; ctx.textAlign = "left"; ctx.fillStyle = "#b9c6e4"; fit(ctx, k, 250, 24, 600); ctx.fillText(k, x + 30, y);
           ctx.textAlign = "right"; ctx.fillStyle = "#fff"; F(800, 26); ctx.fillText(val, x + w - 30, y);
         });
       });
       ctx.textAlign = "center"; ctx.fillStyle = "#fff"; F(700, 34);
-      ctx.fillText(`Beza ${RM(Math.abs(rows[0].m - rows[1].m))} sebulan · ${v.years} tahun · ${v.rate}%`, W / 2, 1070);
+      ctx.fillText(`${t("pDiff2", RM(Math.abs(rows[0].m - rows[1].m)))} · ${t("yrs", v.years)} · ${v.rate}%`, W / 2, 1070);
     }
     // jalur SA
     ctx.fillStyle = "#eb0a1e"; ctx.fillRect(0, 1180, W, 120);
-    ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(800, 40); ctx.fillText(p.name || "Nama awak", 60, 1232);
+    ctx.textAlign = "left"; ctx.fillStyle = "#fff"; F(800, 40); ctx.fillText(p.name || t("pName"), 60, 1232);
     F(600, 26); ctx.fillText(`Sales Advisor Toyota${p.branch ? " · " + p.branch : ""}`, 60, 1272);
     ctx.textAlign = "right"; F(800, 42); ctx.fillText(p.phone || "01x-xxx xxxx", W - 60, 1250);
     ctx.textAlign = "center"; ctx.fillStyle = "#b9c6e4"; F(500, 17);
-    wrap(ctx, FOOT, W / 2, rows.length === 1 ? 1140 : 1122, 960, 22);
+    wrap(ctx, t("foot"), W / 2, rows.length === 1 ? 1140 : 1122, 960, 22);
     ctx.fillStyle = "#0b1b3a"; ctx.fillRect(0, 1300, W, 50); ctx.fillStyle = "#b9c6e4"; F(500, 18);
-    ctx.fillText("Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my", W / 2, 1332);
+    ctx.fillText(t("footSrc"), W / 2, 1332);
   }
 
-  function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast("Fail dimuat turun"); }
+  function saveBlob(blob, name) { const a = document.createElement("a"); a.href = URL.createObjectURL(blob); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000); toast(t("saved")); }
   async function shareBlob(blob, name) {
     const file = new File([blob], name, { type: "image/png" });
     if (navigator.canShare && navigator.canShare({ files: [file] })) { try { await navigator.share({ files: [file] }); } catch {} }
-    else { saveBlob(blob, name); toast("Telefon tak sokong kongsi terus — fail dimuat turun"); }
+    else { saveBlob(blob, name); toast(t("noShare")); }
   }
 
-  // ---------- BROSUR ----------
+  // ---------- BROCHURE ----------
   const BROCH = window.BROCHURES || {};
   let pdfLibP;
   const loadPdfLib = () => pdfLibP || (pdfLibP = new Promise((res, rej) => {
     if (window.PDFLib) return res(window.PDFLib);
     const s = document.createElement("script"); s.src = "vendor/pdf-lib.min.js";
-    s.onload = () => res(window.PDFLib); s.onerror = () => { pdfLibP = null; rej(new Error("pdf-lib gagal dimuat")); };
+    s.onload = () => res(window.PDFLib); s.onerror = () => { pdfLibP = null; rej(new Error("pdf-lib")); };
     document.head.appendChild(s);
   }));
   // Helvetica hanya sokong aksara Latin (WinAnsi)
@@ -261,8 +394,8 @@
 
   async function stampBrochure(car) {
     const p = profile(), [file] = BROCH[car.id];
-    const [L, bytes] = await Promise.all([loadPdfLib(), fetch("brochures/" + file).then(r => { if (!r.ok) throw new Error("PDF tiada"); return r.arrayBuffer(); })]);
-    const { PDFDocument, StandardFonts, rgb, PDFString, PDFName } = L;
+    const [L, bytes] = await Promise.all([loadPdfLib(), fetch("brochures/" + file).then(r => { if (!r.ok) throw new Error("PDF"); return r.arrayBuffer(); })]);
+    const { PDFDocument, StandardFonts, rgb, PDFString } = L;
     const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
     const bold = await doc.embedFont(StandardFonts.HelveticaBold), reg = await doc.embedFont(StandardFonts.Helvetica);
     const name = latin(p.name), phone = latin(p.phone), branch = latin(p.branch);
@@ -287,7 +420,7 @@
         page.drawText(`Sales Advisor Toyota${branch ? " · " + branch : ""}`, { x: pad, y: bh * 0.22, size: ss, font: reg, color: white });
         const pw = bold.widthOfTextAtSize(phone, ps);
         page.drawText(phone, { x: w - pad - pw, y: bh * 0.44, size: ps, font: bold, color: white });
-        const tip = "Tekan untuk WhatsApp";
+        const tip = t("tapWA");
         page.drawText(tip, { x: w - pad - reg.widthOfTextAtSize(tip, ss), y: bh * 0.18, size: ss, font: reg, color: white });
         link(page, [0, 0, w, bh]);
       } else {
@@ -310,19 +443,19 @@
   function brosurMsg(c, withLink) {
     const p = profile();
     const harga = c.grades.map(g => `• ${g[0]}: ${RM(g[2])}`).join("\n");
-    return `Hi! Saya ${p.name}, Sales Advisor Toyota${p.branch ? " " + p.branch : ""}.\n\n` +
-      (withLink ? `Ini e-brochure rasmi Toyota ${c.name}:\n${BROCH[c.id] ? BROCH[c.id][1] : c.url}\n\n` : `Ini e-brochure rasmi Toyota ${c.name}.\n\n`) +
-      `Harga OTR (Semenanjung, tanpa insurans):\n${harga}\n\n*Harga boleh berubah bila-bila masa.\nNak test drive atau kira loan? Boleh message saya: ${p.phone}`;
+    return `${t("msgHi", p.name, p.branch)}\n\n` +
+      (withLink ? t("msgLink", c.name, BROCH[c.id] ? BROCH[c.id][1] : c.url) : t("msgNoLink", c.name)) +
+      `\n\n${t("msgPrice")}\n${harga}\n\n${t("msgChange")}\n${t("msgCta", p.phone)}`;
   }
 
   function brosur() {
     view.innerHTML = `
-      <h2>Brosur rasmi</h2><p class="sub"><b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Link</b>: hantar pautan + harga ke nombor customer.</p>
-      <div class="card"><label>Nombor WhatsApp customer (untuk Link)</label><input id="cust" inputmode="tel" placeholder="cth. 0123456789"></div>
+      <h2>${t("broH")}</h2><p class="sub">${t("broSub")}</p>
+      <div class="card"><label>${t("custWA")}</label><input id="cust" inputmode="tel" placeholder="${t("eg")} 0123456789"></div>
       <div class="list">${CARS.map((c, i) => `
-        <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type} · dari ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
+        <div class="car"><img src="${c.img}" alt="${esc(c.name)}"><div class="t"><b>${esc(c.name)}</b><small>${c.type} · ${t("from")} ${RM(Math.min(...c.grades.map(g => g[2])))}</small></div>
         <div style="display:grid;gap:6px">${BROCH[c.id] ? `<button class="btn red" data-pdf="${i}" style="padding:8px 12px">PDF</button>` : ""}<button class="btn wa" data-i="${i}" style="padding:8px 12px">Link</button></div></div>`).join("")}</div>
-      <p class="note">E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.</p>`;
+      <p class="note">${t("broNote")}</p>`;
     view.querySelectorAll("[data-i]").forEach(b => b.onclick = () => {
       if (!needProfile()) return;
       const c = CARS[+b.dataset.i];
@@ -331,69 +464,75 @@
     view.querySelectorAll("[data-pdf]").forEach(b => b.onclick = async () => {
       if (!needProfile() || b.disabled) return;
       const c = CARS[+b.dataset.pdf], label = b.textContent;
-      b.disabled = true; b.textContent = "…"; toast("Menyediakan brochure…");
+      b.disabled = true; b.textContent = "…"; toast(t("preparing"));
       try {
         const f = await stampBrochure(c);
         if (navigator.canShare && navigator.canShare({ files: [f] })) {
           try { await navigator.share({ files: [f], title: f.name, text: brosurMsg(c, false) }); } catch {}
         } else saveBlob(f, f.name);
-      } catch (e) { toast("Gagal: " + e.message); }
+      } catch (e) { toast(t("failed") + e.message); }
       b.disabled = false; b.textContent = label;
     });
   }
 
-  // ---------- GAJI ----------
+  // ---------- GAJI / SALARY ----------
   function gaji() {
     const pref = loanPref(), last = store.get("sa_gaji", 5000);
     view.innerHTML = `
-      <h2>Ikut gaji</h2><p class="sub">Masukkan gaji kasar sebulan, dapat senarai kereta yang sesuai.</p>
+      <h2>${t("salH")}</h2><p class="sub">${t("salSub")}</p>
       <div class="card">
-        <label>Gaji kasar sebulan (RM)</label><input id="sal" type="number" inputmode="numeric" value="${last}">
+        <label>${t("salIn")}</label><input id="sal" type="number" inputmode="numeric" value="${last}">
         <div class="row">
-          <div><label>Deposit (%)</label><input id="dep" type="number" value="${pref.dep}"></div>
-          <div><label>Kadar (%)</label><input id="rate" type="number" step="0.01" value="${pref.rate}"></div>
+          <div><label>${t("depPct")}</label><input id="dep" type="number" value="${pref.dep}"></div>
+          <div><label>${t("ratePct")}</label><input id="rate" type="number" step="0.01" value="${pref.rate}"></div>
         </div>
       </div>
       <div class="list" id="out"></div>
-      <p class="note">Panduan: <span class="tag ok">Selesa</span> ansuran ≤20% gaji, <span class="tag mid">Sederhana</span> ≤25%, <span class="tag max">Maksimum</span> ≤30%. Tempoh ${pref.years} tahun. Kelulusan sebenar ikut bank (DSR & komitmen lain).</p>`;
+      <p class="note">${t("salNote", pref.years)}</p>`;
     const run = () => {
       const sal = +$("#sal").value || 0, dep = +$("#dep").value || 0, rate = +$("#rate").value || 0;
       store.set("sa_gaji", sal);
       const list = GRADES.map((g, i) => ({ g, i, m: monthly(g.price, dep, rate, pref.years) }))
         .map(x => ({ ...x, r: sal ? x.m / sal : 9 })).filter(x => x.r <= 0.30).sort((a, b) => b.g.price - a.g.price);
+      const tags = t("tags");
       $("#out").innerHTML = list.length ? list.map(x => {
-        const t = x.r <= .20 ? ["ok", "Selesa"] : x.r <= .25 ? ["mid", "Sederhana"] : ["max", "Maksimum"];
-        return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${RM(x.g.price)} · ${Math.round(x.r * 100)}% gaji</small></div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${t[0]}">${t[1]}</span></div></a>`;
-      }).join("") : `<div class="card">Tiada model dalam had 30% gaji. Cuba tambah deposit.</div>`;
-      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, 0]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); loanMode = "satu"; });
+        const tg = x.r <= .20 ? ["ok", tags[0]] : x.r <= .25 ? ["mid", tags[1]] : ["max", tags[2]];
+        return `<a class="car" href="#loan" data-g="${x.i}" style="text-decoration:none"><img src="${x.g.car.img}" alt=""><div class="t"><b>${x.g.name}</b><small>${RM(x.g.price)} · ${Math.round(x.r * 100)}% ${t("ofSal")}</small></div><div style="text-align:right"><div class="p">${RM(x.m)}</div><span class="tag ${tg[0]}">${tg[1]}</span></div></a>`;
+      }).join("") : `<div class="card">${t("salNone")}</div>`;
+      $("#out").querySelectorAll("[data-g]").forEach(a => a.onclick = () => { store.set("sa_sel", [+a.dataset.g, ...store.get("sa_sel", []).slice(1)]); store.set("sa_loan2", { ...pref, mode: "pct", dep, rate }); });
     };
     view.querySelectorAll("input").forEach(e => e.oninput = run); run();
   }
 
-  // ---------- AKAUN ----------
+  // ---------- AKAUN / ACCOUNT ----------
   function akaun() {
     const p = profile();
     view.innerHTML = `
-      <h2>Akaun</h2><p class="sub">Nama & nombor ini masuk dalam poster dan mesej WhatsApp.</p>
+      <h2>${t("accH")}</h2><p class="sub">${t("accSub")}</p>
       <div class="card">
-        <label>Nama</label><input id="n" value="${esc(p.name)}" placeholder="cth. Wan">
-        <label>Nombor telefon</label><input id="ph" inputmode="tel" value="${esc(p.phone)}" placeholder="cth. 012-345 6789">
-        <label>Cawangan (pilihan)</label><input id="br" value="${esc(p.branch)}" placeholder="cth. Toyota Shah Alam">
-        <div style="margin-top:16px"><button class="btn red block" id="sv">Simpan</button></div>
+        <label>${t("langLbl")}</label>
+        <div class="seg" id="lsel" style="margin-bottom:4px"><button data-l="ms" class="${lang === "ms" ? "on" : ""}">Bahasa Melayu</button><button data-l="en" class="${lang === "en" ? "on" : ""}">English</button></div>
+        <label>${t("name")}</label><input id="n" value="${esc(p.name)}" placeholder="${t("eg")} Wan">
+        <label>${t("phone")}</label><input id="ph" inputmode="tel" value="${esc(p.phone)}" placeholder="${t("eg")} 012-345 6789">
+        <label>${t("branch")}</label><input id="br" value="${esc(p.branch)}" placeholder="${t("eg")} Toyota Shah Alam">
+        <div style="margin-top:16px"><button class="btn red block" id="sv">${t("save")}</button></div>
       </div>
-      <p class="note">Data disimpan dalam pelayar telefon ini sahaja, tidak dihantar ke mana-mana pelayan.</p>`;
-    $("#sv").onclick = () => { store.set("sa_profile", { name: $("#n").value.trim(), phone: $("#ph").value.trim(), branch: $("#br").value.trim() }); toast("Profil disimpan"); };
+      <p class="note">${t("accNote")}</p>`;
+    $("#lsel").querySelectorAll("button").forEach(b => b.onclick = () => setLang(b.dataset.l));
+    $("#sv").onclick = () => { store.set("sa_profile", { name: $("#n").value.trim(), phone: $("#ph").value.trim(), branch: $("#br").value.trim() }); toast(t("savedProf")); };
   }
 
   // ---------- router ----------
   function route() {
     const [tab, sub] = (location.hash.slice(1) || "home").split("/");
-    const map = { home, loan: () => loan(sub), brosur, gaji, akaun };
-    if (tab === "loan") loanMode = sub === "banding" ? "banding" : "satu";
+    const map = { home, loan, brosur, gaji, akaun };
+    if (tab === "loan") loanN = sub === "banding" ? 2 : sub === "banding3" ? 3 : sub === "banding4" ? 4 : 1;
     (map[tab] || home)();
     document.querySelectorAll(".tabs a").forEach(a => a.classList.toggle("on", a.dataset.tab === (map[tab] ? tab : "home")));
     window.scrollTo(0, 0);
   }
+  $("#lang").onclick = () => setLang(lang === "en" ? "ms" : "en");
   addEventListener("hashchange", route);
+  applyChrome();
   route();
 })();
