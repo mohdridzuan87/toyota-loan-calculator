@@ -1,1 +1,2 @@
-Letak fail fon Monster Clubhouse di sini sebagai MonsterClubhouse.ttf (atau .otf), kemudian render semula ikon dari assets/icon-src.html.
+Ikon guna fon Yellowtail (Google Fonts, OFL) sebagai pengganti Monster Clubhouse.
+Jika mahu fon lain, letak fail di sini sebagai MonsterClubhouse.ttf (atau .otf) dan render semula ikon dari assets/icon-src.html.
