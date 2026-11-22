@@ -157,7 +157,9 @@
     const fin = price * (1 - depPct / 100);
     return (fin + fin * (rate / 100) * years) / (years * 12);
   };
-  const gradeOptions = sel => GRADES.map((g, i) => `<option value="${i}" ${i === sel ? "selected" : ""}>${g.name} · ${RM(g.price)}</option>`).join("");
+  // Senarai varian disusun A-Z (nilai kekal indeks GRADES)
+  const GRADE_AZ = GRADES.map((g, i) => i).sort((a, b) => GRADES[a].name.localeCompare(GRADES[b].name, "en", { numeric: true, sensitivity: "base" }));
+  const gradeOptions = sel => GRADE_AZ.map(i => `<option value="${i}" ${i === sel ? "selected" : ""}>${GRADES[i].name} · ${RM(GRADES[i].price)}</option>`).join("");
   const needProfile = () => { const p = profile(); if (!p.name || !p.phone) { toast(t("needProfile")); return false; } return true; };
 
   // ---------- HOME ----------
