@@ -69,7 +69,7 @@
       cLow: "Ansuran bulanan", cMonth: "/bulan", cYears: n => n + " Tahun", cLowest: "Terendah",
       fElig: "Nak tahu layak atau tidak? Hantar mesej kepada saya hari ini.", fContact: "Semakan kelayakan percuma", fWA: ["Sembang di","WhatsApp"],
       pDisc: "Angka adalah anggaran dan tertakluk pada kelulusan serta terma bank. Kadar dan harga boleh berubah tanpa notis. Semenanjung Malaysia sahaja.",
-      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", photoDel: "Buang gambar",
+      photo: "Gambar profil (untuk poster)", photoAdd: "Pilih gambar", photoDel: "Buang gambar", newColors: "Tukar warna latar",
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
@@ -127,7 +127,7 @@
       cLow: "Monthly instalment", cMonth: "/month", cYears: n => n + (n === 1 ? " Year" : " Years"), cLowest: "Lowest",
       fElig: "Curious if you qualify? Send me a message today.", fContact: "Free eligibility check", fWA: ["Chat on","WhatsApp"],
       pDisc: "Figures are estimates, subject to bank approval and terms. Rates and prices may change without notice. Peninsular Malaysia only.",
-      photo: "Profile photo (for posters)", photoAdd: "Choose photo", photoDel: "Remove photo",
+      photo: "Profile photo (for posters)", photoAdd: "Choose photo", photoDel: "Remove photo", newColors: "Shuffle background colours",
       langLbl: "Language", sa: "Toyota Sales Advisor", link: "Link", otrS: "OTR", loanS: "Loan", pickup: "Pickup"
     }
   };
@@ -264,6 +264,7 @@
       <div class="card result" id="res"></div>
       <div class="card">
         <canvas id="cv" width="1080" height="1350"></canvas>
+        <button class="btn ghost block" id="recolor" type="button" style="margin-bottom:10px">🎨 ${t("newColors")}</button>
         <div class="actions"><button class="btn red" id="dl">${t("dl")}</button><button class="btn wa" id="share">${WA_ICON}${t("share")}</button></div>
         <p class="note">${t("foot")}</p>
       </div>`;
@@ -317,7 +318,7 @@
             (rows.length > 2 ? `<div class="kv"><span>${t("lowest", tg)}</span><span>${esc(lo.g.name)}</span></div>` : "");
         })() : "") +
         `<p class="note" style="margin:0">${t("insNote")}</p>`;
-      drawPoster(rows, v);
+      neonSet = newNeon(); drawPoster(rows, v);
     };
     $("#dm").querySelectorAll("button").forEach(b => b.onclick = () => {
       v.mode = b.dataset.d; $("#dm").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
@@ -325,6 +326,7 @@
     });
     depInput();
     view.querySelectorAll(".card select, #rate, #insIn").forEach(e => e.oninput = update);
+    $("#recolor").onclick = () => { neonSet = newNeon(); if (lastDraw) drawPoster(lastDraw.rows, lastDraw.v); };
     $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "loan-poster.png")); };
     $("#share").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => shareBlob(b, "loan-poster.png")); };
     update();
@@ -368,9 +370,14 @@
   const WA_BUBBLE = new Path2D("M3.6 20.4l1.25-3.9A8.6 8.6 0 1 1 8.1 19.6z");
   const WA_PHONE = new Path2D("M9.3 7.3c.3-.5.6-.5.9-.5h.4c.2 0 .4.1.5.4l.8 1.8c.1.2 0 .5-.1.7l-.6.7c-.1.2-.1.4 0 .5.6 1 1.5 1.9 2.5 2.5.2.1.4.1.5 0l.7-.7c.2-.2.5-.2.7-.1l1.8.8c.2.1.4.3.4.5 0 .5-.1 1.2-.6 1.6-.5.4-1.2.6-2 .5-1.5-.2-3-1-4.2-2.3-1.3-1.2-2.1-2.7-2.3-4.2-.1-.7.1-1.3.6-1.7z");
 
+  // Warna neon rawak: satu dari setiap keluarga (merah/jingga, kuning/amber, hijau, cyan/biru), tiada ungu/merah jambu
+  const NEON_FAMILIES = [["255,59,31", "255,102,0"], ["255,238,0", "255,170,0"], ["57,255,20", "170,255,0", "0,255,153"], ["0,229,255", "0,140,255"]];
+  const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const newNeon = () => shuffle(NEON_FAMILIES.map(f => f[Math.floor(Math.random() * f.length)]));
+  let neonSet = newNeon(), lastDraw = null;
   let drawSeq = 0;
   async function drawPoster(rows, v) {
-    const seq = ++drawSeq;
+    const seq = ++drawSeq; lastDraw = { rows, v };
     await document.fonts.ready;
     const p = profile(), photoSrc = store.get("sa_photo", "");
     const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadImg(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
@@ -385,7 +392,7 @@
 
     // ---- latar: asas gelap + 4 cahaya neon dari setiap bucu, bertemu di tengah
     ctx.fillStyle = "#050a18"; ctx.fillRect(0, 0, W, H);
-    const NEON = [[0, 0, "0,229,255"], [W, 0, "57,255,20"], [W, H, "255,170,0"], [0, H, "255,59,31"]]; // cyan, hijau limau, amber, merah-jingga
+    const NEON = [[0, 0, neonSet[0]], [W, 0, neonSet[1]], [W, H, neonSet[2]], [0, H, neonSet[3]]];
     const reach = Math.hypot(W, H) * .56;
     ctx.save(); ctx.globalCompositeOperation = "lighter";
     NEON.forEach(([cx, cy, rgb]) => {
