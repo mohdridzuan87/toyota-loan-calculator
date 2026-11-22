@@ -511,7 +511,9 @@
     ctx.textAlign = "left"; F(800, 30 * hs); ctx.letterSpacing = 3 * hs + "px"; const tg = t("cTitle"), tgw = ctx.measureText(tg).width + 44 * hs;
     rr(ctx, pad, 38 * hs, tgw, 56 * hs, 28 * hs); ctx.fillStyle = RED; ctx.fill(); ctx.fillStyle = "#fff"; ctx.fillText(tg, pad + 22 * hs, 77 * hs); ctx.letterSpacing = "0px";
     ctx.fillStyle = "#fff"; fitF(title, W - pad * 2 - 560 * hs, 112 * hs, 800); ctx.fillText(title, pad, 210 * hs);
-    ctx.save(); ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 8 * hs; ctx.fillStyle = "#fff"; F(700, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs); ctx.restore();
+    if (rows.length > 1) { // subtajuk banding hanya bila ada lebih dari satu varian
+      ctx.save(); ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 8 * hs; ctx.fillStyle = "#fff"; F(700, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs); ctx.restore();
+    }
 
     // ---- kad varian
     const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
