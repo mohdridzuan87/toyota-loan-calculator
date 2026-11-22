@@ -1,6 +1,6 @@
 {
-  "name": "SA Toolkit",
-  "short_name": "SA Toolkit",
+  "name": "Toyota Loan Calculator",
+  "short_name": "Toyota Loan",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
