@@ -41,7 +41,7 @@
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
       inst: (y, r) => `Ansuran ${y} tahun @ ${r}%`, upfront: "Bayaran awal (deposit + insurans)",
       diff: t => `Beza ${t ? "deposit" : "sebulan"}`, hiLo: " (tertinggi vs terendah)", lowest: t => `${t ? "Deposit" : "Ansuran"} terendah`,
-      insNote: d => "Insurans (anggaran): premium komprehensif kereta persendirian Semenanjung, dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (disemak " + d + ")" : "") + " dan kadar tarif motor (cc + RM26 setiap RM1,000 harga, tolak NCD, termasuk SST 8% + duti setem RM10). Harga dikemas kini automatik 1hb & 15hb. Toyota tidak menerbitkan harga premium; harga sebenar ikut syarikat insurans.",
+      insNote: d => "Insurans (anggaran): premium komprehensif kereta persendirian Semenanjung, dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (disemak " + d + ")" : "") + " dan kadar tarif motor (cc + RM26 setiap RM1,000 harga, tolak NCD, termasuk SST 8% + duti setem RM10, tambah 15%). Jumlah boleh diubah sendiri. Harga dikemas kini automatik 1hb & 15hb. Toyota tidak menerbitkan harga premium; harga sebenar ikut syarikat insurans.",
       pInsNote: d => "Insurans: anggaran dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (" + d + ")" : "") + " dan tarif motor kereta persendirian.",
       pCmp: n => `PERBANDINGAN LOAN · ${n} VARIAN`, pPkg: "PAKEJ LOAN TOYOTA", pFrom: "Ansuran bulanan dari", pMonthly: "Ansuran sebulan",
       pAfter: "Selepas rebate", pAfterS: "Lepas rebate", pIns: " + insurans", pInsS: " + ins.", pTenure: "Tempoh", pRate: "Kadar",
@@ -56,6 +56,7 @@
       msgCta: ph => `Nak pandu uji atau kira loan? WhatsApp saya: ${ph}`,
       broH: "Brochure rasmi", broSub: "<b>PDF</b>: e-brochure rasmi siap nama & nombor awak, kongsi terus ke WhatsApp. <b>Pautan</b>: hantar pautan + harga ke nombor pelanggan.",
       docMax: "MaxCheck (servis berkala)", docPrice: "Senarai harga",
+      insEditL: n => `Insurans ${n} (RM)`, insAuto: "Auto", insEditNote: "Anggaran automatik termasuk tambahan 15%. Boleh ubah jumlah; tekan Auto untuk kembali ke anggaran.",
       staleWarn: (d, n) => `⚠ Harga & rebate tidak disemak automatik sejak ${d} (${n} hari). Angka mungkin sudah lapuk; sahkan di toyota.com.my sebelum beri sebut harga.`,
       custWA: "Nombor WhatsApp pelanggan (untuk Pautan)", eg: "cth.", from: "dari",
       broNote: "E-brochure ialah salinan fail rasmi toyota.com.my; app hanya tambah jalur nama & nombor (boleh ditekan terus ke WhatsApp awak). Harga OTR Semenanjung, tanpa insurans.",
@@ -104,7 +105,7 @@
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
       inst: (y, r) => `Instalment ${y} yr${y > 1 ? "s" : ""} @ ${r}%`, upfront: "Upfront (down payment + insurance)",
       diff: t => `Difference ${t ? "in down payment" : "per month"}`, hiLo: " (highest vs lowest)", lowest: t => `Lowest ${t ? "down payment" : "instalment"}`,
-      insNote: d => "Insurance (estimate): comprehensive premium for a Peninsular private car, calculated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (checked " + d + ")" : "") + " and the motor tariff rates (by cc + RM26 per RM1,000 of price, less NCD, incl. 8% SST + RM10 stamp duty). Prices update automatically on the 1st & 15th. Toyota does not publish premium prices; the actual premium depends on the insurer.",
+      insNote: d => "Insurance (estimate): comprehensive premium for a Peninsular private car, calculated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (checked " + d + ")" : "") + " and the motor tariff rates (by cc + RM26 per RM1,000 of price, less NCD, incl. 8% SST + RM10 stamp duty, plus 15%). The amount can be edited. Prices update automatically on the 1st & 15th. Toyota does not publish premium prices; the actual premium depends on the insurer.",
       pInsNote: d => "Insurance: estimated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (" + d + ")" : "") + " and the private-car motor tariff.",
       pCmp: n => `LOAN COMPARISON · ${n} VARIANTS`, pPkg: "TOYOTA LOAN PACKAGE", pFrom: "Monthly instalment from", pMonthly: "Monthly instalment",
       pAfter: "After rebate", pAfterS: "After rebate", pIns: " + insurance", pInsS: " + ins.", pTenure: "Tenure", pRate: "Rate",
@@ -119,6 +120,7 @@
       msgCta: ph => `Keen on a test drive or a loan calculation? Message me: ${ph}`,
       broH: "Official brochures", broSub: "<b>PDF</b>: official e-brochure with your name & number, share straight to WhatsApp. <b>Link</b>: send the link + prices to the customer's number.",
       docMax: "MaxCheck (periodic service)", docPrice: "Price list",
+      insEditL: n => `Insurance ${n} (RM)`, insAuto: "Auto", insEditNote: "The automatic estimate includes an extra 15%. You can edit the amount; tap Auto to go back to the estimate.",
       staleWarn: (d, n) => `⚠ Prices & rebates have not been checked automatically since ${d} (${n} days). Figures may be out of date; confirm at toyota.com.my before quoting.`,
       custWA: "Customer's WhatsApp number (for Link)", eg: "e.g.", from: "from",
       broNote: "E-brochures are copies of the official toyota.com.my files; the app only adds a name & number strip (tap to WhatsApp you). OTR prices for Peninsular, without insurance.",
@@ -172,11 +174,15 @@
   const ccOf = g => { const m = g.name.match(/(\d\.\d)/); return (m && CC[m[1]]) || g.car.cc || 1496; };
   const BASE = [[1400, 273.8], [1650, 305.5], [2200, 339.1], [3050, 372.6], [4100, 404.3], [4250, 436], [4400, 469.6], [Infinity, 501.3]];
   const NCDS = [0, 25, 30, 38.33, 45, 55];
+  // Tambahan 15% ke atas anggaran tarif (Wan, 23 Nov 2026); SA boleh ubah jumlah insurans sendiri (sa_insov, ikut nama varian)
+  const INS_LOAD = 1.15;
+  const insOv = () => store.get("sa_insov", {});
   const insurance = (g, ncd) => {
     const cc = ccOf(g), base = BASE.find(b => cc <= b[0])[1];
     const gross = base + 26 * Math.max(0, Math.ceil(g.price / 1000) - 1);
     const net = gross * (1 - ncd / 100);
-    return { cc, gross, net, total: net * 1.08 + 10 };
+    const auto = (net * 1.08 + 10) * INS_LOAD, ov = insOv()[g.name];
+    return { cc, gross, net, auto, custom: ov != null, total: ov != null ? ov : auto };
   };
   let CHECKED_AT = ""; // semakan automatik terakhir (prices.json checkedAt) untuk amaran >30 hari
   let PRICE_AT = ""; // tarikh semakan harga (prices.json), untuk nota sumber insurans
@@ -323,6 +329,7 @@
           <select id="ncd">${NCDS.map(n => `<option value="${n}" ${n == pref.ncd ? "selected" : ""}>NCD ${n}%</option>`).join("")}</select>
           <label class="chk"><input type="checkbox" id="insIn" ${pref.insIn ? "checked" : ""}> ${t("insIn")}</label>
         </div>
+        <div id="insBox"></div>
         <div id="rebBox"></div>
       </div>
       <div class="card result" id="res"></div>
@@ -351,6 +358,31 @@
         box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, parseMoney(inp.value))); update(); });
       }
     };
+    // Kotak insurans boleh diubah: satu input setiap varian; kosong/Auto = anggaran automatik (+15%)
+    const insInputs = picks => {
+      const box = $("#insBox"), key = picks.join(",");
+      if (box.dataset.key !== key) {
+        box.dataset.key = key;
+        box.innerHTML = [...new Set(picks)].map(i => `<label>${t("insEditL", esc(GRADES[i].name))}</label><div class="row" style="grid-template-columns:1fr auto"><input class="insv money" data-g="${i}" type="text" inputmode="decimal"><button type="button" class="btn ghost insauto" data-g="${i}" style="padding:8px 12px">${t("insAuto")}</button></div>`).join("") +
+          `<p class="note" style="margin:6px 0 0">${t("insEditNote")}</p>`;
+        box.querySelectorAll(".insv").forEach(inp => inp.oninput = () => {
+          const name = GRADES[+inp.dataset.g].name, o = { ...insOv() };
+          if (inp.value.trim() === "") delete o[name]; else o[name] = Math.max(0, parseMoney(inp.value));
+          store.set("sa_insov", o); update(true);
+        });
+        box.querySelectorAll(".insauto").forEach(b => b.onclick = () => {
+          const o = { ...insOv() }; delete o[GRADES[+b.dataset.g].name]; store.set("sa_insov", o);
+          const inp = box.querySelector('.insv[data-g="' + b.dataset.g + '"]'); inp.blur(); update(true);
+        });
+      }
+    };
+    const insSync = rows => { // papar nilai semasa dalam kotak (kecuali yang sedang ditaip)
+      view.querySelectorAll(".insv").forEach(inp => {
+        if (document.activeElement === inp) return;
+        const r = rows.find(x => x.g.name === GRADES[+inp.dataset.g].name);
+        if (r) inp.value = fmtMoney(Math.round(r.ins.total));
+      });
+    };
     const renderColours = (k, g) => {
       const box = view.querySelector('.cbox[data-k="' + k + '"]'); if (!box) return;
       const list = colourList(g.name); if (!list.length) { box.innerHTML = ""; return; }
@@ -369,11 +401,12 @@
       store.set("sa_loan3", v);
       const picks = [...view.querySelectorAll(".gsel")].map(s => +s.value);
       store.set("sa_sel", sel.map((x, k) => picks[k] ?? x));
-      rebInputs(picks);
+      rebInputs(picks); insInputs(picks);
       if (!keepBoxes) picks.forEach((i, k) => renderColours(k, GRADES[i]));
       $("#colNote").textContent = picks.some(i => colourList(GRADES[i].name).length) ? t("colNote", COL.updatedAt || "", !!CP.stale) : "";
       const rows = picks.map(i => calc(withColour(GRADES[i]), v));
-      const tg = v.mode === "target", sm = `<small style="font-size:14px;font-weight:600">`;
+      insSync(rows);
+      const tg =v.mode === "target", sm = `<small style="font-size:14px;font-weight:600">`;
       $("#res").innerHTML = rows.map(r => {
         const head = tg
           ? `<div class="k">${esc(r.g.name)} · ${t("depNeeded")}</div><div class="v">${RM(r.dep)}${sm} (${pct1(r.depPct)}%)</small></div>
