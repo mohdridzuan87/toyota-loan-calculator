@@ -41,7 +41,7 @@
       insEst: n => `Insurans anggaran (NCD ${n}%)`, inLoan: " · dalam loan", loanAmt: "Jumlah loan",
       inst: (y, r) => `Ansuran ${y} tahun @ ${r}%`, upfront: "Bayaran awal (deposit + insurans)",
       diff: t => `Beza ${t ? "deposit" : "sebulan"}`, hiLo: " (tertinggi vs terendah)", lowest: t => `${t ? "Deposit" : "Ansuran"} terendah`,
-      insNote: d => "Insurans (anggaran): premium komprehensif kereta persendirian Semenanjung, dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (disemak " + d + ")" : "") + " dan kadar tarif motor (cc + RM26 setiap RM1,000 harga, tolak NCD, termasuk SST 8% + duti setem RM10, tambah 15%). Jumlah boleh diubah sendiri. Harga dikemas kini automatik 1hb & 15hb. Toyota tidak menerbitkan harga premium; harga sebenar ikut syarikat insurans.",
+      insNote: d => "Insurans (anggaran): premium komprehensif kereta persendirian Semenanjung, dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (disemak " + d + ")" : "") + " dan kadar tarif motor (cc + RM26 setiap RM1,000 harga, tolak NCD, termasuk SST 8% + duti setem RM10, tambah 20%). Jumlah boleh diubah sendiri. Harga dikemas kini automatik 1hb & 15hb. Toyota tidak menerbitkan harga premium; harga sebenar ikut syarikat insurans.",
       pInsNote: d => "Insurans: anggaran dikira automatik daripada harga OTR terkini senarai harga Toyota Malaysia" + (d ? " (" + d + ")" : "") + " dan tarif motor kereta persendirian.",
       pCmp: n => `PERBANDINGAN LOAN · ${n} VARIAN`, pPkg: "PAKEJ LOAN TOYOTA", pFrom: "Ansuran bulanan dari", pMonthly: "Ansuran sebulan",
       pAfter: "Selepas rebate", pAfterS: "Lepas rebate", pIns: " + insurans", pInsS: " + ins.", pTenure: "Tempoh", pRate: "Kadar",
@@ -105,7 +105,7 @@
       insEst: n => `Estimated insurance (NCD ${n}%)`, inLoan: " · in loan", loanAmt: "Loan amount",
       inst: (y, r) => `Instalment ${y} yr${y > 1 ? "s" : ""} @ ${r}%`, upfront: "Upfront (down payment + insurance)",
       diff: t => `Difference ${t ? "in down payment" : "per month"}`, hiLo: " (highest vs lowest)", lowest: t => `Lowest ${t ? "down payment" : "instalment"}`,
-      insNote: d => "Insurance (estimate): comprehensive premium for a Peninsular private car, calculated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (checked " + d + ")" : "") + " and the motor tariff rates (by cc + RM26 per RM1,000 of price, less NCD, incl. 8% SST + RM10 stamp duty, plus 15%). The amount can be edited. Prices update automatically on the 1st & 15th. Toyota does not publish premium prices; the actual premium depends on the insurer.",
+      insNote: d => "Insurance (estimate): comprehensive premium for a Peninsular private car, calculated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (checked " + d + ")" : "") + " and the motor tariff rates (by cc + RM26 per RM1,000 of price, less NCD, incl. 8% SST + RM10 stamp duty, plus 20%). The amount can be edited. Prices update automatically on the 1st & 15th. Toyota does not publish premium prices; the actual premium depends on the insurer.",
       pInsNote: d => "Insurance: estimated automatically from the latest OTR price in Toyota Malaysia's price list" + (d ? " (" + d + ")" : "") + " and the private-car motor tariff.",
       pCmp: n => `LOAN COMPARISON · ${n} VARIANTS`, pPkg: "TOYOTA LOAN PACKAGE", pFrom: "Monthly instalment from", pMonthly: "Monthly instalment",
       pAfter: "After rebate", pAfterS: "After rebate", pIns: " + insurance", pInsS: " + ins.", pTenure: "Tenure", pRate: "Rate",
@@ -174,8 +174,8 @@
   const ccOf = g => { const m = g.name.match(/(\d\.\d)/); return (m && CC[m[1]]) || g.car.cc || 1496; };
   const BASE = [[1400, 273.8], [1650, 305.5], [2200, 339.1], [3050, 372.6], [4100, 404.3], [4250, 436], [4400, 469.6], [Infinity, 501.3]];
   const NCDS = [0, 25, 30, 38.33, 45, 55];
-  // Tambahan 15% ke atas anggaran tarif (Wan, 23 Nov 2026); SA boleh ubah jumlah insurans sendiri (sa_insov, ikut nama varian)
-  const INS_LOAD = 1.15;
+  // Tambahan 20% ke atas anggaran tarif (Wan, 23 Nov 2026; asal 15%); SA boleh ubah jumlah insurans sendiri (sa_insov, ikut nama varian)
+  const INS_LOAD = 1.2;
   const insOv = () => store.get("sa_insov", {});
   const insurance = (g, ncd) => {
     const cc = ccOf(g), base = BASE.find(b => cc <= b[0])[1];
@@ -358,7 +358,7 @@
         box.querySelectorAll(".rebv").forEach(inp => inp.oninput = () => { setRebOverride(GRADES[+inp.dataset.g].name, Math.max(0, parseMoney(inp.value))); update(); });
       }
     };
-    // Kotak insurans boleh diubah: satu input setiap varian; kosong/Auto = anggaran automatik (+15%)
+    // Kotak insurans boleh diubah: satu input setiap varian; kosong/Auto = anggaran automatik (+20%)
     const insInputs = picks => {
       const box = $("#insBox"), key = picks.join(",");
       if (box.dataset.key !== key) {
