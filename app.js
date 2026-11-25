@@ -489,8 +489,9 @@
       return o;
     }));
   };
+  // Semua poster guna gambar pandangan SISI (assets/cars/cut) — Wan mahu semua gambar kereta dari sisi (25 Nov 2026).
+  // Gambar ikut warna (col/) ialah sudut 3/4 hadapan, jadi tidak dipakai lagi; label warna kekal di kad.
   const cutOf = g => {
-    if (g.colour && g.colour.img) return g.colour.img;
     const id = g.car.id, gr = /GR Sport/i.test(g.name), hev = /HEV/i.test(g.name);
     const k = gr && CUTS.has(id + "-grs") ? id + "-grs" : hev && CUTS.has(id + "-hev") ? id + "-hev" : id;
     return CUTS.has(k) ? "assets/cars/cut/" + k + ".png" : g.car.img;
@@ -568,7 +569,8 @@
     // ---- kad varian
     const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
     let cw = (W - pad * 2 - gap * (L.cols - 1)) / L.cols, ch = (areaBot - areaTop - gap * (L.rows - 1)) / L.rows;
-    if (rows.length === 1 && !live) cw = Math.min(cw, 1100); // Live: kad selebar bar nama
+    if (rows.length === 1 && !live) cw = Math.min(cw, 1100);
+    if (live) cw *= .85; // Live: kad 15% lebih sempit (sama lebar dengan bar nama)
     const k = Math.min(cw / 900, ch / 1150);
     const colRow = rows.some(q => q.g.colour && q.g.colour.price > 0); // baris harga warna dalam jadual (semua kad sama tinggi)
     rows.forEach((r, i) => {
@@ -592,7 +594,7 @@
       ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
       const FIX = (690 + (colRow ? 54 : 0)) * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
-      if (!(r.g.colour && r.g.colour.img)) { // gambar warna sudah ada bayang sendiri
+      { // bayang lembut di bawah kereta (gambar sisi tiada bayang sendiri)
         ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
         ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
@@ -652,7 +654,7 @@
     }
 
     // ---- kaki: bar navy bergaris emas
-    const f = L.fs, fh = L.foot, fy = H - L.disc - fh, fx = pad * .8, fwid = W - fx * 2, narrow = W < 1500;
+    const f = L.fs, fh = L.foot, fy = H - L.disc - fh, fwid = (W - pad * 1.6) * (live ? .85 : 1), fx = (W - fwid) / 2, narrow = W < 1500;
     ctx.save(); ctx.shadowColor = "rgba(0,0,0,.4)"; ctx.shadowBlur = 26 * f; ctx.shadowOffsetY = 8 * f;
     const fg = ctx.createLinearGradient(fx, fy, fx + fwid, fy); fg.addColorStop(0, "#071127"); fg.addColorStop(1, "#102a57");
     rr(ctx, fx, fy, fwid, fh, 26 * f); ctx.fillStyle = fg; ctx.fill(); ctx.restore();
@@ -985,6 +987,14 @@
         </div>
       </div>`;
     const save = () => store.set("sa_live", s);
+    // Poster dianjak ke kiri (object-position 30%); letak lencana LIVE & tag customer tepat di tengah poster
+    const alignBar = () => {
+      const cv = $("#cv"), st = $("#lvStage"); if (!cv || !st || !document.body.contains(st)) return;
+      const cw = cv.clientWidth, ch = cv.clientHeight, dw = Math.min(cw, ch * cv.width / cv.height);
+      const centre = cv.offsetLeft + (cw - dw) * .3 + dw / 2, padL = parseFloat(getComputedStyle(st).paddingLeft) || 0;
+      st.querySelectorAll(".lvbar, .lvcust").forEach(el => { el.style.alignSelf = "flex-start"; el.style.marginLeft = Math.max(0, centre - el.offsetWidth / 2 - padL) + "px"; });
+    };
+    window.onresize = alignBar;
     const carOf = () => GRADES[s.gi].car;
     const renderModels = () => {
       const q = s.q.trim().toLowerCase();
@@ -1022,7 +1032,7 @@
       renderGrades(); renderColours(g);
       const tag = $("#lvCustTag"); tag.hidden = !s.cust.trim(); tag.textContent = t("lvFor") + ": " + s.cust.trim();
       const ph = $("#lvPh"); ph.textContent = (s.hidePhone ? "🙈 " : "📞 ") + t("lvPhone", !s.hidePhone); ph.classList.toggle("off", !!s.hidePhone);
-      drawPoster([calc(withColour(g), v)], { ...v, hidePhone: !!s.hidePhone, live: true }); // kad + bar nama sahaja (tanpa latar warna-warni); poster sama dengan tab Loan; warna neon kekal semasa live, tukar dengan butang 🎨
+      drawPoster([calc(withColour(g), v)], { ...v, hidePhone: !!s.hidePhone, live: true }).then(alignBar); // kad + bar nama sahaja (tanpa latar warna-warni); poster sama dengan tab Loan; warna neon kekal semasa live, tukar dengan butang 🎨
     };
     $("#lvQ").oninput = e => { s.q = e.target.value; save(); renderModels(); };
     $("#lvQ").onkeydown = e => { if (e.key === "Enter") { const b = $("#lvModels .lvm"); if (b) b.click(); } };
@@ -1038,7 +1048,7 @@
     const fsBtn = $("#lvFs"), root = document.documentElement;
     const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
     const fsLabel = () => { const on = document.body.classList.contains("lvfocus"); fsBtn.textContent = on ? "✕ " + t("lvExit") : "⛶ " + t("lvFull"); };
-    const setFocus = on => { document.body.classList.toggle("lvfocus", on); fsLabel(); };
+    const setFocus = on => { document.body.classList.toggle("lvfocus", on); fsLabel(); requestAnimationFrame(alignBar); };
     fsBtn.onclick = () => {
       if (document.body.classList.contains("lvfocus")) {
         setFocus(false);
