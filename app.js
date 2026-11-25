@@ -491,7 +491,9 @@
   };
   // Semua poster guna gambar pandangan SISI (assets/cars/cut) — Wan mahu semua gambar kereta dari sisi (25 Nov 2026).
   // Gambar ikut warna (col/) ialah sudut 3/4 hadapan, jadi tidak dipakai lagi; label warna kekal di kad.
-  const cutOf = g => {
+  // Live (colour=true): guna gambar ikut warna (3/4 hadapan, 1200 px) supaya kereta tukar warna bila customer minta.
+  const cutOf = (g, colour) => {
+    if (colour && g.colour && g.colour.img) return g.colour.img;
     const id = g.car.id, gr = /GR Sport/i.test(g.name), hev = /HEV/i.test(g.name);
     const k = gr && CUTS.has(id + "-grs") ? id + "-grs" : hev && CUTS.has(id + "-hev") ? id + "-hev" : id;
     return CUTS.has(k) ? "assets/cars/cut/" + k + ".png" : g.car.img;
@@ -518,11 +520,12 @@
   const newNeon = () => shuffle(NEON_FAMILIES.map(f => f[Math.floor(Math.random() * f.length)]));
   let neonSet = newNeon(), lastDraw = null;
   let drawSeq = 0;
+  const LIVE_CAR = 360; // px tambahan untuk kereta di poster Live
   async function drawPoster(rows, v) {
     const seq = ++drawSeq; lastDraw = { rows, v };
     await document.fonts.ready;
     const p = profile(), photoSrc = store.get("sa_photo", "");
-    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
+    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g, !!v.live)))), photoSrc ? loadImg(photoSrc) : null]);
     if (seq !== drawSeq) return;
     // Live (v.live): lukis di kanvas tersembunyi tanpa latar neon/tajuk/penafian, kemudian potong kad + bar nama ke #cv
     const vis = $("#cv"); if (!vis) return;
@@ -567,11 +570,12 @@
     } // tamat latar + kepala (bukan Live)
 
     // ---- kad varian
-    const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
+    const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head - (live ? LIVE_CAR : 0), areaBot = H - L.foot - L.disc - 30 * L.fs;
     let cw = (W - pad * 2 - gap * (L.cols - 1)) / L.cols, ch = (areaBot - areaTop - gap * (L.rows - 1)) / L.rows;
     if (rows.length === 1 && !live) cw = Math.min(cw, 1100);
     if (live) cw *= .85; // Live: kad 15% lebih sempit (sama lebar dengan bar nama)
-    const k = Math.min(cw / 900, ch / 1150);
+    // Live: ruang tambahan LIVE_CAR px semuanya untuk gambar kereta (saiz teks kekal), macam susun atur SA Studio
+    const k = Math.min(cw / 900, (ch - (live ? LIVE_CAR : 0)) / 1150);
     const colRow = rows.some(q => q.g.colour && q.g.colour.price > 0); // baris harga warna dalam jadual (semua kad sama tinggi)
     rows.forEach((r, i) => {
       const col = i % L.cols, row = Math.floor(i / L.cols);
@@ -594,11 +598,11 @@
       ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
       const FIX = (690 + (colRow ? 54 : 0)) * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
-      { // bayang lembut di bawah kereta (gambar sisi tiada bayang sendiri)
+      if (!(live && r.g.colour && r.g.colour.img)) { // bayang lembut (gambar sisi tiada bayang; gambar warna Live ada bayang sendiri)
         ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
         ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
-      const pillSp = r.g.colour ? 56 * k : 0; // ruang untuk label warna di atas gambar
+      const pillSp = r.g.colour && !live ? 56 * k : 0; // ruang untuk label warna di atas gambar (Live: label di bucu atas kiri, atas gambar)
       contain(ctx, img, x + 30 * k, imgTop + pillSp, cw - 60 * k, imgH * .9 - pillSp, .85);
       if (r.g.colour) {
         const cc = r.g.colour, lab = cc.name + (cc.price ? "  +" + RM(cc.price) : "");
