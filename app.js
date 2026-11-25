@@ -523,7 +523,9 @@
     const p = profile(), photoSrc = store.get("sa_photo", "");
     const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
     if (seq !== drawSeq) return;
-    const cv = $("#cv"); if (!cv) return;
+    // Live (v.live): lukis di kanvas tersembunyi tanpa latar neon/tajuk/penafian, kemudian potong kad + bar nama ke #cv
+    const vis = $("#cv"); if (!vis) return;
+    const live = !!v.live, cv = live ? (drawPoster.off || (drawPoster.off = document.createElement("canvas"))) : vis;
     const L = LAYOUT[rows.length] || LAYOUT[1], { W, H } = L;
     if (cv.width !== W || cv.height !== H) { cv.width = W; cv.height = H; }
     const ctx = cv.getContext("2d");
@@ -533,6 +535,8 @@
 
     // ---- latar: asas gelap + 4 cahaya neon dari setiap bucu, bertemu di tengah
     ctx.fillStyle = "#050a18"; ctx.fillRect(0, 0, W, H);
+    const hs = L.hs, pad = 60 * Math.max(hs, .7);
+    if (!live) {
     const NEON = [[0, 0, neonSet[0]], [W, 0, neonSet[1]], [W, H, neonSet[2]], [0, H, neonSet[3]]];
     const reach = Math.hypot(W, H) * .56;
     ctx.save(); ctx.globalCompositeOperation = "lighter";
@@ -546,7 +550,6 @@
     ctx.fillStyle = "rgba(5,10,24,.12)"; ctx.fillRect(0, 0, W, H);
 
     // ---- kepala
-    const hs = L.hs, pad = 60 * Math.max(hs, .7);
     // jalur merah serong di penjuru kanan atas + perkataan TOYOTA
     ctx.fillStyle = RED; ctx.beginPath(); ctx.moveTo(W - 470 * hs, 0); ctx.lineTo(W, 0); ctx.lineTo(W, 150 * hs); ctx.lineTo(W - 530 * hs, 150 * hs); ctx.closePath(); ctx.fill();
     ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.moveTo(W - 500 * hs, 0); ctx.lineTo(W - 486 * hs, 0); ctx.lineTo(W - 546 * hs, 150 * hs); ctx.lineTo(W - 560 * hs, 150 * hs); ctx.closePath(); ctx.fill();
@@ -560,11 +563,12 @@
     if (rows.length > 1) { // subtajuk banding hanya bila ada lebih dari satu varian
       ctx.save(); ctx.shadowColor = "rgba(0,0,0,.45)"; ctx.shadowBlur = 8 * hs; ctx.fillStyle = "#fff"; F(700, 38 * hs); ctx.fillText(t("cSub"), pad, 266 * hs); ctx.restore();
     }
+    } // tamat latar + kepala (bukan Live)
 
     // ---- kad varian
     const gap = (rows.length === 3 ? 30 : 44) * Math.max(hs, .7), areaTop = L.head, areaBot = H - L.foot - L.disc - 30 * L.fs;
     let cw = (W - pad * 2 - gap * (L.cols - 1)) / L.cols, ch = (areaBot - areaTop - gap * (L.rows - 1)) / L.rows;
-    if (rows.length === 1) cw = Math.min(cw, 1100);
+    if (rows.length === 1 && !live) cw = Math.min(cw, 1100); // Live: kad selebar bar nama
     const k = Math.min(cw / 900, ch / 1150);
     const colRow = rows.some(q => q.g.colour && q.g.colour.price > 0); // baris harga warna dalam jadual (semua kad sama tinggi)
     rows.forEach((r, i) => {
@@ -707,6 +711,12 @@
       const [w1, w2] = t("fWA"); const tw2 = bw2 - (icx + ir + 18 * f - b0) - 22 * f;
       ctx.fillStyle = "#fff"; ctx.textAlign = "left"; fitF(w1.length > w2.length ? w1 : w2, tw2, 36 * f, 800);
       ctx.fillText(w1, icx + ir + 18 * f, midY - 4 * f); ctx.fillText(w2, icx + ir + 18 * f, midY + 38 * f);
+    }
+    if (live) { // potong: dari atas kad hingga bawah bar nama, tepi bar nama + sedikit ruang
+      const m = 24, x0 = Math.max(0, fx - m), y0 = Math.max(0, areaTop - m), x1 = Math.min(W, fx + fwid + m), y1 = Math.min(H, fy + fh + m);
+      vis.width = Math.round(x1 - x0); vis.height = Math.round(y1 - y0);
+      vis.getContext("2d").drawImage(cv, x0, y0, x1 - x0, y1 - y0, 0, 0, vis.width, vis.height);
+      return;
     }
     // penafian
     ctx.save(); ctx.shadowColor = "rgba(0,0,0,.55)"; ctx.shadowBlur = 8 * f; ctx.textAlign = "center"; ctx.fillStyle = "#fff"; fitF(t("pDisc"), W * .86, 26 * f, 600, true);
@@ -970,7 +980,7 @@
           </div>
           <label>${t("lvCust")}</label><input id="lvCust" type="text" maxlength="40" placeholder="${t("lvCustPh")}" value="${esc(s.cust)}">
           <button class="btn block lvph" id="lvPh" type="button" style="margin-top:12px"></button>
-          <div class="actions" style="margin-top:12px"><button class="btn ghost" id="recolor" type="button">🎨 ${t("newColors")}</button><button class="btn red" id="dl" type="button">${t("dl")}</button></div>
+          <button class="btn red block" id="dl" type="button" style="margin-top:10px">${t("dl")}</button>
           <p class="note">${t("foot")}</p>
         </div>
       </div>`;
@@ -1012,7 +1022,7 @@
       renderGrades(); renderColours(g);
       const tag = $("#lvCustTag"); tag.hidden = !s.cust.trim(); tag.textContent = t("lvFor") + ": " + s.cust.trim();
       const ph = $("#lvPh"); ph.textContent = (s.hidePhone ? "🙈 " : "📞 ") + t("lvPhone", !s.hidePhone); ph.classList.toggle("off", !!s.hidePhone);
-      drawPoster([calc(withColour(g), v)], { ...v, hidePhone: !!s.hidePhone }); // poster sama dengan tab Loan; warna neon kekal semasa live, tukar dengan butang 🎨
+      drawPoster([calc(withColour(g), v)], { ...v, hidePhone: !!s.hidePhone, live: true }); // kad + bar nama sahaja (tanpa latar warna-warni); poster sama dengan tab Loan; warna neon kekal semasa live, tukar dengan butang 🎨
     };
     $("#lvQ").oninput = e => { s.q = e.target.value; save(); renderModels(); };
     $("#lvQ").onkeydown = e => { if (e.key === "Enter") { const b = $("#lvModels .lvm"); if (b) b.click(); } };
@@ -1022,7 +1032,6 @@
       v.mode = b.dataset.d; $("#lvDm").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); depInput(); update();
     });
     view.querySelectorAll("#rate, #yrs, #ncd, #insIn").forEach(e => e.oninput = update);
-    $("#recolor").onclick = () => { neonSet = newNeon(); if (lastDraw) drawPoster(lastDraw.rows, lastDraw.v); };
     $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "live-poster.png")); };
     // Skrin penuh: sorok header, tab bawah & bar pelayar; poster DAN kawalan kekal (poster jadi lebih besar di tablet).
     // Jika pelayar tak sokong fullscreen (cth. iPhone), mod fokus tetap sorok header & tab.
