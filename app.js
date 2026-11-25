@@ -15,7 +15,10 @@
   let lang = store.get("sa_lang", "ms") === "en" ? "en" : "ms";
   const I18N = {
     ms: {
-      nav: ["Utama", "Loan", "Brochure", "Gaji", "Akaun"],
+      nav: ["Utama", "Loan", "Live", "Brochure", "Gaji", "Akaun"],
+      lvH: "Live calculator", lvSub: "Buka di laptop/tablet dan share skrin ke TikTok Live. Poster berubah serta-merta bila awak tukar model, varian atau deposit.",
+      lvCmt: "Tulis model di komen 💬", lvSearch: "Cari model… (cth. Vios)", lvModel: "Model", lvCust: "Nama customer (pilihan)", lvCustPh: "cth. En. Ahmad",
+      lvFor: "Kiraan untuk", lvFull: "Skrin penuh", lvExit: "Keluar skrin penuh", lvNone: "Tiada model sepadan",
       foot: "*Harga boleh berubah bila-bila masa dari tarikh poster ini dikongsi. Harga berdasarkan untuk Semenanjung Malaysia sahaja. Anggaran ansuran, tertakluk pada terma dan syarat bank.",
       footSrc: "Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my",
       needProfile: "Isi nama & nombor di tab Akaun dulu",
@@ -79,7 +82,10 @@
       langLbl: "Bahasa", sa: "Sales Advisor Toyota", link: "Pautan", otrS: "OTR", loanS: "Loan", pickup: "Pikap"
     },
     en: {
-      nav: ["Home", "Loan", "Brochure", "Salary", "Account"],
+      nav: ["Home", "Loan", "Live", "Brochure", "Salary", "Account"],
+      lvH: "Live calculator", lvSub: "Open on a laptop/tablet and share the screen to TikTok Live. The poster updates instantly as you change model, variant or down payment.",
+      lvCmt: "Comment a model 💬", lvSearch: "Search model… (e.g. Vios)", lvModel: "Model", lvCust: "Customer name (optional)", lvCustPh: "e.g. Mr Ahmad",
+      lvFor: "Calculation for", lvFull: "Full screen", lvExit: "Exit full screen", lvNone: "No matching model",
       foot: "*Prices may change at any time from the date this poster is shared. Prices are for Peninsular Malaysia only. Estimated instalment, subject to bank terms and conditions.",
       footSrc: "OTR price incl. SST, without insurance, individual private · source: toyota.com.my",
       needProfile: "Fill in your name & number in the Account tab first",
@@ -914,11 +920,107 @@
     $("#sv").onclick = () => { const ph = fmtPhone($("#ph").value); $("#ph").value = ph; store.set("sa_profile", { name: $("#n").value.trim(), phone: ph, branch: $("#br").value.trim() }); toast(t("savedProf")); };
   }
 
+  // ---------- LIVE (poster besar untuk TikTok Live: poster kiri, kawalan kanan) ----------
+  const livePref = () => ({ gi: 0, q: "", cust: "", ...store.get("sa_live", {}) });
+  function live() {
+    const s = livePref(), pref = loanPref();
+    let v = { ...pref, mode: pref.mode === "target" ? "pct" : pref.mode };
+    if (!GRADES[s.gi]) s.gi = 0;
+    view.innerHTML = `
+      <div class="lv">
+        <div class="lvstage" id="lvStage">
+          <div class="lvbar"><span class="lvlive"><i></i>LIVE</span><span class="lvcmt">${t("lvCmt")}</span></div>
+          <div class="lvcust" id="lvCustTag" hidden></div>
+          <canvas id="cv" width="1500" height="2000"></canvas>
+          <button class="lvfs" id="lvFs" type="button"></button>
+        </div>
+        <div class="card lvpanel">
+          <h2 style="margin-top:0">${t("lvH")}</h2><p class="sub" style="margin-bottom:8px">${t("lvSub")}</p>
+          <input id="lvQ" type="search" placeholder="${t("lvSearch")}" value="${esc(s.q)}" autocomplete="off">
+          <div class="lvmodels" id="lvModels"></div>
+          <label>${t("variant")}</label><div class="lvgrades" id="lvGrades"></div>
+          <div class="cbox" id="lvCol"></div>
+          <label>${t("deposit")}</label>
+          <div class="seg" id="lvDm" style="margin-bottom:8px">
+            <button data-d="pct" class="${v.mode === "pct" ? "on" : ""}">%</button>
+            <button data-d="rm" class="${v.mode === "rm" ? "on" : ""}">RM</button>
+          </div>
+          <div id="lvDep"></div>
+          <div class="row">
+            <div><label>${t("rate")}</label><input id="rate" type="number" min="0" max="10" step="0.01" value="${v.rate}"></div>
+            <div><label>${t("tenure")}</label><select id="yrs">${[9, 8, 7, 6, 5].map(y => `<option ${y == v.years ? "selected" : ""} value="${y}">${t("yrs", y)}</option>`).join("")}</select></div>
+          </div>
+          <label>${t("insH")}</label>
+          <div class="row">
+            <select id="ncd">${NCDS.map(n => `<option value="${n}" ${n == v.ncd ? "selected" : ""}>NCD ${n}%</option>`).join("")}</select>
+            <label class="chk"><input type="checkbox" id="insIn" ${v.insIn ? "checked" : ""}> ${t("insIn")}</label>
+          </div>
+          <label>${t("lvCust")}</label><input id="lvCust" type="text" maxlength="40" placeholder="${t("lvCustPh")}" value="${esc(s.cust)}">
+          <div class="actions" style="margin-top:12px"><button class="btn ghost" id="recolor" type="button">🎨 ${t("newColors")}</button><button class="btn red" id="dl" type="button">${t("dl")}</button></div>
+          <p class="note">${t("foot")}</p>
+        </div>
+      </div>`;
+    const save = () => store.set("sa_live", s);
+    const carOf = () => GRADES[s.gi].car;
+    const renderModels = () => {
+      const q = s.q.trim().toLowerCase();
+      const list = CARS.filter(c => !q || c.name.toLowerCase().includes(q) || c.grades.some(g => g[0].toLowerCase().includes(q)));
+      $("#lvModels").innerHTML = list.length ? list.map(c => `<button type="button" class="lvm${c === carOf() ? " on" : ""}" data-id="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy"><span>${esc(c.name)}</span></button>`).join("") : `<p class="note">${t("lvNone")}</p>`;
+      $("#lvModels").querySelectorAll(".lvm").forEach(b => b.onclick = () => {
+        const i = GRADES.findIndex(g => g.car.id === b.dataset.id); if (i < 0) return;
+        s.gi = i; save(); renderModels(); update();
+      });
+    };
+    const renderGrades = () => {
+      const car = carOf();
+      $("#lvGrades").innerHTML = GRADES.map((g, i) => g.car === car ? `<button type="button" class="lvg${i === s.gi ? " on" : ""}" data-i="${i}"><span>${esc(g.name)}</span><b>${RM(g.price)}</b></button>` : "").join("");
+      $("#lvGrades").querySelectorAll(".lvg").forEach(b => b.onclick = () => { s.gi = +b.dataset.i; save(); update(); });
+    };
+    const renderColours = g => {
+      const box = $("#lvCol"), list = colourList(g.name); if (!list.length) { box.innerHTML = ""; return; }
+      const cur = chosenColour(g);
+      box.innerHTML = '<div class="swatches">' + list.map(c => '<button type="button" class="sw' + (c.name === cur.name ? " on" : "") + '" data-c="' + esc(c.name) + '" title="' + esc(c.name) + '" aria-label="' + esc(c.name) + '"><i style="background:' + swatchBg(c) + '"></i></button>').join("") + "</div>" +
+        '<div class="swinfo"><span><b>' + esc(cur.name) + "</b> · " + (cur.price ? "+" + RM(cur.price) : t("colFree")) + "</span></div>";
+      box.querySelectorAll(".sw").forEach(b => b.onclick = () => { const m = store.get("sa_col", {}); m[g.name] = b.dataset.c; store.set("sa_col", m); update(); });
+    };
+    const depInput = () => {
+      $("#lvDep").innerHTML = v.mode === "rm"
+        ? `<input id="depv" class="money" type="text" inputmode="decimal" value="${fmtMoney(v.depRM)}" placeholder="${t("phDepRM")}">`
+        : `<input id="depv" type="number" inputmode="decimal" min="0" max="90" step="1" value="${v.dep}" placeholder="${t("phDepPct")}">`;
+      $("#depv").oninput = update;
+    };
+    const update = () => {
+      const dv = parseMoney($("#depv").value);
+      v = { ...v, rate: +$("#rate").value || 0, years: +$("#yrs").value, ncd: +$("#ncd").value, insIn: $("#insIn").checked };
+      if (v.mode === "rm") v.depRM = dv; else v.dep = dv;
+      store.set("sa_loan3", { ...loanPref(), rate: v.rate, years: v.years, ncd: v.ncd, insIn: v.insIn, mode: v.mode, dep: v.dep, depRM: v.depRM });
+      const g = GRADES[s.gi];
+      renderGrades(); renderColours(g);
+      const tag = $("#lvCustTag"); tag.hidden = !s.cust.trim(); tag.textContent = t("lvFor") + ": " + s.cust.trim();
+      drawPoster([calc(withColour(g), v)], v); // warna neon kekal semasa live; tukar dengan butang 🎨
+    };
+    $("#lvQ").oninput = e => { s.q = e.target.value; save(); renderModels(); };
+    $("#lvQ").onkeydown = e => { if (e.key === "Enter") { const b = $("#lvModels .lvm"); if (b) b.click(); } };
+    $("#lvCust").oninput = e => { s.cust = e.target.value; save(); update(); };
+    $("#lvDm").querySelectorAll("button").forEach(b => b.onclick = () => {
+      v.mode = b.dataset.d; $("#lvDm").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); depInput(); update();
+    });
+    view.querySelectorAll("#rate, #yrs, #ncd, #insIn").forEach(e => e.oninput = update);
+    $("#recolor").onclick = () => { neonSet = newNeon(); if (lastDraw) drawPoster(lastDraw.rows, lastDraw.v); };
+    $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "live-poster.png")); };
+    const stage = $("#lvStage"), fsBtn = $("#lvFs");
+    const fsLabel = () => { fsBtn.textContent = document.fullscreenElement ? "✕ " + t("lvExit") : "⛶ " + t("lvFull"); };
+    fsBtn.onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); };
+    document.onfullscreenchange = fsLabel; fsLabel();
+    renderModels(); depInput(); update();
+  }
+
   // ---------- router ----------
   function route() {
     clearInterval(promoTimer);
     const [tab, sub] = (location.hash.slice(1) || "home").split("/");
-    const map = { home, loan, brosur, gaji, akaun };
+    const map = { home, loan, live, brosur, gaji, akaun };
+    document.body.classList.toggle("live", tab === "live");
     if (tab === "loan") loanN = sub === "banding" ? 2 : sub === "banding3" ? 3 : sub === "banding4" ? 4 : 1;
     (map[tab] || home)();
     if (CHECKED_AT) {
