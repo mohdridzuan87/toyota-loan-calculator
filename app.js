@@ -19,6 +19,7 @@
       lvH: "Live calculator", lvSub: "Buka di laptop/tablet dan share skrin ke TikTok Live. Poster berubah serta-merta bila awak tukar model, varian atau deposit.",
       lvCmt: "Tulis model di komen 💬", lvSearch: "Cari model… (cth. Vios)", lvModel: "Model", lvCust: "Nama customer (pilihan)", lvCustPh: "cth. En. Ahmad",
       lvFor: "Kiraan untuk", lvFull: "Skrin penuh", lvExit: "Keluar skrin penuh", lvNone: "Tiada model sepadan",
+      lvPhone: on => "Nombor telefon: " + (on ? "DIPAPAR" : "DISOROK"), lvHidNum: "Komen di bawah", lvAskCmt: ["Tanya", "di komen"],
       foot: "*Harga boleh berubah bila-bila masa dari tarikh poster ini dikongsi. Harga berdasarkan untuk Semenanjung Malaysia sahaja. Anggaran ansuran, tertakluk pada terma dan syarat bank.",
       footSrc: "Harga OTR termasuk SST, tanpa insurans, individu persendirian · sumber: toyota.com.my",
       needProfile: "Isi nama & nombor di tab Akaun dulu",
@@ -86,6 +87,7 @@
       lvH: "Live calculator", lvSub: "Open on a laptop/tablet and share the screen to TikTok Live. The poster updates instantly as you change model, variant or down payment.",
       lvCmt: "Comment a model 💬", lvSearch: "Search model… (e.g. Vios)", lvModel: "Model", lvCust: "Customer name (optional)", lvCustPh: "e.g. Mr Ahmad",
       lvFor: "Calculation for", lvFull: "Full screen", lvExit: "Exit full screen", lvNone: "No matching model",
+      lvPhone: on => "Phone number: " + (on ? "SHOWN" : "HIDDEN"), lvHidNum: "Comment below", lvAskCmt: ["Ask in", "comments"],
       foot: "*Prices may change at any time from the date this poster is shared. Prices are for Peninsular Malaysia only. Estimated instalment, subject to bank terms and conditions.",
       footSrc: "OTR price incl. SST, without insurance, individual private · source: toyota.com.my",
       needProfile: "Fill in your name & number in the Account tab first",
@@ -676,16 +678,27 @@
     const lh = 34 * f, ly0 = midY - (lines.length - 1) * lh / 2 + 9 * f; lines.forEach((l, q) => ctx.fillText(l, ex, ly0 + q * lh));
     // nombor telefon
     const s2x = sepX(seg[2]), cr = fh * .26, ccx = s2x + 26 * f + cr;
-    if (narrow) {
+    // Live: nombor boleh disorok (v.hidePhone) — ganti dengan ajakan komen; tab Loan tiada hidePhone, kekal asal
+    const hide = !!v.hidePhone, phTxt = hide ? t("lvHidNum") : (p.phone || "01x-xxx xxxx");
+    if (narrow && !hide) {
       ctx.beginPath(); ctx.arc(ccx, midY, cr, 0, Math.PI * 2); ctx.fillStyle = "#25d366"; ctx.fill();
       ctx.save(); const sc = cr * 1.25 / 24; ctx.translate(ccx - 12 * sc, midY - 12 * sc); ctx.scale(sc, sc);
       ctx.strokeStyle = "#fff"; ctx.lineWidth = 1.9; ctx.stroke(WA_BUBBLE); ctx.fillStyle = "#fff"; ctx.fill(WA_PHONE); ctx.restore();
     }
-    const nx2 = narrow ? ccx + cr + 20 * f : s2x + 26 * f, nw2 = sepX(seg[3]) - nx2 - 18 * f;
-    ctx.fillStyle = "#fff"; fitF(p.phone || "01x-xxx xxxx", nw2, 60 * f, 800); ctx.fillText(p.phone || "01x-xxx xxxx", nx2, midY + 8 * f);
+    const nx2 = narrow && !hide ? ccx + cr + 20 * f : s2x + 26 * f, nw2 = sepX(seg[3]) - nx2 - 18 * f;
+    ctx.fillStyle = "#fff"; fitF(phTxt, nw2, 60 * f, 800); ctx.fillText(phTxt, nx2, midY + 8 * f);
     ctx.fillStyle = GOLD; fitF(t("fContact"), nw2, 24 * f, 600); ctx.fillText(t("fContact"), nx2, midY + 44 * f);
     // butang WhatsApp (poster lebar sahaja): pil hijau
-    if (!narrow) {
+    if (!narrow && hide) { // pil merah "Tanya di komen" ganti butang WhatsApp
+      const b0 = sepX(seg[3]) + 24 * f, bw2 = sepX(seg[4]) - b0 - 24 * f, bh2 = fh * .6, by2 = midY - bh2 / 2;
+      rr(ctx, b0, by2, bw2, bh2, bh2 / 2); ctx.fillStyle = RED; ctx.fill();
+      const [w1, w2] = t("lvAskCmt"), ix = b0 + 26 * f, iw = 44 * f;
+      ctx.textAlign = "left"; F(400, iw); ctx.fillText("💬", ix, midY + iw * .36);
+      const tx2 = ix + iw + 16 * f, tw2 = b0 + bw2 - tx2 - 22 * f;
+      ctx.fillStyle = "#fff"; fitF(w1.length > w2.length ? w1 : w2, tw2, 36 * f, 800);
+      ctx.fillText(w1, tx2, midY - 4 * f); ctx.fillText(w2, tx2, midY + 38 * f);
+    }
+    if (!narrow && !hide) {
       const b0 = sepX(seg[3]) + 24 * f, bw2 = sepX(seg[4]) - b0 - 24 * f, bh2 = fh * .6, by2 = midY - bh2 / 2;
       rr(ctx, b0, by2, bw2, bh2, bh2 / 2); ctx.fillStyle = "#1fa855"; ctx.fill();
       const ir = bh2 * .3, icx = b0 + 26 * f + ir;
@@ -956,6 +969,7 @@
             <label class="chk"><input type="checkbox" id="insIn" ${v.insIn ? "checked" : ""}> ${t("insIn")}</label>
           </div>
           <label>${t("lvCust")}</label><input id="lvCust" type="text" maxlength="40" placeholder="${t("lvCustPh")}" value="${esc(s.cust)}">
+          <button class="btn block lvph" id="lvPh" type="button" style="margin-top:12px"></button>
           <div class="actions" style="margin-top:12px"><button class="btn ghost" id="recolor" type="button">🎨 ${t("newColors")}</button><button class="btn red" id="dl" type="button">${t("dl")}</button></div>
           <p class="note">${t("foot")}</p>
         </div>
@@ -965,7 +979,7 @@
     const renderModels = () => {
       const q = s.q.trim().toLowerCase();
       const list = CARS.filter(c => !q || c.name.toLowerCase().includes(q) || c.grades.some(g => g[0].toLowerCase().includes(q)));
-      $("#lvModels").innerHTML = list.length ? list.map(c => `<button type="button" class="lvm${c === carOf() ? " on" : ""}" data-id="${esc(c.id)}"><img src="${esc(c.img)}" alt="" loading="lazy"><span>${esc(c.name)}</span></button>`).join("") : `<p class="note">${t("lvNone")}</p>`;
+      $("#lvModels").innerHTML = list.length ? list.map(c => `<button type="button" class="lvm${c === carOf() ? " on" : ""}" data-id="${esc(c.id)}">${esc(c.name)}</button>`).join("") : `<p class="note">${t("lvNone")}</p>`;
       $("#lvModels").querySelectorAll(".lvm").forEach(b => b.onclick = () => {
         const i = GRADES.findIndex(g => g.car.id === b.dataset.id); if (i < 0) return;
         s.gi = i; save(); renderModels(); update();
@@ -997,21 +1011,37 @@
       const g = GRADES[s.gi];
       renderGrades(); renderColours(g);
       const tag = $("#lvCustTag"); tag.hidden = !s.cust.trim(); tag.textContent = t("lvFor") + ": " + s.cust.trim();
-      drawPoster([calc(withColour(g), v)], v); // warna neon kekal semasa live; tukar dengan butang 🎨
+      const ph = $("#lvPh"); ph.textContent = (s.hidePhone ? "🙈 " : "📞 ") + t("lvPhone", !s.hidePhone); ph.classList.toggle("off", !!s.hidePhone);
+      drawPoster([calc(withColour(g), v)], { ...v, hidePhone: !!s.hidePhone }); // poster sama dengan tab Loan; warna neon kekal semasa live, tukar dengan butang 🎨
     };
     $("#lvQ").oninput = e => { s.q = e.target.value; save(); renderModels(); };
     $("#lvQ").onkeydown = e => { if (e.key === "Enter") { const b = $("#lvModels .lvm"); if (b) b.click(); } };
     $("#lvCust").oninput = e => { s.cust = e.target.value; save(); update(); };
+    $("#lvPh").onclick = () => { s.hidePhone = !s.hidePhone; save(); update(); };
     $("#lvDm").querySelectorAll("button").forEach(b => b.onclick = () => {
       v.mode = b.dataset.d; $("#lvDm").querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b)); depInput(); update();
     });
     view.querySelectorAll("#rate, #yrs, #ncd, #insIn").forEach(e => e.oninput = update);
     $("#recolor").onclick = () => { neonSet = newNeon(); if (lastDraw) drawPoster(lastDraw.rows, lastDraw.v); };
     $("#dl").onclick = () => { if (!needProfile()) return; $("#cv").toBlob(b => saveBlob(b, "live-poster.png")); };
-    const stage = $("#lvStage"), fsBtn = $("#lvFs");
-    const fsLabel = () => { fsBtn.textContent = document.fullscreenElement ? "✕ " + t("lvExit") : "⛶ " + t("lvFull"); };
-    fsBtn.onclick = () => { if (document.fullscreenElement) document.exitFullscreen(); else if (stage.requestFullscreen) stage.requestFullscreen().catch(() => {}); };
-    document.onfullscreenchange = fsLabel; fsLabel();
+    // Skrin penuh: sorok header, tab bawah & bar pelayar; poster DAN kawalan kekal (poster jadi lebih besar di tablet).
+    // Jika pelayar tak sokong fullscreen (cth. iPhone), mod fokus tetap sorok header & tab.
+    const fsBtn = $("#lvFs"), root = document.documentElement;
+    const fsEl = () => document.fullscreenElement || document.webkitFullscreenElement;
+    const fsLabel = () => { const on = document.body.classList.contains("lvfocus"); fsBtn.textContent = on ? "✕ " + t("lvExit") : "⛶ " + t("lvFull"); };
+    const setFocus = on => { document.body.classList.toggle("lvfocus", on); fsLabel(); };
+    fsBtn.onclick = () => {
+      if (document.body.classList.contains("lvfocus")) {
+        setFocus(false);
+        if (fsEl()) (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      } else {
+        setFocus(true);
+        const req = root.requestFullscreen || root.webkitRequestFullscreen;
+        if (req) try { const p = req.call(root); if (p && p.catch) p.catch(() => {}); } catch {}
+      }
+    };
+    document.onfullscreenchange = document.onwebkitfullscreenchange = () => { if (!fsEl()) setFocus(false); };
+    fsLabel();
     renderModels(); depInput(); update();
   }
 
@@ -1021,6 +1051,7 @@
     const [tab, sub] = (location.hash.slice(1) || "home").split("/");
     const map = { home, loan, live, brosur, gaji, akaun };
     document.body.classList.toggle("live", tab === "live");
+    if (tab !== "live") { document.body.classList.remove("lvfocus"); if (document.fullscreenElement) document.exitFullscreen().catch(() => {}); }
     if (tab === "loan") loanN = sub === "banding" ? 2 : sub === "banding3" ? 3 : sub === "banding4" ? 4 : 1;
     (map[tab] || home)();
     if (CHECKED_AT) {

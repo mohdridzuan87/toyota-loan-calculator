@@ -111,10 +111,17 @@ canvas{width:100%;height:auto;border-radius:14px;display:block;margin:12px 0}
 
 /* Live calculator: poster kiri, kawalan kanan (laptop/tablet); bertindan di telefon */
 body.live main{max-width:1440px}
-.lv{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:16px;align-items:start}
+.lv{display:grid;grid-template-columns:minmax(0,1fr) clamp(250px,31vw,380px);gap:16px;align-items:start}
+/* Mod skrin penuh/fokus: tiada header & tab bawah; poster + kawalan isi seluruh skrin */
+body.lvfocus{padding-bottom:0;background:#050a18}
+body.lvfocus .top,body.lvfocus .tabs,body.lvfocus .stalebar{display:none}
+body.lvfocus main{max-width:none;padding:8px}
+body.lvfocus .lv{gap:8px}
+body.lvfocus .lvstage{height:calc(100vh - 16px);height:calc(100dvh - 16px);border-radius:12px;padding:8px}
+body.lvfocus .lvpanel{top:8px;max-height:calc(100vh - 16px);max-height:calc(100dvh - 16px);padding:12px}
+body.lvfocus .lvpanel h2,body.lvfocus .lvpanel h2+.sub,body.lvfocus .lvpanel>.note{display:none}
 .lvstage{position:relative;background:#050a18;border-radius:18px;height:calc(100vh - 160px);min-height:460px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;overflow:hidden}
 .lvstage canvas{flex:1 1 0;min-height:0;height:0;width:100%;object-fit:contain;margin:0;border-radius:0}
-.lvstage:fullscreen{height:100vh;border-radius:0}
 .lvbar{display:flex;gap:8px;z-index:2;white-space:nowrap;flex:none}
 .lvlive,.lvcmt,.lvcust{font-weight:800;font-size:15px;border-radius:999px;padding:7px 14px;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 .lvlive{background:var(--red);color:#fff;display:flex;align-items:center;gap:8px;letter-spacing:1px}
@@ -126,15 +133,24 @@ body.live main{max-width:1440px}
 .lvfs{position:absolute;top:14px;right:14px;z-index:2;border:0;border-radius:10px;padding:7px 11px;font:inherit;font-size:13px;font-weight:700;background:rgba(255,255,255,.14);color:#fff;cursor:pointer}
 .lvfs:hover{background:rgba(255,255,255,.26)}
 .lvpanel{position:sticky;top:64px;max-height:calc(100vh - 160px);overflow:auto;margin:0}
-.lvmodels{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
-.lvm{display:flex;flex-direction:column;align-items:center;gap:4px;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:6px 4px;font:inherit;font-size:12px;font-weight:700;color:var(--ink);cursor:pointer}
-.lvm img{width:100%;height:40px;object-fit:contain;background:#fff;border-radius:8px}
-.lvm.on{border-color:var(--red);box-shadow:0 0 0 2px var(--red)}
+.lvmodels{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:10px}
+.lvm{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:10px 12px;font:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;text-align:left}
+.lvm.on{border-color:var(--red);background:var(--red);color:#fff}
 .lvgrades{display:grid;gap:6px}
 .lvg{display:flex;justify-content:space-between;gap:10px;border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:10px 12px;font:inherit;font-size:13px;color:var(--ink);cursor:pointer;text-align:left}
 .lvg.on{border-color:var(--red);background:var(--red);color:#fff}
 #lvCol{margin-top:12px}
-@media (max-width:900px){
+.lvph{background:#16a34a;color:#fff}
+.lvph.off{background:var(--soft);color:var(--ink);border:1px solid var(--line)}
+/* Tablet kecil (8"): panel lebih padat supaya poster dapat lebih ruang */
+@media (max-width:1100px){
+  .lvm{padding:8px 10px;font-size:13px}
+  .lvg{padding:8px 10px;font-size:12px}
+  .lvpanel label{margin:9px 0 5px}
+  .lvpanel input,.lvpanel select{padding:9px}
+  .lvpanel .row{grid-template-columns:1fr}
+}
+@media (max-width:640px){
   .lv{grid-template-columns:1fr}
   .lvstage{height:auto;min-height:0}
   .lvstage canvas{height:auto;flex:none}
