@@ -489,11 +489,10 @@
       return o;
     }));
   };
-  // Semua poster guna gambar pandangan SISI (assets/cars/cut) — Wan mahu semua gambar kereta dari sisi (25 Nov 2026).
-  // Gambar ikut warna (col/) ialah sudut 3/4 hadapan, jadi tidak dipakai lagi; label warna kekal di kad.
-  // Live (colour=true): guna gambar ikut warna (3/4 hadapan, 1200 px) supaya kereta tukar warna bila customer minta.
-  const cutOf = (g, colour) => {
-    if (colour && g.colour && g.colour.img) return g.colour.img;
+  // Semua poster (Loan & Live) guna gambar IKUT WARNA dipilih (col/, 3/4 hadapan, 1200 px) supaya warna sebenar keluar
+  // (Wan, 26 Nov 2026: poster Loan Vellfire tak tunjuk warna sebenar). Tiada gambar warna -> gambar sisi assets/cars/cut.
+  const cutOf = g => {
+    if (g.colour && g.colour.img) return g.colour.img;
     const id = g.car.id, gr = /GR Sport/i.test(g.name), hev = /HEV/i.test(g.name);
     const k = gr && CUTS.has(id + "-grs") ? id + "-grs" : hev && CUTS.has(id + "-hev") ? id + "-hev" : id;
     return CUTS.has(k) ? "assets/cars/cut/" + k + ".png" : g.car.img;
@@ -525,7 +524,7 @@
     const seq = ++drawSeq; lastDraw = { rows, v };
     await document.fonts.ready;
     const p = profile(), photoSrc = store.get("sa_photo", "");
-    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g, !!v.live)))), photoSrc ? loadImg(photoSrc) : null]);
+    const [imgs, photo] = await Promise.all([Promise.all(rows.map(r => loadCar(cutOf(r.g)))), photoSrc ? loadImg(photoSrc) : null]);
     if (seq !== drawSeq) return;
     // Live (v.live): lukis di kanvas tersembunyi tanpa latar neon/tajuk/penafian, kemudian potong kad + bar nama ke #cv
     const vis = $("#cv"); if (!vis) return;
@@ -598,7 +597,7 @@
       ctx.textAlign = "left"; ctx.fillStyle = NAVY; fitF(r.g.name, nmax, 56 * k, 800); ctx.fillText(r.g.name, nx, bcy + 18 * k);
       // gambar kereta
       const FIX = (690 + (colRow ? 54 : 0)) * k, imgTop = y + 148 * k, imgH = Math.max(ch - FIX - 148 * k, 120 * k);
-      if (!(live && r.g.colour && r.g.colour.img)) { // bayang lembut (gambar sisi tiada bayang; gambar warna Live ada bayang sendiri)
+      if (!(r.g.colour && r.g.colour.img)) { // bayang lembut (gambar sisi tiada bayang; gambar warna ada bayang sendiri)
         ctx.save(); ctx.fillStyle = "rgba(10,23,51,.10)"; ctx.beginPath();
         ctx.ellipse(x + cw / 2, imgTop + imgH * .9, cw * .3, imgH * .03, 0, 0, Math.PI * 2); ctx.fill(); ctx.restore();
       }
